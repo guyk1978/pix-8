@@ -1,11 +1,3 @@
-// open-next.config.ts
-export default {
-  functions: {
-    default: {
-      runtime: "nodejs",
-    },
-  },
-  middleware: {
-    runtime: "nodejs",
-  },
-};
+import { defineCloudflareConfig } from "@opennextjs/cloudflare";
+
+export default defineCloudflareConfig({});
