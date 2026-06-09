@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cloudflare": "opennextjs-cloudflare build && node -e \"require('fs').copyFileSync('.open-next/worker.js','.open-next/_worker.js')\"",
+    "build:cloudflare": "opennextjs-cloudflare build && node -e \"const fs=require('fs');fs.mkdirSync('functions',{recursive:true});fs.copyFileSync('.open-next/worker.js','functions/[[path]].js')\"",
     "start": "next start",
     "lint": "eslint"
   },
