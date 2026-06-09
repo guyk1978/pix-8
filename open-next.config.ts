@@ -5,4 +5,7 @@ export default {
       runtime: "nodejs",
     },
   },
+  middleware: {
+    runtime: "nodejs",
+  },
 };
