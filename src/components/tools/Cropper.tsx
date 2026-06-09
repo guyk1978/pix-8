@@ -1,0 +1,485 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import {
+  buildDownloadFilename,
+  type CropRegion,
+  resolveFormat,
+  useImageProcessor,
+} from "@/hooks/useImageProcessor";
+
+type AspectPreset = "free" | "1:1" | "16:9" | "4:3";
+
+const ASPECT_PRESETS: { id: AspectPreset; label: string; ratio: number | null }[] =
+  [
+    { id: "free", label: "Free", ratio: null },
+    { id: "1:1", label: "1:1", ratio: 1 },
+    { id: "16:9", label: "16:9", ratio: 16 / 9 },
+    { id: "4:3", label: "4:3", ratio: 4 / 3 },
+  ];
+
+const buttonClassName =
+  "min-h-9 rounded-sm border border-[#333] px-3 py-1.5 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
+
+const activeButtonClassName =
+  "border-accent/40 bg-accent-muted text-accent";
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function createInitialCrop(
+  imageWidth: number,
+  imageHeight: number,
+  aspect: number | null,
+): CropRegion {
+  if (!aspect) {
+    const margin = 0.1;
+    return {
+      x: Math.round(imageWidth * margin),
+      y: Math.round(imageHeight * margin),
+      width: Math.round(imageWidth * (1 - margin * 2)),
+      height: Math.round(imageHeight * (1 - margin * 2)),
+    };
+  }
+
+  let cropWidth = imageWidth * 0.8;
+  let cropHeight = cropWidth / aspect;
+
+  if (cropHeight > imageHeight * 0.8) {
+    cropHeight = imageHeight * 0.8;
+    cropWidth = cropHeight * aspect;
+  }
+
+  return {
+    x: Math.round((imageWidth - cropWidth) / 2),
+    y: Math.round((imageHeight - cropHeight) / 2),
+    width: Math.round(cropWidth),
+    height: Math.round(cropHeight),
+  };
+}
+
+function fitCropToAspect(
+  crop: CropRegion,
+  imageWidth: number,
+  imageHeight: number,
+  aspect: number | null,
+): CropRegion {
+  if (!aspect) return crop;
+
+  const centerX = crop.x + crop.width / 2;
+  const centerY = crop.y + crop.height / 2;
+
+  let width = crop.width;
+  let height = width / aspect;
+
+  if (height > imageHeight) {
+    height = imageHeight;
+    width = height * aspect;
+  }
+
+  if (width > imageWidth) {
+    width = imageWidth;
+    height = width / aspect;
+  }
+
+  let x = centerX - width / 2;
+  let y = centerY - height / 2;
+
+  x = clamp(x, 0, imageWidth - width);
+  y = clamp(y, 0, imageHeight - height);
+
+  return {
+    x: Math.round(x),
+    y: Math.round(y),
+    width: Math.round(width),
+    height: Math.round(height),
+  };
+}
+
+function clampCrop(
+  crop: CropRegion,
+  imageWidth: number,
+  imageHeight: number,
+): CropRegion {
+  const width = clamp(crop.width, 1, imageWidth);
+  const height = clamp(crop.height, 1, imageHeight);
+  const x = clamp(crop.x, 0, imageWidth - width);
+  const y = clamp(crop.y, 0, imageHeight - height);
+
+  return {
+    x: Math.round(x),
+    y: Math.round(y),
+    width: Math.round(width),
+    height: Math.round(height),
+  };
+}
+
+type DragMode = "move" | "resize-se" | "resize-sw" | "resize-ne" | "resize-nw";
+
+export function Cropper() {
+  const {
+    canvasRef,
+    source,
+    error,
+    isProcessing,
+    loadFile,
+    processImage,
+    handleDownload,
+  } = useImageProcessor();
+
+  const imageRef = useRef<HTMLImageElement>(null);
+  const dragRef = useRef<{
+    mode: DragMode;
+    startX: number;
+    startY: number;
+    startCrop: CropRegion;
+  } | null>(null);
+
+  const [crop, setCrop] = useState<CropRegion | null>(null);
+  const [aspectPreset, setAspectPreset] = useState<AspectPreset>("free");
+  const [stripMetadata, setStripMetadata] = useState(true);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
+  const [displaySize, setDisplaySize] = useState({ width: 0, height: 0 });
+
+  const aspectRatio =
+    ASPECT_PRESETS.find((preset) => preset.id === aspectPreset)?.ratio ?? null;
+
+  const updateDisplaySize = useCallback(() => {
+    const image = imageRef.current;
+    if (!image) return;
+
+    setDisplaySize({
+      width: image.clientWidth,
+      height: image.clientHeight,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!source) {
+      setCrop(null);
+      return;
+    }
+
+    setCrop(createInitialCrop(source.width, source.height, aspectRatio));
+  }, [source]);
+
+  useEffect(() => {
+    if (!source) return;
+
+    setCrop((current) =>
+      current
+        ? fitCropToAspect(current, source.width, source.height, aspectRatio)
+        : createInitialCrop(source.width, source.height, aspectRatio),
+    );
+  }, [aspectPreset, aspectRatio, source]);
+
+  useEffect(() => {
+    const image = imageRef.current;
+    if (!image) return;
+
+    updateDisplaySize();
+
+    const observer = new ResizeObserver(updateDisplaySize);
+    observer.observe(image);
+
+    return () => observer.disconnect();
+  }, [source, updateDisplaySize]);
+
+  const scale =
+    source && displaySize.width > 0 ? displaySize.width / source.width : 1;
+
+  const handleFileChange = useCallback(
+    (file: File | null) => {
+      if (file) void loadFile(file);
+    },
+    [loadFile],
+  );
+
+  const toNaturalDelta = useCallback(
+    (deltaX: number, deltaY: number) => ({
+      x: deltaX / scale,
+      y: deltaY / scale,
+    }),
+    [scale],
+  );
+
+  const startDrag = useCallback(
+    (mode: DragMode, clientX: number, clientY: number) => {
+      if (!crop) return;
+
+      dragRef.current = {
+        mode,
+        startX: clientX,
+        startY: clientY,
+        startCrop: crop,
+      };
+    },
+    [crop],
+  );
+
+  useEffect(() => {
+    const onPointerMove = (event: PointerEvent) => {
+      if (!dragRef.current || !source) return;
+
+      const { mode, startX, startY, startCrop } = dragRef.current;
+      const delta = toNaturalDelta(event.clientX - startX, event.clientY - startY);
+
+      let next = { ...startCrop };
+
+      if (mode === "move") {
+        next.x = startCrop.x + delta.x;
+        next.y = startCrop.y + delta.y;
+      } else {
+        if (mode.includes("e")) {
+          next.width = startCrop.width + delta.x;
+        }
+        if (mode.includes("w")) {
+          next.x = startCrop.x + delta.x;
+          next.width = startCrop.width - delta.x;
+        }
+        if (mode.includes("s")) {
+          next.height = startCrop.height + delta.y;
+        }
+        if (mode.includes("n")) {
+          next.y = startCrop.y + delta.y;
+          next.height = startCrop.height - delta.y;
+        }
+
+        if (aspectRatio) {
+          next.height = next.width / aspectRatio;
+          if (mode.includes("n")) {
+            next.y = startCrop.y + startCrop.height - next.height;
+          }
+        }
+
+        if (next.width < 1) next.width = 1;
+        if (next.height < 1) next.height = 1;
+      }
+
+      next = clampCrop(next, source.width, source.height);
+
+      if (aspectRatio) {
+        next = fitCropToAspect(next, source.width, source.height, aspectRatio);
+      }
+
+      setCrop(next);
+    };
+
+    const onPointerUp = () => {
+      dragRef.current = null;
+    };
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+    };
+  }, [source, aspectRatio, toNaturalDelta]);
+
+  const handleCrop = useCallback(async () => {
+    if (!source || !crop) return;
+
+    const cropRegion = clampCrop(crop, source.width, source.height);
+
+    const result = await processImage(source.file, {
+      width: cropRegion.width,
+      height: cropRegion.height,
+      crop: cropRegion,
+      format: resolveFormat(source.mimeType),
+      stripMetadata,
+      canvas: canvasRef.current,
+    });
+
+    if (!result) return;
+
+    await handleDownload(
+      result.blob,
+      buildDownloadFilename(`${source.name}-cropped`, result.format),
+      { stripMetadata },
+    );
+  }, [source, crop, stripMetadata, processImage, handleDownload, canvasRef]);
+
+  const canCrop =
+    !!source && !!crop && crop.width > 0 && crop.height > 0 && !isProcessing;
+
+  const displayCrop = crop
+    ? {
+        x: crop.x * scale,
+        y: crop.y * scale,
+        width: crop.width * scale,
+        height: crop.height * scale,
+      }
+    : null;
+
+  return (
+    <div className="w-full">
+      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+        {!source ? (
+          <div
+            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
+              isDraggingFile
+                ? "border-accent bg-accent-muted"
+                : "border-[#333] bg-background hover:border-muted"
+            }`}
+            onDragEnter={(event) => {
+              event.preventDefault();
+              setIsDraggingFile(true);
+            }}
+            onDragLeave={(event) => {
+              event.preventDefault();
+              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+                setIsDraggingFile(false);
+              }
+            }}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={(event) => {
+              event.preventDefault();
+              setIsDraggingFile(false);
+              handleFileChange(event.dataTransfer.files[0] ?? null);
+            }}
+          >
+            <input
+              id="cropper-upload"
+              type="file"
+              accept="image/*"
+              aria-label="Upload image"
+              className="absolute inset-0 cursor-pointer opacity-0"
+              onChange={(event) => {
+                handleFileChange(event.target.files?.[0] ?? null);
+                event.target.value = "";
+              }}
+            />
+            <div className="pointer-events-none px-2 text-center">
+              <p className="font-label text-muted">Upload</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                Drop an image here or tap to browse
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4 rounded-sm border border-[#333] bg-background p-2 sm:p-3">
+            <div className="flex justify-center">
+              <div className="relative inline-block max-w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  ref={imageRef}
+                  src={source.url}
+                  alt="Crop preview"
+                  draggable={false}
+                  onLoad={updateDisplaySize}
+                  className="block h-auto max-h-[min(60vh,480px)] w-auto max-w-full select-none"
+                />
+
+                {displayCrop && displaySize.width > 0 && (
+                  <div className="absolute inset-0 touch-none">
+                    <div
+                      className="absolute inset-0 bg-black/55"
+                      style={{
+                        clipPath: `polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 0, ${displayCrop.x}px ${displayCrop.y}px, ${displayCrop.x}px ${displayCrop.y + displayCrop.height}px, ${displayCrop.x + displayCrop.width}px ${displayCrop.y + displayCrop.height}px, ${displayCrop.x + displayCrop.width}px ${displayCrop.y}px, ${displayCrop.x}px ${displayCrop.y}px)`,
+                      }}
+                    />
+
+                    <div
+                      className="absolute border border-accent"
+                      style={{
+                        left: displayCrop.x,
+                        top: displayCrop.y,
+                        width: displayCrop.width,
+                        height: displayCrop.height,
+                        boxShadow: "0 0 0 1px rgba(0,0,0,0.4)",
+                      }}
+                      onPointerDown={(event) => {
+                        event.preventDefault();
+                        (event.currentTarget as HTMLElement).setPointerCapture(
+                          event.pointerId,
+                        );
+                        startDrag("move", event.clientX, event.clientY);
+                      }}
+                    >
+                      {(
+                        [
+                          ["resize-nw", "left-0 top-0 -translate-x-1/2 -translate-y-1/2"],
+                          ["resize-ne", "right-0 top-0 translate-x-1/2 -translate-y-1/2"],
+                          ["resize-sw", "bottom-0 left-0 -translate-x-1/2 translate-y-1/2"],
+                          ["resize-se", "bottom-0 right-0 translate-x-1/2 translate-y-1/2"],
+                        ] as const
+                      ).map(([mode, position]) => (
+                        <div
+                          key={mode}
+                          className={`absolute h-3 w-3 rounded-sm border border-accent bg-background ${position}`}
+                          onPointerDown={(event) => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            (event.currentTarget as HTMLElement).setPointerCapture(
+                              event.pointerId,
+                            );
+                            startDrag(mode, event.clientX, event.clientY);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <p className="text-center font-mono text-xs text-muted">
+              {source.width} × {source.height}px
+              {crop && (
+                <>
+                  {" "}
+                  · Crop {crop.width} × {crop.height}px
+                </>
+              )}
+            </p>
+          </div>
+        )}
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          {ASPECT_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              disabled={!source}
+              onClick={() => setAspectPreset(preset.id)}
+              className={`${buttonClassName} ${
+                aspectPreset === preset.id ? activeButtonClassName : "bg-background"
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 border-t border-[#333] pt-5">
+          <StripMetadataToggle
+            checked={stripMetadata}
+            disabled={!source}
+            onChange={setStripMetadata}
+          />
+        </div>
+
+        {error && (
+          <p className="mt-4 font-mono text-xs text-red-400" role="alert">
+            {error}
+          </p>
+        )}
+
+        <button
+          type="button"
+          disabled={!canCrop}
+          onClick={() => void handleCrop()}
+          className="mt-5 min-h-11 w-full rounded-sm border border-[#333] bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {isProcessing ? "Processing…" : "Crop & Download"}
+        </button>
+      </div>
+
+      <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
+    </div>
+  );
+}
