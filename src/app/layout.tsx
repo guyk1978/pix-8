@@ -17,13 +17,35 @@ const robotoMono = Roboto_Mono({
   subsets: ["latin"],
 });
 
+const siteDescription =
+  "Browser-based image utilities that run entirely on your device. Resize, convert, compress, and crop — no uploads, no tracking.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://pix-8.com"),
   title: {
     default: "pix-8 — Privacy-first image tools",
     template: "%s · pix-8",
   },
-  description:
-    "Browser-based image utilities that run entirely on your device. Resize, convert, compress, and crop — no uploads, no tracking.",
+  description: siteDescription,
+  openGraph: {
+    title: "pix-8 | Client-side image utilities",
+    description: "Process images locally. Nothing leaves your browser.",
+    type: "website",
+    images: [
+      {
+        url: "/img-share-en.png",
+        width: 1200,
+        height: 630,
+        alt: "pix-8 — client-side image utilities",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "pix-8 | Client-side image utilities",
+    description: "Process images locally. Nothing leaves your browser.",
+    images: ["/img-share-en.png"],
+  },
 };
 
 export default function RootLayout({

@@ -1,5 +1,6 @@
 "use client";
 
+import { ShareButton } from "@/components/ShareButton";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const GITHUB_REPO_URL = "https://github.com/guyk1978/pix-8";
@@ -39,6 +40,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        <ShareButton />
         <ThemeToggle />
 
         <span

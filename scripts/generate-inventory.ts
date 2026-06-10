@@ -21,6 +21,16 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
+function escapeAttr(value: string): string {
+  return escapeHtml(value).replace(/'/g, "&#39;");
+}
+
+function renderCopyButton(names: string[], label: string): string {
+  if (names.length === 0) return "";
+
+  return `<button type="button" class="copy-btn" data-names="${escapeAttr(JSON.stringify(names))}" title="${escapeHtml(label)}">${escapeHtml(label)}</button>`;
+}
+
 function renderToolsSection(): string {
   return dashboardSections
     .map((section) => {
@@ -42,9 +52,18 @@ function renderToolsSection(): string {
         )
         .join("");
 
+      const copyLabel =
+        section.id === "advanced" ? "Copy advanced names" : "Copy tool names";
+
       return `
       <section class="block">
-        <h2>${escapeHtml(section.label)} <span class="count">${sectionTools.length}</span></h2>
+        <h2>
+          <span class="h2-title">${escapeHtml(section.label)} <span class="count">${sectionTools.length}</span></span>
+          ${renderCopyButton(
+            sectionTools.map((tool) => tool.name),
+            copyLabel,
+          )}
+        </h2>
         <table>
           <thead>
             <tr>
@@ -89,7 +108,13 @@ function renderBlogSection(): string {
 
   return `
     <section class="block">
-      <h2>Articles <span class="count">${articles.length}</span></h2>
+      <h2>
+        <span class="h2-title">Articles <span class="count">${articles.length}</span></span>
+        ${renderCopyButton(
+          articles.map((article) => article.title),
+          "Copy article names",
+        )}
+      </h2>
       <table>
         <thead>
           <tr>
@@ -155,9 +180,33 @@ export function generateInventory(): string {
       margin-bottom: 1rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
+    .h2-title { display: inline-flex; align-items: center; gap: 0.5rem; }
     .count { color: #737373; font-weight: 400; }
+    .copy-btn {
+      margin-left: auto;
+      flex-shrink: 0;
+      border: 1px solid #333;
+      background: #161616;
+      color: #a3a3a3;
+      font-family: ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.375rem 0.625rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .copy-btn:hover {
+      border-color: #525252;
+      color: #e8e8e8;
+      background: #1a1a1a;
+    }
+    .copy-btn.copied {
+      color: #e8e8e8;
+      border-color: #525252;
+    }
     table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
     th, td {
       border: 1px solid #333;
@@ -224,6 +273,30 @@ export function generateInventory(): string {
     ${renderToolsSection()}
     ${renderBlogSection()}
   </div>
+  <script>
+    document.querySelectorAll(".copy-btn").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const names = JSON.parse(button.dataset.names || "[]");
+        const text = names.join("\\n");
+        const original = button.textContent || "Copy";
+
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = "Copied!";
+          button.classList.add("copied");
+          window.setTimeout(() => {
+            button.textContent = original;
+            button.classList.remove("copied");
+          }, 1500);
+        } catch {
+          button.textContent = "Copy failed";
+          window.setTimeout(() => {
+            button.textContent = original;
+          }, 1500);
+        }
+      });
+    });
+  </script>
 </body>
 </html>`;
 
