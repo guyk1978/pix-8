@@ -182,7 +182,7 @@ export function Converter() {
 
   return (
     <div className="w-full">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         <ProcessingModeToggle mode={mode} onChange={handleModeChange} />
 
         {mode === "single" ? (
@@ -190,7 +190,7 @@ export function Converter() {
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDragging
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -226,7 +226,7 @@ export function Converter() {
                 <img
                   src={source.url}
                   alt="Preview"
-                  className="max-h-40 max-w-full rounded-sm border border-[#333] object-contain sm:max-h-48"
+                  className="max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
                 />
                 <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
                   {source.width} × {source.height}px · {source.file.name}
@@ -250,7 +250,7 @@ export function Converter() {
               className={`relative flex min-h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-sm border border-dashed p-5 transition-colors ${
                 isDragging
                   ? "border-accent bg-accent-muted"
-                  : "border-[#333] bg-background hover:border-muted"
+                  : "border-border bg-background hover:border-muted"
               }`}
               onDragEnter={(event) => {
                 event.preventDefault();
@@ -322,7 +322,7 @@ export function Converter() {
           </p>
         )}
 
-        <div className="mt-5 border-t border-[#333] pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={mode === "single" ? !source : bulk.items.length === 0}
@@ -349,7 +349,7 @@ export function Converter() {
             type="button"
             disabled={!canBatchConvert}
             onClick={() => void handleBatchDownload()}
-            className="mt-5 min-h-11 w-full rounded-sm border border-[#333] bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-5 min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {busy ? "Processing…" : "Convert All & Download ZIP"}
           </button>

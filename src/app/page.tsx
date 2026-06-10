@@ -17,7 +17,7 @@ export default function Home() {
 
       <DashboardTools />
 
-      <section className="mt-10 grid gap-3 border border-[#333] bg-[#161616] p-4 sm:grid-cols-3 sm:p-5">
+      <section className="mt-10 grid gap-3 border border-border bg-card p-4 sm:grid-cols-3 sm:p-5">
         <div className="space-y-1">
           <p className="font-label text-muted">Processing</p>
           <p className="font-mono text-sm text-foreground">Client-side</p>

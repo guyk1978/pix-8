@@ -18,7 +18,7 @@ import {
 } from "@/lib/faviconRender";
 
 const inputClassName =
-  "w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
 
 const FORMAT_OPTIONS: { value: FaviconExportFormat; label: string }[] = [
   { value: "ico", label: "ICO (16 + 32 + 48)" },
@@ -142,13 +142,13 @@ export function FaviconGenerator() {
 
   return (
     <div className="w-full">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDraggingFile
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -210,7 +210,7 @@ export function FaviconGenerator() {
           <div className="space-y-4">
             <div className="space-y-3">
               <span className="font-label text-muted">Crop preview</span>
-              <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-sm border border-[#333] bg-background p-4">
+              <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-4">
                 {source ? (
                   <canvas
                     ref={sourceCanvasRef}
@@ -230,7 +230,7 @@ export function FaviconGenerator() {
                 {FAVICON_PREVIEW_SIZES.map((size) => (
                   <div
                     key={size}
-                    className="flex flex-col items-center gap-2 rounded-sm border border-[#333] bg-background p-3"
+                    className="flex flex-col items-center gap-2 rounded-sm border border-border bg-background p-3"
                   >
                     <canvas
                       ref={(node) => {
@@ -246,7 +246,7 @@ export function FaviconGenerator() {
                       }}
                       width={size}
                       height={size}
-                      className="border border-[#333]"
+                      className="border border-border"
                       style={{
                         width: size * 2,
                         height: size * 2,
@@ -268,7 +268,7 @@ export function FaviconGenerator() {
             )}
           </div>
 
-          <div className="space-y-4 border border-[#333] bg-background p-4">
+          <div className="space-y-4 border border-border bg-background p-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <label htmlFor="favicon-zoom" className="font-label text-muted">
@@ -289,7 +289,7 @@ export function FaviconGenerator() {
                 onChange={(event) =>
                   setSettings({ zoom: Number(event.target.value) })
                 }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-[#161616] accent-accent disabled:opacity-50"
+                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
               />
               <p className="font-mono text-[10px] text-muted">
                 Center-crops to a square before resizing.

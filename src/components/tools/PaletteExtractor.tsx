@@ -84,13 +84,13 @@ export function PaletteExtractor() {
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <div className="rounded-sm border border-[#333] bg-[#161616] p-4 sm:p-6">
+      <div className="rounded-sm border border-border bg-card p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDragging
                 ? "border-muted bg-surface"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -147,11 +147,11 @@ export function PaletteExtractor() {
                   handleFileChange(event.target.files?.[0] ?? null);
                   event.target.value = "";
                 }}
-                className="w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
+                className="w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
               />
             </div>
 
-            <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-sm border border-[#333] bg-background p-3">
+            <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={source.url}
@@ -173,20 +173,20 @@ export function PaletteExtractor() {
           </div>
 
           {!source ? (
-            <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-[#333] bg-background p-6 text-center">
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
                 Upload an image to extract dominant colors.
               </p>
             </div>
           ) : isExtracting ? (
-            <div className="flex min-h-28 items-center justify-center rounded-sm border border-[#333] bg-background p-6">
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-border bg-background p-6">
               <div className="flex items-center gap-3">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#333] border-t-foreground" />
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-foreground" />
                 <p className="font-label text-muted">Extracting colors…</p>
               </div>
             </div>
           ) : palette.length === 0 ? (
-            <div className="flex min-h-28 items-center justify-center rounded-sm border border-[#333] bg-background p-6 text-center">
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
                 No colors could be extracted from this image.
               </p>
@@ -198,11 +198,11 @@ export function PaletteExtractor() {
                   key={color.hex}
                   type="button"
                   onClick={() => void handleCopyHex(color.hex)}
-                  className="group flex flex-col items-center gap-2 rounded-sm border border-transparent p-1 transition-colors hover:border-[#333] focus-visible:border-muted focus-visible:outline-none"
+                  className="group flex flex-col items-center gap-2 rounded-sm border border-transparent p-1 transition-colors hover:border-border focus-visible:border-muted focus-visible:outline-none"
                   aria-label={`Copy ${color.hex} to clipboard`}
                 >
                   <span
-                    className="h-14 w-full rounded-md border border-[#333] shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)] transition-transform group-hover:scale-[1.03] sm:h-16"
+                    className="h-14 w-full rounded-md border border-border shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)] transition-transform group-hover:scale-[1.03] sm:h-16"
                     style={{ backgroundColor: color.hex }}
                   />
                   <span
@@ -226,7 +226,7 @@ export function PaletteExtractor() {
           </p>
         )}
 
-        <div className="mt-5 border-t border-[#333] pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={!source}

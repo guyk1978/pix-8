@@ -14,7 +14,7 @@ import {
 } from "@/hooks/useImageProcessor";
 
 const inputClassName =
-  "w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-50";
 
 const POSITIONS: { id: WatermarkPosition; label: string }[] = [
   { id: "top-left", label: "TL" },
@@ -29,7 +29,7 @@ const POSITIONS: { id: WatermarkPosition; label: string }[] = [
 ];
 
 const positionButtonClassName =
-  "min-h-9 rounded-sm border border-[#333] bg-background font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground";
+  "min-h-9 rounded-sm border border-border bg-background font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground";
 
 const activePositionClassName = "border-accent/40 bg-accent-muted text-accent";
 
@@ -165,7 +165,7 @@ export function Watermark() {
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <label htmlFor="watermark-main" className="font-label text-muted">
@@ -262,7 +262,7 @@ export function Watermark() {
           </div>
         </div>
 
-        <div className="mt-5 flex min-h-48 items-center justify-center overflow-hidden rounded-sm border border-[#333] bg-background p-3 sm:min-h-56">
+        <div className="mt-5 flex min-h-48 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-56">
           {source && watermark ? (
             <canvas
               ref={previewCanvasRef}
@@ -283,7 +283,7 @@ export function Watermark() {
           </p>
         )}
 
-        <div className="mt-5 border-t border-[#333] pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={!source}

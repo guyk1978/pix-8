@@ -25,7 +25,7 @@ export default function BlogPage() {
       </section>
 
       {articles.length === 0 ? (
-        <div className="flex min-h-40 items-center justify-center border border-dashed border-[#333] bg-[#161616] p-8 text-center">
+        <div className="flex min-h-40 items-center justify-center border border-dashed border-border bg-card p-8 text-center">
           <p className="text-sm text-muted">
             No articles yet. Add markdown files to{" "}
             <code className="font-mono text-xs">src/content/articles/</code>.

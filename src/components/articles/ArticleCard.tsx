@@ -12,7 +12,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
   return (
     <Link
       href={`/articles/${article.slug}`}
-      className="group block border border-[#333] bg-[#161616] p-5 transition-colors hover:border-muted hover:bg-[#1a1a1a]"
+      className="group block border border-border bg-card p-5 transition-colors hover:border-muted hover:bg-card-hover"
     >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <span className="font-label text-muted">{tool?.name ?? article.toolId}</span>

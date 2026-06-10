@@ -11,10 +11,10 @@ export function ToolCard({ tool, index }: ToolCardProps) {
   return (
     <Link
       href={tool.href}
-      className="group flex gap-4 border border-[#333] bg-[#161616] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-muted hover:bg-[#1a1a1a] hover:shadow-[0_6px_20px_rgba(0,0,0,0.35)] sm:p-5"
+      className="group flex gap-4 border border-border bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-muted hover:bg-card-hover hover:shadow-[var(--glass-shadow)] sm:p-5"
     >
       <div
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-[#333] bg-background text-muted transition-colors duration-200 group-hover:border-muted group-hover:text-foreground"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border bg-background text-muted transition-colors duration-200 group-hover:border-muted group-hover:text-foreground"
         aria-hidden
       >
         <ToolIcon id={tool.id} className="h-[18px] w-[18px]" />
@@ -27,7 +27,7 @@ export function ToolCard({ tool, index }: ToolCardProps) {
               {tool.name}
             </h3>
             {tool.status === "ready" && (
-              <span className="border border-[#333] bg-background px-1.5 py-0.5 font-label text-muted">
+              <span className="border border-border bg-background px-1.5 py-0.5 font-label text-muted">
                 Ready
               </span>
             )}

@@ -17,10 +17,10 @@ import {
 } from "@/lib/bodyPixRemoval";
 
 const inputClassName =
-  "w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-accent";
+  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-accent";
 
 const toggleButtonClassName =
-  "min-h-10 flex-1 rounded-sm border border-[#333] bg-background px-3 py-2 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
+  "min-h-10 flex-1 rounded-sm border border-border bg-background px-3 py-2 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
 
 const activeToggleClassName = "border-accent/40 bg-accent-muted text-accent";
 
@@ -229,13 +229,13 @@ export function BackgroundRemover() {
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDragging
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -331,14 +331,14 @@ export function BackgroundRemover() {
               disabled={!source || isBusy}
               onInput={(event) => handleColorChange(event.currentTarget.value)}
               onChange={(event) => handleColorChange(event.currentTarget.value)}
-              className="h-10 w-14 cursor-pointer rounded-sm border border-[#333] bg-background disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-10 w-14 cursor-pointer rounded-sm border border-border bg-background disabled:cursor-not-allowed disabled:opacity-50"
             />
             <span className="font-mono text-xs text-muted">{backgroundColor}</span>
           </div>
         )}
 
         <div
-          className={`relative mt-5 flex min-h-48 items-center justify-center overflow-hidden rounded-sm border border-[#333] p-3 sm:min-h-56 ${
+          className={`relative mt-5 flex min-h-48 items-center justify-center overflow-hidden rounded-sm border border-border p-3 sm:min-h-56 ${
             backgroundMode === "transparent" && !hasProcessed
               ? "bg-[repeating-conic-gradient(#1a1a1a_0%_25%,#222_0%_50%)] bg-[length:16px_16px]"
               : ""
@@ -349,7 +349,7 @@ export function BackgroundRemover() {
         >
           {isBusy && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur-sm">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#333] border-t-accent" />
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
               <p className="font-label text-accent">{processingLabel}</p>
               <p className="font-mono text-[10px] text-muted">
                 Processing locally in your browser
@@ -383,7 +383,7 @@ export function BackgroundRemover() {
           </p>
         )}
 
-        <div className="mt-5 border-t border-[#333] pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={!source || isBusy}
@@ -402,7 +402,7 @@ export function BackgroundRemover() {
             type="button"
             disabled={!source || isBusy}
             onClick={() => void handleProcess()}
-            className="min-h-11 w-full rounded-sm border border-[#333] bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-11 w-full rounded-sm border border-border bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
           >
             {isBusy ? "Processing…" : "Remove Background"}
           </button>

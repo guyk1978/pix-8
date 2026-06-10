@@ -14,7 +14,7 @@ export function WorkflowSuggestions({ suggestions }: WorkflowSuggestionsProps) {
 
   return (
     <section
-      className="mt-6 border-t border-dashed border-[#333] pt-6"
+      className="mt-6 border-t border-dashed border-border pt-6"
       aria-label="Suggested next tools"
     >
       <h2 className="mb-3 font-label text-muted">What&apos;s next?</h2>
@@ -24,7 +24,7 @@ export function WorkflowSuggestions({ suggestions }: WorkflowSuggestionsProps) {
           <Link
             key={link.href}
             href={link.href}
-            className="group shrink-0 rounded-sm border border-[#333] bg-[#121212] px-4 py-2.5 font-label text-sm text-muted transition-all hover:border-muted hover:text-foreground hover:shadow-[0_0_14px_rgba(232,232,232,0.1)] focus-visible:border-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted"
+            className="group shrink-0 rounded-sm border border-border bg-background px-4 py-2.5 font-label text-sm text-muted transition-all hover:border-muted hover:text-foreground hover:shadow-[var(--glow-hover)] focus-visible:border-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted"
           >
             <span className="flex items-center gap-2">
               <span>{link.name}</span>

@@ -13,7 +13,7 @@ export default function SettingsPage() {
       </section>
 
       <div className="space-y-4">
-        <div className="border border-[#333] bg-[#161616] p-5">
+        <div className="border border-border bg-card p-5">
           <p className="font-label text-muted">Privacy</p>
           <p className="mt-2 font-mono text-sm text-foreground">
             Metadata stripping enabled by default
@@ -24,7 +24,7 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <div className="border border-[#333] bg-[#161616] p-5">
+        <div className="border border-border bg-card p-5">
           <p className="font-label text-muted">Processing</p>
           <p className="mt-2 font-mono text-sm text-foreground">
             Client-side only

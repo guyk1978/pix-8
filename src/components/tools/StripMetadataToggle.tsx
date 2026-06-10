@@ -16,7 +16,7 @@ export function StripMetadataToggle({
         checked={checked}
         disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
-        className="h-4 w-4 shrink-0 rounded-sm border border-[#333] bg-background accent-accent disabled:cursor-not-allowed disabled:opacity-50"
+        className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:cursor-not-allowed disabled:opacity-50"
       />
       <span className="font-label text-muted">Strip Metadata</span>
       {checked && (

@@ -90,13 +90,13 @@ export function CssPaletteGenerator() {
 
   return (
     <div className="w-full">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDraggingFile
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -150,11 +150,11 @@ export function CssPaletteGenerator() {
                   handleFileChange(event.target.files?.[0] ?? null);
                   event.target.value = "";
                 }}
-                className="w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
+                className="w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
               />
             </div>
 
-            <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-sm border border-[#333] bg-background p-3">
+            <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={source.url}
@@ -176,20 +176,20 @@ export function CssPaletteGenerator() {
           </div>
 
           {!source ? (
-            <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-[#333] bg-background p-6 text-center">
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
                 Upload an image to generate a CSS palette.
               </p>
             </div>
           ) : isExtracting ? (
-            <div className="flex min-h-28 items-center justify-center rounded-sm border border-[#333] bg-background p-6">
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-border bg-background p-6">
               <div className="flex items-center gap-3">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#333] border-t-foreground" />
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-foreground" />
                 <p className="font-label text-muted">Extracting colors…</p>
               </div>
             </div>
           ) : palette.length === 0 ? (
-            <div className="flex min-h-28 items-center justify-center rounded-sm border border-[#333] bg-background p-6 text-center">
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
                 No colors could be extracted from this image.
               </p>
@@ -201,10 +201,10 @@ export function CssPaletteGenerator() {
                   key={color.role}
                   type="button"
                   onClick={() => void handleCopy(color.hex, color.hex)}
-                  className="flex items-center gap-3 rounded-sm border border-[#333] bg-background p-3 text-left transition-colors hover:border-muted"
+                  className="flex items-center gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:border-muted"
                 >
                   <span
-                    className="h-12 w-12 shrink-0 rounded-sm border border-[#333]"
+                    className="h-12 w-12 shrink-0 rounded-sm border border-border"
                     style={{ backgroundColor: color.hex }}
                   />
                   <span className="min-w-0">
@@ -226,7 +226,7 @@ export function CssPaletteGenerator() {
         </section>
 
         {palette.length > 0 && (
-          <section className="mt-6 space-y-3 border-t border-[#333] pt-6">
+          <section className="mt-6 space-y-3 border-t border-border pt-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="font-label text-foreground">Code Export</h2>
               <select
@@ -234,7 +234,7 @@ export function CssPaletteGenerator() {
                 onChange={(event) =>
                   setCodeFormat(event.target.value as CodeFormat)
                 }
-                className="min-h-9 rounded-sm border border-[#333] bg-background px-3 font-mono text-[10px] text-foreground outline-none focus:border-muted"
+                className="min-h-9 rounded-sm border border-border bg-background px-3 font-mono text-[10px] text-foreground outline-none focus:border-muted"
               >
                 {CODE_FORMAT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -244,14 +244,14 @@ export function CssPaletteGenerator() {
               </select>
             </div>
 
-            <pre className="overflow-x-auto rounded-sm border border-[#333] bg-background p-4 font-mono text-[11px] leading-relaxed text-muted">
+            <pre className="overflow-x-auto rounded-sm border border-border bg-background p-4 font-mono text-[11px] leading-relaxed text-muted">
               {codeSnippet}
             </pre>
 
             <button
               type="button"
               onClick={() => void handleCopy(codeSnippet, "snippet")}
-              className="min-h-11 w-full rounded-sm border border-[#333] bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20"
+              className="min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20"
             >
               {copiedKey === "snippet" ? "Snippet copied!" : "Copy code snippet"}
             </button>

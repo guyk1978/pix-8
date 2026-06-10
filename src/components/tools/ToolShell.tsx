@@ -35,7 +35,7 @@ export function ToolShell({ tool, children, relatedArticles = [] }: ToolShellPro
         </p>
       </div>
 
-      <div className="border border-[#333] bg-[#161616] p-4 sm:p-6">
+      <div className="border border-border bg-card p-4 sm:p-6">
         {children}
         <WorkflowSuggestions suggestions={getWorkflowSuggestions(tool.id)} />
       </div>

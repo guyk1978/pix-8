@@ -15,7 +15,7 @@ import {
 } from "@/hooks/useImageProcessor";
 
 const inputClassName =
-  "w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
 
 const PRESETS: { label: string; settings: GrayscaleSettings }[] = [
   { label: "Neutral", settings: { contrast: 100, brightness: 0 } },
@@ -104,13 +104,13 @@ export function GrayscaleConverter() {
 
   return (
     <div className="w-full">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDraggingFile
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -174,7 +174,7 @@ export function GrayscaleConverter() {
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="space-y-3">
             <span className="font-label text-muted">Preview</span>
-            <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-[#333] bg-background p-3 sm:min-h-72">
+            <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
               {source ? (
                 <canvas
                   ref={previewCanvasRef}
@@ -193,7 +193,7 @@ export function GrayscaleConverter() {
             )}
           </div>
 
-          <div className="space-y-4 border border-[#333] bg-background p-4">
+          <div className="space-y-4 border border-border bg-background p-4">
             <div className="space-y-2">
               <span className="font-label text-muted">Presets</span>
               <div className="grid grid-cols-3 gap-1.5">
@@ -203,7 +203,7 @@ export function GrayscaleConverter() {
                     type="button"
                     disabled={!source}
                     onClick={() => setSettings(preset.settings)}
-                    className="min-h-9 rounded-sm border border-[#333] bg-[#161616] font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
+                    className="min-h-9 rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
                   >
                     {preset.label}
                   </button>
@@ -231,7 +231,7 @@ export function GrayscaleConverter() {
                 onChange={(event) =>
                   patchSettings({ contrast: Number(event.target.value) })
                 }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-[#161616] accent-accent disabled:opacity-50"
+                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
               />
             </div>
 
@@ -256,7 +256,7 @@ export function GrayscaleConverter() {
                 onChange={(event) =>
                   patchSettings({ brightness: Number(event.target.value) })
                 }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-[#161616] accent-accent disabled:opacity-50"
+                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
               />
             </div>
 
@@ -264,14 +264,14 @@ export function GrayscaleConverter() {
               type="button"
               disabled={!source}
               onClick={() => setSettings(DEFAULT_GRAYSCALE_SETTINGS)}
-              className="min-h-9 w-full rounded-sm border border-[#333] bg-[#161616] font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
+              className="min-h-9 w-full rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
             >
               Reset adjustments
             </button>
           </div>
         </div>
 
-        <div className="mt-5 border-t border-[#333] pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={!source}

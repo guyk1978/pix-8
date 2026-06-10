@@ -198,12 +198,12 @@ export function MetadataRemover() {
 
   return (
     <div className="w-full">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         <div
           className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
             isDragging
               ? "border-accent bg-accent-muted"
-              : "border-[#333] bg-background hover:border-muted"
+              : "border-border bg-background hover:border-muted"
           }`}
           onDragEnter={(event) => {
             event.preventDefault();
@@ -240,7 +240,7 @@ export function MetadataRemover() {
               <img
                 src={source.url}
                 alt="Preview"
-                className="max-h-40 max-w-full rounded-sm border border-[#333] object-contain sm:max-h-48"
+                className="max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
               />
               <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
                 {source.width} × {source.height}px · {formatFileSize(source.file.size)}
@@ -260,7 +260,7 @@ export function MetadataRemover() {
         </div>
 
         {source && (
-          <div className="mt-5 border border-[#333] bg-background p-4">
+          <div className="mt-5 border border-border bg-background p-4">
             <div className="mb-3 flex items-center justify-between gap-2">
               <p className="font-label text-muted">Detected metadata</p>
               {isScanning && (
@@ -273,7 +273,7 @@ export function MetadataRemover() {
                 {metadataFields.map((field) => (
                   <div
                     key={field.label}
-                    className="grid gap-1 border-b border-[#333] pb-2 last:border-0 last:pb-0 sm:grid-cols-[7rem_1fr]"
+                    className="grid gap-1 border-b border-border pb-2 last:border-0 last:pb-0 sm:grid-cols-[7rem_1fr]"
                   >
                     <dt className="font-label text-muted">{field.label}</dt>
                     <dd className="font-mono text-xs text-foreground">{field.value}</dd>
@@ -291,7 +291,7 @@ export function MetadataRemover() {
         )}
 
         {source && metadataRemoved && cleanBlob && (
-          <div className="mt-4 grid gap-3 border border-dashed border-[#333] bg-[#161616] p-4 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3 border border-dashed border-border bg-card p-4 sm:grid-cols-3">
             <div>
               <p className="font-label text-muted">Original</p>
               <p className="mt-1 font-mono text-sm text-foreground">

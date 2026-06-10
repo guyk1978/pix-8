@@ -21,7 +21,7 @@ function renderInline(text: string) {
           <Link
             key={index}
             href={href}
-            className="text-foreground underline decoration-[#333] underline-offset-2 hover:decoration-muted"
+            className="text-foreground underline decoration-border underline-offset-2 hover:decoration-muted"
           >
             {label}
           </Link>
@@ -31,7 +31,7 @@ function renderInline(text: string) {
         <a
           key={index}
           href={href}
-          className="text-foreground underline decoration-[#333] underline-offset-2 hover:decoration-muted"
+          className="text-foreground underline decoration-border underline-offset-2 hover:decoration-muted"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -69,7 +69,7 @@ function renderTable(block: string) {
             {header.map((cell) => (
               <th
                 key={cell}
-                className="border border-[#333] bg-[#1a1a1a] px-3 py-2 text-left font-label text-muted"
+                className="border border-border bg-card-hover px-3 py-2 text-left font-label text-muted"
               >
                 {renderInline(cell)}
               </th>
@@ -82,7 +82,7 @@ function renderTable(block: string) {
               {row.map((cell) => (
                 <td
                   key={cell}
-                  className="border border-[#333] px-3 py-2 text-muted"
+                  className="border border-border px-3 py-2 text-muted"
                 >
                   {renderInline(cell)}
                 </td>
@@ -168,7 +168,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
 
         if (trimmed.startsWith("*") && trimmed.endsWith("*")) {
           return (
-            <p key={index} className="border-l-2 border-[#333] pl-4 italic text-muted">
+            <p key={index} className="border-l-2 border-border pl-4 italic text-muted">
               {renderInline(trimmed.replace(/^\*|\*$/g, ""))}
             </p>
           );

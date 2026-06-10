@@ -32,7 +32,7 @@ function Toast({ toast, onDismiss }: ToastProps) {
   return (
     <div
       role="status"
-      className="animate-toast-in pointer-events-auto flex items-start gap-3 rounded-sm border border-[#333] bg-[#1a1a1a] px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
+      className="animate-toast-in pointer-events-auto flex items-start gap-3 rounded-sm border border-border bg-card px-4 py-3 shadow-[var(--toast-shadow)]"
     >
       <span className="mt-0.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
       <div className="min-w-0 flex-1">

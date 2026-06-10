@@ -36,13 +36,13 @@ export function BulkFileQueue({ items, onRemove, onClear }: BulkFileQueueProps) 
         {items.map((item) => (
           <li
             key={item.id}
-            className="flex items-center gap-3 border border-[#333] bg-background p-2"
+            className="flex items-center gap-3 border border-border bg-background p-2"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={item.url}
               alt=""
-              className="h-10 w-10 shrink-0 border border-[#333] object-cover"
+              className="h-10 w-10 shrink-0 border border-border object-cover"
             />
             <div className="min-w-0 flex-1">
               <p className="truncate font-mono text-xs text-foreground">

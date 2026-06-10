@@ -11,10 +11,10 @@ interface ToolOutputActionsProps {
 }
 
 const primaryButtonClassName =
-  "min-h-11 flex-1 rounded-sm border border-[#333] bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40";
+  "min-h-11 flex-1 rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40";
 
 const secondaryButtonClassName =
-  "min-h-11 flex-1 rounded-sm border border-[#333] bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40";
+  "min-h-11 flex-1 rounded-sm border border-border bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40";
 
 export function ToolOutputActions({
   onDownload,

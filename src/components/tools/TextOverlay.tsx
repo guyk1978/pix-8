@@ -16,7 +16,7 @@ import {
 } from "@/lib/textOverlayRender";
 
 const inputClassName =
-  "w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
 
 const FONT_OPTIONS = [
   { value: "Inter, system-ui, sans-serif", label: "Sans" },
@@ -174,13 +174,13 @@ export function TextOverlay() {
 
   return (
     <div className="w-full">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDraggingFile
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -246,7 +246,7 @@ export function TextOverlay() {
                 Drag to position text
               </span>
             </div>
-            <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-[#333] bg-background p-3 sm:min-h-72">
+            <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
               {source ? (
                 <canvas
                   ref={previewCanvasRef}
@@ -271,7 +271,7 @@ export function TextOverlay() {
             )}
           </div>
 
-          <div className="space-y-4 border border-[#333] bg-background p-4">
+          <div className="space-y-4 border border-border bg-background p-4">
             <div className="space-y-2">
               <label htmlFor="text-overlay-content" className="font-label text-muted">
                 Text
@@ -328,7 +328,7 @@ export function TextOverlay() {
                 onChange={(event) =>
                   patchSettings({ fontSizePercent: Number(event.target.value) })
                 }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-[#161616] accent-accent disabled:opacity-50"
+                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
               />
             </div>
 
@@ -345,7 +345,7 @@ export function TextOverlay() {
                   onChange={(event) =>
                     patchSettings({ color: event.target.value })
                   }
-                  className="h-11 w-14 shrink-0 cursor-pointer rounded-sm border border-[#333] bg-background p-1 disabled:opacity-50"
+                  className="h-11 w-14 shrink-0 cursor-pointer rounded-sm border border-border bg-background p-1 disabled:opacity-50"
                 />
                 <span className="font-mono text-xs text-muted">{settings.color}</span>
               </div>
@@ -363,7 +363,7 @@ export function TextOverlay() {
                     className={`min-h-9 rounded-sm border font-mono text-[10px] transition-colors disabled:opacity-50 ${
                       settings.align === option.value
                         ? "border-accent/40 bg-accent-muted text-accent"
-                        : "border-[#333] bg-[#161616] text-muted hover:border-muted hover:text-foreground"
+                        : "border-border bg-card text-muted hover:border-muted hover:text-foreground"
                     }`}
                   >
                     {option.label}
@@ -380,7 +380,7 @@ export function TextOverlay() {
                 onChange={(event) =>
                   patchSettings({ shadow: event.target.checked })
                 }
-                className="h-4 w-4 shrink-0 rounded-sm border border-[#333] bg-background accent-accent disabled:opacity-50"
+                className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
               />
               <span className="font-label text-muted">Text shadow</span>
             </label>
@@ -393,7 +393,7 @@ export function TextOverlay() {
                 onChange={(event) =>
                   patchSettings({ backgroundBox: event.target.checked })
                 }
-                className="h-4 w-4 shrink-0 rounded-sm border border-[#333] bg-background accent-accent disabled:opacity-50"
+                className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
               />
               <span className="font-label text-muted">Background box</span>
             </label>
@@ -424,14 +424,14 @@ export function TextOverlay() {
                       backgroundOpacity: Number(event.target.value) / 100,
                     })
                   }
-                  className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-[#161616] accent-accent disabled:opacity-50"
+                  className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
                 />
               </div>
             )}
           </div>
         </div>
 
-        <div className="mt-5 border-t border-[#333] pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={!source}

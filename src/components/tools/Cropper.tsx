@@ -21,7 +21,7 @@ const ASPECT_PRESETS: { id: AspectPreset; label: string; ratio: number | null }[
   ];
 
 const buttonClassName =
-  "min-h-9 rounded-sm border border-[#333] px-3 py-1.5 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
+  "min-h-9 rounded-sm border border-border px-3 py-1.5 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
 
 const activeButtonClassName =
   "border-accent/40 bg-accent-muted text-accent";
@@ -329,13 +329,13 @@ export function Cropper() {
 
   return (
     <div className="w-full">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDraggingFile
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -373,7 +373,7 @@ export function Cropper() {
             </div>
           </div>
         ) : (
-          <div className="space-y-4 rounded-sm border border-[#333] bg-background p-2 sm:p-3">
+          <div className="space-y-4 rounded-sm border border-border bg-background p-2 sm:p-3">
             <div className="flex justify-center">
               <div className="relative inline-block max-w-full">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -467,7 +467,7 @@ export function Cropper() {
           ))}
         </div>
 
-        <div className="mt-5 border-t border-[#333] pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={!source}

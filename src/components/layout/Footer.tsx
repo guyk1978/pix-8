@@ -43,7 +43,7 @@ export function Footer() {
             href={JOIN_MY_PDF_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex max-w-md flex-col gap-1 rounded-sm border border-[#333] bg-[#161616] px-4 py-3 transition-colors hover:border-muted hover:bg-[#1a1a1a]"
+            className="group inline-flex max-w-md flex-col gap-1 rounded-sm border border-border bg-card px-4 py-3 transition-colors hover:border-muted hover:bg-card-hover"
           >
             <span className="font-label text-foreground">
               Done editing? Combine these images into a PDF

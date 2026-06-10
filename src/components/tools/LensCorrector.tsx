@@ -15,7 +15,7 @@ import {
 } from "@/hooks/useImageProcessor";
 
 const inputClassName =
-  "w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
 
 function correctionLabel(value: number): string {
   if (value === 0) return "Neutral";
@@ -133,13 +133,13 @@ export function LensCorrector() {
 
   return (
     <div className="w-full">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDraggingFile
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -205,7 +205,7 @@ export function LensCorrector() {
                 {correctionLabel(settings.correction)}
               </span>
             </div>
-            <div className="relative flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-[#333] bg-background p-3 sm:min-h-72">
+            <div className="relative flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
               {source ? (
                 <>
                   <canvas
@@ -240,7 +240,7 @@ export function LensCorrector() {
             )}
           </div>
 
-          <div className="space-y-4 border border-[#333] bg-background p-4">
+          <div className="space-y-4 border border-border bg-background p-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <label htmlFor="lens-correction" className="font-label text-muted">
@@ -262,7 +262,7 @@ export function LensCorrector() {
                 onChange={(event) =>
                   setSettings({ correction: Number(event.target.value) })
                 }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-[#161616] accent-accent disabled:opacity-50"
+                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
               />
               <div className="flex justify-between font-mono text-[9px] text-muted">
                 <span>Barrel</span>
@@ -277,7 +277,7 @@ export function LensCorrector() {
                 disabled={!source}
                 checked={showGrid}
                 onChange={(event) => setShowGrid(event.target.checked)}
-                className="h-4 w-4 shrink-0 rounded-sm border border-[#333] bg-background accent-accent disabled:opacity-50"
+                className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
               />
               <span className="font-label text-muted">Grid overlay</span>
             </label>
@@ -286,14 +286,14 @@ export function LensCorrector() {
               type="button"
               disabled={!source}
               onClick={() => setSettings(DEFAULT_LENS_CORRECTION_SETTINGS)}
-              className="min-h-9 w-full rounded-sm border border-[#333] bg-[#161616] font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
+              className="min-h-9 w-full rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
             >
               Reset correction
             </button>
           </div>
         </div>
 
-        <div className="mt-5 border-t border-[#333] pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={!source}

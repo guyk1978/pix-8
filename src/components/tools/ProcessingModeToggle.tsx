@@ -15,7 +15,7 @@ export function ProcessingModeToggle({
   onChange,
 }: ProcessingModeToggleProps) {
   return (
-    <div className="mb-5 flex gap-2 border border-[#333] bg-background p-1">
+    <div className="mb-5 flex gap-2 border border-border bg-background p-1">
       <button
         type="button"
         onClick={() => onChange("single")}

@@ -112,8 +112,8 @@ function NavItem({
       onClick={onNavigate}
       className={`flex items-center gap-3 rounded-sm border px-3 py-2.5 font-label transition-colors ${
         active
-          ? "border-[#333] bg-surface text-foreground"
-          : "border-transparent text-muted hover:border-[#333] hover:bg-surface hover:text-foreground"
+          ? "border-border bg-surface text-foreground"
+          : "border-transparent text-muted hover:border-border hover:bg-surface hover:text-foreground"
       }`}
     >
       {icon}
@@ -139,8 +139,8 @@ function NestedLink({
       onClick={onNavigate}
       className={`block rounded-sm border border-transparent py-2 pl-9 pr-3 font-mono text-xs transition-colors ${
         active
-          ? "border-[#333] bg-surface text-foreground"
-          : "text-muted hover:border-[#333] hover:bg-surface hover:text-foreground"
+          ? "border-border bg-surface text-foreground"
+          : "text-muted hover:border-border hover:bg-surface hover:text-foreground"
       }`}
     >
       {label}
@@ -166,7 +166,7 @@ function ExpandableSection({
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center gap-3 rounded-sm border border-transparent px-3 py-2.5 font-label text-muted transition-colors hover:border-[#333] hover:bg-surface hover:text-foreground"
+        className="flex w-full items-center gap-3 rounded-sm border border-transparent px-3 py-2.5 font-label text-muted transition-colors hover:border-border hover:bg-surface hover:text-foreground"
       >
         {icon}
         <span className="flex-1 text-left">{label}</span>
@@ -191,7 +191,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
 
   const sidebarContent = (
     <>
-      <div className="flex h-14 items-center border-b border-[#333] px-4">
+      <div className="flex h-14 items-center border-b border-border px-4">
         <Link
           href="/"
           onClick={onMobileClose}
@@ -258,12 +258,12 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         </ExpandableSection>
       </nav>
 
-      <div className="border-t border-[#333] p-3">
+      <div className="border-t border-border p-3">
         <a
           href={JOIN_MY_PDF_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mb-2 block rounded-sm border border-[#333] bg-[#161616] px-3 py-2.5 transition-colors hover:border-muted hover:bg-surface"
+          className="mb-2 block rounded-sm border border-border bg-card px-3 py-2.5 transition-colors hover:border-muted hover:bg-surface"
         >
           <span className="block font-label text-xs text-foreground">
             Combine images into a PDF
@@ -299,7 +299,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r border-[#333] bg-sidebar transition-transform lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r border-border bg-sidebar transition-transform lg:static lg:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

@@ -59,8 +59,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <span className="font-label text-muted">Article</span>
       </div>
 
-      <article className="border border-[#333] bg-[#161616] p-6 sm:p-8">
-        <header className="space-y-3 border-b border-[#333] pb-6">
+      <article className="border border-border bg-card p-6 sm:p-8">
+        <header className="space-y-3 border-b border-border pb-6">
           <p className="font-label text-muted">Related to {tool?.name}</p>
           <h1 className="text-2xl font-medium tracking-tight text-foreground">
             {article.title}

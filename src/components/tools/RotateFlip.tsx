@@ -13,7 +13,7 @@ import {
 } from "@/hooks/useImageProcessor";
 
 const buttonClassName =
-  "min-h-10 rounded-sm border border-[#333] bg-background px-3 py-2 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
+  "min-h-10 rounded-sm border border-border bg-background px-3 py-2 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
 
 export function RotateFlip() {
   const {
@@ -108,13 +108,13 @@ export function RotateFlip() {
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDragging
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -188,7 +188,7 @@ export function RotateFlip() {
               </button>
             </div>
 
-            <div className="mt-5 flex min-h-48 items-center justify-center overflow-hidden rounded-sm border border-[#333] bg-background p-4 sm:min-h-56">
+            <div className="mt-5 flex min-h-48 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-4 sm:min-h-56">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={source.url}
@@ -211,7 +211,7 @@ export function RotateFlip() {
           </>
         )}
 
-        <div className="mt-5 border-t border-[#333] pt-5">
+        <div className="mt-5 border-t border-border pt-5">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={!source}

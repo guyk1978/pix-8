@@ -1,6 +1,29 @@
 @import "tailwindcss";
 
+/* Industrial Light (default when .light or no .dark) */
 :root {
+  --background: #f4f4f4;
+  --foreground: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --surface: #ffffff;
+  --surface-hover: #f8f9fa;
+  --sidebar: #ffffff;
+  --accent: #525252;
+  --accent-muted: rgba(82, 82, 82, 0.08);
+  --slate: #9ca3af;
+  --card: #ffffff;
+  --card-hover: #f8f9fa;
+  --header: #ffffff;
+  --track: #e5e7eb;
+  --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --glass-backdrop: none;
+  --glow-hover: 0 0 14px rgba(0, 0, 0, 0.06);
+  --toast-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Industrial Matte (dark) */
+.dark {
   --background: #121212;
   --foreground: #e8e8e8;
   --muted: #737373;
@@ -11,6 +34,16 @@
   --accent: #a3a3a3;
   --accent-muted: rgba(163, 163, 163, 0.1);
   --slate: #525252;
+  --card: #161616;
+  --card-hover: #1a1a1a;
+  --header: #121212;
+  --track: #161616;
+  --glass-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.25);
+  --glass-backdrop: blur(12px);
+  --glow-hover: 0 0 14px rgba(232, 232, 232, 0.1);
+  --toast-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 @theme inline {
@@ -24,6 +57,10 @@
   --color-accent: var(--accent);
   --color-accent-muted: var(--accent-muted);
   --color-slate: var(--slate);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-header: var(--header);
+  --color-track: var(--track);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-roboto-mono);
 }
@@ -37,10 +74,8 @@ body {
 @utility glass-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    0 4px 16px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(12px);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-backdrop);
 }
 
 @utility font-label {

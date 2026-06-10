@@ -1,5 +1,7 @@
 "use client";
 
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+
 const GITHUB_REPO_URL = "https://github.com/guyk1978/pix-8";
 
 interface HeaderProps {
@@ -8,12 +10,12 @@ interface HeaderProps {
 
 export function Header({ onMenuToggle }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-[#333] bg-[#121212]/95 px-4 backdrop-blur-sm sm:px-6">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-border bg-header/95 px-4 backdrop-blur-sm sm:px-6">
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onMenuToggle}
-          className="flex h-9 w-9 items-center justify-center rounded-sm border border-[#333] text-muted transition-colors hover:border-muted hover:text-foreground lg:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-sm border border-border text-muted transition-colors hover:border-muted hover:text-foreground lg:hidden"
           aria-label="Toggle navigation"
         >
           <svg
@@ -37,8 +39,10 @@ export function Header({ onMenuToggle }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        <ThemeToggle />
+
         <span
-          className="hidden items-center gap-1.5 rounded-sm border border-[#333] px-2.5 py-1.5 sm:flex"
+          className="hidden items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 sm:flex"
           title="All processing runs in your browser — files never upload to a server"
         >
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-foreground" />
@@ -49,7 +53,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
           href={GITHUB_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex h-9 w-9 items-center justify-center rounded-sm border border-[#333] text-muted transition-colors hover:border-muted hover:text-foreground"
+          className="flex h-9 w-9 items-center justify-center rounded-sm border border-border text-muted transition-colors hover:border-muted hover:text-foreground"
           aria-label="View source code on GitHub"
           title="GitHub repository"
         >

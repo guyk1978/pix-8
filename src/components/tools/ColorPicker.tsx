@@ -255,13 +255,13 @@ export function ColorPicker() {
 
   return (
     <div className="w-full">
-      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
           <div
             className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
               isDragging
                 ? "border-accent bg-accent-muted"
-                : "border-[#333] bg-background hover:border-muted"
+                : "border-border bg-background hover:border-muted"
             }`}
             onDragEnter={(event) => {
               event.preventDefault();
@@ -319,12 +319,12 @@ export function ColorPicker() {
                 handleFileChange(event.target.files?.[0] ?? null);
                 event.target.value = "";
               }}
-              className="w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
+              className="w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
             />
 
             <div
               ref={viewerRef}
-              className="relative overflow-hidden rounded-sm border border-[#333] bg-background"
+              className="relative overflow-hidden rounded-sm border border-border bg-background"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -339,7 +339,7 @@ export function ColorPicker() {
 
               {pointer && (
                 <div
-                  className="pointer-events-none fixed z-50 rounded-sm border border-[#333] bg-[#161616] p-1 shadow-lg"
+                  className="pointer-events-none fixed z-50 rounded-sm border border-border bg-card p-1 shadow-lg"
                   style={magnifierStyle}
                 >
                   <p className="mb-1 px-1 font-mono text-[9px] text-muted">
@@ -360,7 +360,7 @@ export function ColorPicker() {
           </div>
         )}
 
-        <section className="mt-6 border-t border-[#333] pt-6">
+        <section className="mt-6 border-t border-border pt-6">
           <div className="mb-4 flex items-center justify-between gap-2">
             <h2 className="font-label text-foreground">Sampled Color</h2>
             {pointer && (
@@ -371,16 +371,16 @@ export function ColorPicker() {
           </div>
 
           {!activeColor ? (
-            <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-[#333] bg-background p-6 text-center">
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
                 Upload an image and click a pixel to sample its color.
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex items-center gap-4 border border-[#333] bg-background p-4">
+              <div className="flex items-center gap-4 border border-border bg-background p-4">
                 <span
-                  className="h-16 w-16 shrink-0 rounded-sm border border-[#333]"
+                  className="h-16 w-16 shrink-0 rounded-sm border border-border"
                   style={{ backgroundColor: activeColor.hex }}
                 />
                 <div className="min-w-0 space-y-1">
@@ -405,7 +405,7 @@ export function ColorPicker() {
                     key={format.key}
                     type="button"
                     onClick={() => void handleCopy(format.value, format.key)}
-                    className="flex min-h-11 flex-col items-start gap-1 rounded-sm border border-[#333] bg-[#161616] px-3 py-2.5 text-left transition-colors hover:border-muted hover:bg-surface"
+                    className="flex min-h-11 flex-col items-start gap-1 rounded-sm border border-border bg-card px-3 py-2.5 text-left transition-colors hover:border-muted hover:bg-surface"
                   >
                     <span className="font-label text-muted">{format.label}</span>
                     <span

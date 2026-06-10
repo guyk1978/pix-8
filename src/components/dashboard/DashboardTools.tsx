@@ -25,12 +25,12 @@ export function DashboardTools() {
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="Search utilities…"
-          className="w-full rounded-sm border border-[#333] bg-[#161616] px-4 py-2.5 font-mono text-sm text-foreground outline-none transition-colors placeholder:text-muted focus:border-muted"
+          className="w-full rounded-sm border border-border bg-card px-4 py-2.5 font-mono text-sm text-foreground outline-none transition-colors placeholder:text-muted focus:border-muted"
         />
       </div>
 
       {filteredTools.length === 0 ? (
-        <div className="flex min-h-36 flex-col items-center justify-center border border-[#333] bg-[#161616] p-8 text-center">
+        <div className="flex min-h-36 flex-col items-center justify-center border border-border bg-card p-8 text-center">
           <p className="font-label text-muted">No tools found</p>
           <p className="mt-2 text-sm text-muted">
             Try a different search term.
@@ -46,7 +46,7 @@ export function DashboardTools() {
 
           return (
             <div key={section.id}>
-              <div className="mb-4 flex items-center justify-between border-b border-[#333] pb-3">
+              <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
                 <h2 className="font-label text-foreground">{section.label}</h2>
                 <span className="font-mono text-xs tabular-nums text-muted">
                   {sectionTools.length} utility
