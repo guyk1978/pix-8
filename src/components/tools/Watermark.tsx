@@ -1,5 +1,7 @@
 "use client";
 
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -164,8 +166,7 @@ export function Watermark() {
   const canDownload = !!source && !!watermark && !isProcessing;
 
   return (
-    <div className="mx-auto w-full max-w-xl">
-      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
+    <ToolWorkspace>
         <div className="grid gap-4 sm:grid-cols-2">
           <ImageFileInput
             id="watermark-main"
@@ -259,11 +260,9 @@ export function Watermark() {
           />
         </div>
 
-        {error && (
-          <p className="mt-4 font-mono text-xs text-red-400" role="alert">
-            {error}
-          </p>
-        )}
+        {error ? (
+          <HelperErrorAlert message={error} className="mt-4" />
+        ) : null}
 
         <ToolOutputActions
           onDownload={handleDownloadImage}
@@ -272,9 +271,8 @@ export function Watermark() {
           disabled={!canDownload}
           isProcessing={isProcessing}
         />
-      </div>
-
+      
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
-    </div>
+    </ToolWorkspace>
   );
 }

@@ -1,14 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
+import { HelperFieldGuide } from "@/components/characters/HelperFieldGuide";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { BulkFileQueue } from "@/components/tools/BulkFileQueue";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import {
   ProcessingModeToggle,
   type ProcessingMode,
 } from "@/components/tools/ProcessingModeToggle";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
@@ -20,8 +23,7 @@ import {
 } from "@/hooks/useImageProcessor";
 import { downloadZipArchive } from "@/lib/zipDownload";
 
-const inputClassName =
-  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2.5 font-mono text-sm text-foreground tabular-nums outline-none transition-colors placeholder:text-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-50";
+const inputClassName = "tool-input tabular-nums placeholder:text-muted";
 
 function resolveTargetDimensions(
   sourceWidth: number,
@@ -254,8 +256,7 @@ export function Resizer() {
   const displayError = error ?? bulk.error;
 
   return (
-    <div className="w-full">
-      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
+    <ToolWorkspace>
         <ProcessingModeToggle mode={mode} onChange={handleModeChange} />
 
         {mode === "single" ? (
@@ -303,10 +304,14 @@ export function Resizer() {
         )}
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label htmlFor="resizer-width" className="font-label text-muted">
-              {t("common.width")}
-            </label>
+          <HelperFieldGuide
+            character="width"
+            label={t("common.width")}
+            englishLabel="Width"
+            htmlFor="resizer-width"
+            characterAlt={t("characters.widthAlt")}
+            characterSide="end"
+          >
             <input
               id="resizer-width"
               type="number"
@@ -318,12 +323,16 @@ export function Resizer() {
               className={inputClassName}
               placeholder="—"
             />
-          </div>
+          </HelperFieldGuide>
 
-          <div className="space-y-2">
-            <label htmlFor="resizer-height" className="font-label text-muted">
-              {t("common.height")}
-            </label>
+          <HelperFieldGuide
+            character="height"
+            label={t("common.height")}
+            englishLabel="Height"
+            htmlFor="resizer-height"
+            characterAlt={t("characters.heightAlt")}
+            characterSide="start"
+          >
             <input
               id="resizer-height"
               type="number"
@@ -335,7 +344,7 @@ export function Resizer() {
               className={inputClassName}
               placeholder="—"
             />
-          </div>
+          </HelperFieldGuide>
         </div>
 
         <div className="mt-5 space-y-3 border-t border-border pt-5">
@@ -367,11 +376,9 @@ export function Resizer() {
           )}
         </div>
 
-        {displayError && (
-          <p className="mt-4 font-mono text-xs text-red-400" role="alert">
-            {displayError}
-          </p>
-        )}
+        {displayError ? (
+          <HelperErrorAlert message={displayError} className="mt-4" />
+        ) : null}
 
         {mode === "single" ? (
           <ToolOutputActions
@@ -391,9 +398,8 @@ export function Resizer() {
             {busy ? t("common.processing") : t("downloads.resizeAllZip")}
           </button>
         )}
-      </div>
 
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
-    </div>
+    </ToolWorkspace>
   );
 }

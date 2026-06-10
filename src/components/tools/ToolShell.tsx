@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { RelatedArticles } from "@/components/articles/RelatedArticles";
+import { ToolHeaderHero } from "@/components/tools/ToolHeaderHero";
 import { WorkflowSuggestions } from "@/components/WorkflowSuggestions";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
@@ -24,6 +25,8 @@ export function ToolShell({
   relatedArticlesHe = [],
 }: ToolShellProps) {
   const { t } = useLanguage();
+  const toolName = t(getToolTranslationKey(tool.id, "name"));
+  const toolDescription = t(getToolTranslationKey(tool.id, "description"));
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
@@ -36,18 +39,13 @@ export function ToolShell({
         </Link>
         <span className="text-border">/</span>
         <span className="font-label text-muted">{tool.tag}</span>
+        <span className="text-border">/</span>
+        <span className="font-label text-[var(--glow-teal)]">{toolName}</span>
       </div>
 
-      <div className="mb-8 space-y-2">
-        <h1 className="text-2xl font-medium tracking-tight text-foreground">
-          {t(getToolTranslationKey(tool.id, "name"))}
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted">
-          {t(getToolTranslationKey(tool.id, "description"))}
-        </p>
-      </div>
+      <ToolHeaderHero title={toolName} description={toolDescription} />
 
-      <div className="border border-border bg-card p-4 sm:p-6">
+      <div className="glow-panel rounded-md border border-border bg-card p-4 sm:p-6 lg:p-8">
         {children}
         <WorkflowSuggestions suggestions={getWorkflowSuggestions(tool.id)} />
       </div>

@@ -92,7 +92,7 @@ export const tools: Tool[] = [
   {
     id: "bg-remover",
     name: "Background Remover",
-    description: "Remove backgrounds locally with TensorFlow.js — no uploads, no cloud.",
+    description: "Remove backgrounds from people, products, and objects — fully local, no cloud.",
     href: "/tools/bg-remover",
     tag: "AI",
     category: "advanced",

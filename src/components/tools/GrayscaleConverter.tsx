@@ -1,5 +1,7 @@
 "use client";
 
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
@@ -107,8 +109,7 @@ export function GrayscaleConverter() {
   const canDownload = !!source && !isProcessing;
 
   return (
-    <div className="w-full">
-      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
+    <ToolWorkspace>
         {!source ? (
           <ImageUploadDropzone
             inputId="grayscale-converter-upload"
@@ -208,11 +209,9 @@ export function GrayscaleConverter() {
           />
         </div>
 
-        {error && (
-          <p className="mt-4 font-mono text-xs text-red-400" role="alert">
-            {error}
-          </p>
-        )}
+        {error ? (
+          <HelperErrorAlert message={error} className="mt-4" />
+        ) : null}
 
         <ToolOutputActions
           onDownload={handleDownloadImage}
@@ -225,9 +224,8 @@ export function GrayscaleConverter() {
         <p className="mt-3 text-center font-mono text-[10px] text-muted">
           {t("toolUi.grayscale.footer")}
         </p>
-      </div>
-
+      
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
-    </div>
+    </ToolWorkspace>
   );
 }

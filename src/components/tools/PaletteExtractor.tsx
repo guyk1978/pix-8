@@ -1,9 +1,11 @@
 "use client";
 
+import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -89,8 +91,7 @@ export function PaletteExtractor() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-xl">
-      <div className="rounded-sm border border-border bg-card p-4 sm:p-6">
+    <ToolWorkspace>
         {!source ? (
           <ImageUploadDropzone
             inputId="palette-upload"
@@ -205,12 +206,9 @@ export function PaletteExtractor() {
           )}
         </div>
 
-        {error && (
-          <p className="mt-4 font-mono text-xs text-red-400" role="alert">
-            {error}
-          </p>
-        )}
-      </div>
-    </div>
+        {error ? (
+          <HelperErrorAlert message={error} className="mt-4" />
+        ) : null}
+    </ToolWorkspace>
   );
 }

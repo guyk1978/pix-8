@@ -1,5 +1,7 @@
 "use client";
 
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
@@ -92,8 +94,7 @@ export function CssPaletteGenerator() {
   );
 
   return (
-    <div className="w-full">
-      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
+    <ToolWorkspace>
         {!source ? (
           <ImageUploadDropzone
             inputId="css-palette-upload"
@@ -224,12 +225,10 @@ export function CssPaletteGenerator() {
           </p>
         )}
 
-        {error && (
-          <p className="mt-4 font-mono text-xs text-red-400" role="alert">
-            {error}
-          </p>
-        )}
-      </div>
-    </div>
+        {error ? (
+          <HelperErrorAlert message={error} className="mt-4" />
+        ) : null}
+      
+    </ToolWorkspace>
   );
 }

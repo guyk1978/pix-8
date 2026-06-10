@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { SidebarProgressTracker } from "@/components/layout/SidebarProgressTracker";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
 import { JOIN_MY_PDF_URL } from "@/lib/external-links";
@@ -208,6 +209,8 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           <span className="font-mono text-base font-medium text-muted">-8</span>
         </Link>
       </div>
+
+      <SidebarProgressTracker />
 
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
         <NavItem

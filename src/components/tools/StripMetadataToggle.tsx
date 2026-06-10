@@ -26,7 +26,7 @@ export function StripMetadataToggle({
       />
       <span className="font-label text-muted">{t("privacy.stripMetadata")}</span>
       {checked && (
-        <span className="font-mono text-[10px] text-accent">
+        <span className="rounded-full border border-[color-mix(in_srgb,var(--glow-purple)_35%,var(--border))] bg-accent-muted px-2 py-0.5 font-mono text-[10px] text-[var(--glow-teal)]">
           {t("privacy.privacyMode")}
         </span>
       )}

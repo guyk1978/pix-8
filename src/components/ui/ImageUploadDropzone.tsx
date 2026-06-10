@@ -1,7 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { CHARACTER_SIZES } from "@/lib/characters";
 
 interface ImageUploadDropzoneProps {
   inputId: string;
@@ -32,20 +34,22 @@ export function ImageUploadDropzone({
   children,
   className = "",
 }: ImageUploadDropzoneProps) {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
 
   const resolvedAriaLabel =
     ariaLabel ??
     (multiple ? t("upload.uploadImagesAria") : t("upload.uploadImageAria"));
   const resolvedTitle = title ?? t("upload.title");
   const resolvedHint = hint ?? t("upload.dropHint");
+  const resolvedFormatHint = formatHint ?? t("upload.formatsHint");
+  const characterSize = isDragging
+    ? CHARACTER_SIZES.uploadActive
+    : CHARACTER_SIZES.upload;
 
   return (
     <div
-      className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-        isDragging
-          ? "border-accent bg-accent-muted"
-          : "border-border bg-background hover:border-muted"
+      className={`tool-dropzone relative flex cursor-pointer flex-col items-center justify-center gap-3 p-6 transition-all duration-300 sm:min-h-64 sm:p-10 ${
+        isDragging ? "tool-dropzone-active" : ""
       } ${className}`}
       onDragEnter={(event) => {
         event.preventDefault();
@@ -84,13 +88,41 @@ export function ImageUploadDropzone({
           event.target.value = "";
         }}
       />
-      {children ?? (
-        <div className="pointer-events-none px-2 text-center">
-          <p className="font-label text-muted">{resolvedTitle}</p>
-          <p className="mt-2 text-sm leading-relaxed text-muted">{resolvedHint}</p>
-          {formatHint ? (
-            <p className="mt-1 font-mono text-[10px] text-muted">{formatHint}</p>
-          ) : null}
+
+      {children ? (
+        <div className="flex w-full flex-col items-center gap-4">
+          <HelperCharacter
+            character="upload"
+            alt={t("characters.uploadAlt")}
+            size={Math.round(characterSize * 0.82)}
+            glow
+            className={`mb-1 ${dir === "rtl" ? "-scale-x-100" : ""}`}
+            animate="float"
+          />
+          {children}
+        </div>
+      ) : (
+        <div className="pointer-events-none flex w-full flex-col items-center gap-4 text-center">
+          <HelperCharacter
+            character="upload"
+            alt={t("characters.uploadAlt")}
+            size={characterSize}
+            glow
+            className={`transition-transform duration-300 ${
+              dir === "rtl" ? "-scale-x-100" : ""
+            } ${isDragging ? "scale-110" : ""}`}
+            animate={isDragging ? "wave" : "float"}
+          />
+
+          <div>
+            <p className="text-base font-medium text-foreground sm:text-lg">
+              {resolvedHint}
+            </p>
+            <p className="mt-1 font-label text-muted">{resolvedTitle}</p>
+            <p className="mt-2 font-mono text-[10px] text-muted">
+              {resolvedFormatHint}
+            </p>
+          </div>
         </div>
       )}
     </div>

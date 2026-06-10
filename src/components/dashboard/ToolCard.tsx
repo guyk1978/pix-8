@@ -17,7 +17,7 @@ export function ToolCard({ tool, index }: ToolCardProps) {
   return (
     <Link
       href={tool.href}
-      className="group flex gap-4 border border-border bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-muted hover:bg-card-hover hover:shadow-[var(--glass-shadow)] sm:p-5"
+      className="group flex gap-4 border border-border bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--glow-teal)_35%,var(--border))] hover:bg-card-hover hover:shadow-[var(--glow-hover)] sm:p-5"
     >
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border bg-background text-muted transition-colors duration-200 group-hover:border-muted group-hover:text-foreground"

@@ -15,7 +15,7 @@ export function LanguageSwitcher() {
     <div
       role="group"
       aria-label={t("language.label")}
-      className="flex h-9 items-center rounded-sm border border-border bg-background p-0.5"
+      className="glow-panel flex h-9 items-center rounded-sm border border-border bg-background p-0.5"
     >
       {options.map((option) => {
         const active = language === option.code;
@@ -30,7 +30,7 @@ export function LanguageSwitcher() {
             title={t(`language.${option.code}`)}
             className={`min-w-9 rounded-sm px-2 font-label text-[10px] tracking-wider transition-colors ${
               active
-                ? "bg-accent-muted text-accent"
+                ? "bg-accent-muted text-accent shadow-[0_0_12px_color-mix(in_srgb,var(--glow-teal)_35%,transparent)]"
                 : "text-muted hover:text-foreground"
             }`}
           >

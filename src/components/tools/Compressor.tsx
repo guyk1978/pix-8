@@ -1,5 +1,7 @@
 "use client";
 
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
@@ -227,8 +229,7 @@ export function Compressor() {
   const displayError = error ?? bulk.error;
 
   return (
-    <div className="w-full">
-      <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
+    <ToolWorkspace>
         <ProcessingModeToggle mode={mode} onChange={handleModeChange} />
 
         {mode === "single" ? (
@@ -332,11 +333,9 @@ export function Compressor() {
           </p>
         )}
 
-        {displayError && (
-          <p className="mt-4 font-mono text-xs text-red-400" role="alert">
-            {displayError}
-          </p>
-        )}
+        {displayError ? (
+          <HelperErrorAlert message={displayError} className="mt-4" />
+        ) : null}
 
         {mode === "single" ? (
           <ToolOutputActions
@@ -356,9 +355,8 @@ export function Compressor() {
             {busy ? t("common.processing") : t("downloads.compressAllZip")}
           </button>
         )}
-      </div>
-
+      
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
-    </div>
+    </ToolWorkspace>
   );
 }
