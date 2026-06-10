@@ -1,6 +1,7 @@
 export const CONSENT_STORAGE_KEY = "pix8-cookie-consent";
 export const CONSENT_ACCEPTED_EVENT = "consent-accepted";
-export const GA_MEASUREMENT_ID = "G-47MX2VE4YM";
+export const GA_MEASUREMENT_ID =
+  process.env.NEXT_PUBLIC_GA_ID?.trim() || "G-47MX2VE4YM";
 
 export type ConsentStatus = "accepted" | "declined";
 

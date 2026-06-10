@@ -1,11 +1,11 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   CONSENT_ACCEPTED_EVENT,
-  CONSENT_STORAGE_KEY,
   GA_MEASUREMENT_ID,
+  hasAnalyticsConsent,
 } from "@/lib/consent";
 
 declare global {
@@ -36,6 +36,8 @@ function setDefaultConsentDenied(): void {
 }
 
 function grantConsentAndConfigure(): void {
+  if (!GA_MEASUREMENT_ID) return;
+
   ensureGtagStub();
   window.gtag("consent", "update", {
     analytics_storage: "granted",
@@ -49,36 +51,35 @@ function grantConsentAndConfigure(): void {
   });
 }
 
-export function GoogleAnalytics() {
-  const [enabled, setEnabled] = useState(false);
+function applyConsentIfGranted(): void {
+  if (hasAnalyticsConsent()) {
+    grantConsentAndConfigure();
+  }
+}
 
+export function GoogleAnalytics() {
   useEffect(() => {
     setDefaultConsentDenied();
+    applyConsentIfGranted();
 
-    const enableAnalytics = () => {
-      setEnabled(true);
+    const handleConsentAccepted = () => {
+      grantConsentAndConfigure();
     };
 
-    if (localStorage.getItem(CONSENT_STORAGE_KEY) === "accepted") {
-      enableAnalytics();
-    }
-
-    window.addEventListener(CONSENT_ACCEPTED_EVENT, enableAnalytics);
+    window.addEventListener(CONSENT_ACCEPTED_EVENT, handleConsentAccepted);
     return () => {
-      window.removeEventListener(CONSENT_ACCEPTED_EVENT, enableAnalytics);
+      window.removeEventListener(CONSENT_ACCEPTED_EVENT, handleConsentAccepted);
     };
   }, []);
 
-  if (!enabled) return null;
+  if (!GA_MEASUREMENT_ID) return null;
 
   return (
-    <>
-      <Script
-        id="google-analytics-gtag"
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
-        onLoad={grantConsentAndConfigure}
-      />
-    </>
+    <Script
+      id="google-analytics-gtag"
+      src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+      strategy="afterInteractive"
+      onLoad={applyConsentIfGranted}
+    />
   );
 }
