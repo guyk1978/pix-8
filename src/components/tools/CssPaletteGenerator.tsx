@@ -1,0 +1,275 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useToast } from "@/components/ui/ToastProvider";
+import { useImageProcessor } from "@/hooks/useImageProcessor";
+import {
+  buildCodeSnippet,
+  CODE_FORMAT_OPTIONS,
+  toPaletteSwatches,
+  type CodeFormat,
+  type PaletteSwatch,
+} from "@/lib/cssPaletteFormat";
+import { extractDominantColors } from "@/lib/paletteExtraction";
+
+function loadImageElement(url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Failed to load image."));
+    image.src = url;
+  });
+}
+
+export function CssPaletteGenerator() {
+  const { source, error, loadFile, setError } = useImageProcessor();
+  const { showToast } = useToast();
+
+  const [palette, setPalette] = useState<PaletteSwatch[]>([]);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
+  const [codeFormat, setCodeFormat] = useState<CodeFormat>("css");
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const codeSnippet = useMemo(
+    () => (palette.length > 0 ? buildCodeSnippet(palette, codeFormat) : ""),
+    [palette, codeFormat],
+  );
+
+  useEffect(() => {
+    if (!source) {
+      setPalette([]);
+      return;
+    }
+
+    let cancelled = false;
+    setIsExtracting(true);
+    setError(null);
+
+    void loadImageElement(source.url)
+      .then((image) => {
+        if (cancelled) return;
+        setPalette(toPaletteSwatches(extractDominantColors(image, 5)));
+      })
+      .catch((cause) => {
+        if (cancelled) return;
+        const message =
+          cause instanceof Error ? cause.message : "Could not extract palette.";
+        setError(message);
+        setPalette([]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsExtracting(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [source, setError]);
+
+  const handleFileChange = useCallback(
+    (file: File | null) => {
+      if (file) void loadFile(file);
+    },
+    [loadFile],
+  );
+
+  const handleCopy = useCallback(
+    async (value: string, key: string) => {
+      try {
+        await navigator.clipboard.writeText(value);
+        setCopiedKey(key);
+        showToast(value, { title: "Copied!" });
+        window.setTimeout(() => setCopiedKey(null), 1500);
+      } catch {
+        setError("Could not copy to clipboard.");
+      }
+    },
+    [showToast, setError],
+  );
+
+  return (
+    <div className="w-full">
+      <div className="glass-panel rounded-sm border border-[#333] p-4 sm:p-6">
+        {!source ? (
+          <div
+            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
+              isDraggingFile
+                ? "border-accent bg-accent-muted"
+                : "border-[#333] bg-background hover:border-muted"
+            }`}
+            onDragEnter={(event) => {
+              event.preventDefault();
+              setIsDraggingFile(true);
+            }}
+            onDragLeave={(event) => {
+              event.preventDefault();
+              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+                setIsDraggingFile(false);
+              }
+            }}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={(event) => {
+              event.preventDefault();
+              setIsDraggingFile(false);
+              handleFileChange(event.dataTransfer.files[0] ?? null);
+            }}
+          >
+            <input
+              id="css-palette-upload"
+              type="file"
+              accept="image/*"
+              aria-label="Upload image"
+              className="absolute inset-0 cursor-pointer opacity-0"
+              onChange={(event) => {
+                handleFileChange(event.target.files?.[0] ?? null);
+                event.target.value = "";
+              }}
+            />
+            <div className="pointer-events-none px-2 text-center">
+              <p className="font-label text-muted">Upload</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                Drop an image here or tap to browse
+              </p>
+              <p className="mt-1 font-mono text-[10px] text-muted">
+                CSS · SCSS · JSON · Tailwind
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="css-palette-replace" className="font-label text-muted">
+                Replace Image
+              </label>
+              <input
+                id="css-palette-replace"
+                type="file"
+                accept="image/*"
+                onChange={(event) => {
+                  handleFileChange(event.target.files?.[0] ?? null);
+                  event.target.value = "";
+                }}
+                className="w-full min-h-11 rounded-sm border border-[#333] bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
+              />
+            </div>
+
+            <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-sm border border-[#333] bg-background p-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={source.url}
+                alt="Source preview"
+                className="max-h-40 max-w-full object-contain"
+              />
+            </div>
+          </div>
+        )}
+
+        <section className="mt-6 space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="font-label text-foreground">Extracted Palette</h2>
+            {source && (
+              <span className="font-mono text-[10px] text-muted">
+                {isExtracting ? "Analyzing…" : `${palette.length} colors`}
+              </span>
+            )}
+          </div>
+
+          {!source ? (
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-[#333] bg-background p-6 text-center">
+              <p className="text-sm text-muted">
+                Upload an image to generate a CSS palette.
+              </p>
+            </div>
+          ) : isExtracting ? (
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-[#333] bg-background p-6">
+              <div className="flex items-center gap-3">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#333] border-t-foreground" />
+                <p className="font-label text-muted">Extracting colors…</p>
+              </div>
+            </div>
+          ) : palette.length === 0 ? (
+            <div className="flex min-h-28 items-center justify-center rounded-sm border border-[#333] bg-background p-6 text-center">
+              <p className="text-sm text-muted">
+                No colors could be extracted from this image.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {palette.map((color) => (
+                <button
+                  key={color.role}
+                  type="button"
+                  onClick={() => void handleCopy(color.hex, color.hex)}
+                  className="flex items-center gap-3 rounded-sm border border-[#333] bg-background p-3 text-left transition-colors hover:border-muted"
+                >
+                  <span
+                    className="h-12 w-12 shrink-0 rounded-sm border border-[#333]"
+                    style={{ backgroundColor: color.hex }}
+                  />
+                  <span className="min-w-0">
+                    <span className="block font-label text-muted capitalize">
+                      {color.role}
+                    </span>
+                    <span
+                      className={`block truncate font-mono text-xs ${
+                        copiedKey === color.hex ? "text-accent" : "text-foreground"
+                      }`}
+                    >
+                      {copiedKey === color.hex ? "Copied!" : color.hex}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {palette.length > 0 && (
+          <section className="mt-6 space-y-3 border-t border-[#333] pt-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="font-label text-foreground">Code Export</h2>
+              <select
+                value={codeFormat}
+                onChange={(event) =>
+                  setCodeFormat(event.target.value as CodeFormat)
+                }
+                className="min-h-9 rounded-sm border border-[#333] bg-background px-3 font-mono text-[10px] text-foreground outline-none focus:border-muted"
+              >
+                {CODE_FORMAT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <pre className="overflow-x-auto rounded-sm border border-[#333] bg-background p-4 font-mono text-[11px] leading-relaxed text-muted">
+              {codeSnippet}
+            </pre>
+
+            <button
+              type="button"
+              onClick={() => void handleCopy(codeSnippet, "snippet")}
+              className="min-h-11 w-full rounded-sm border border-[#333] bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20"
+            >
+              {copiedKey === "snippet" ? "Snippet copied!" : "Copy code snippet"}
+            </button>
+          </section>
+        )}
+
+        {source && (
+          <p className="mt-4 text-center font-mono text-[10px] text-muted">
+            {source.width} × {source.height}px · analysis runs locally
+          </p>
+        )}
+
+        {error && (
+          <p className="mt-4 font-mono text-xs text-red-400" role="alert">
+            {error}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   buildDownloadFilename,
   useImageProcessor,
@@ -41,6 +42,7 @@ export function BackgroundRemover() {
     error,
     loadFile,
     handleDownload,
+    handleCopyToClipboard,
     setError,
   } = useImageProcessor();
 
@@ -180,6 +182,40 @@ export function BackgroundRemover() {
     backgroundColor,
     stripMetadata,
     handleDownload,
+    canvasRef,
+    setError,
+  ]);
+
+  const handleCopyImage = useCallback(async () => {
+    if (!source || !maskRef.current || !sourceImageRef.current) return;
+
+    setError(null);
+
+    try {
+      const resultCanvas = applySegmentationMask(
+        sourceImageRef.current,
+        maskRef.current,
+        {
+          backgroundMode,
+          backgroundColor:
+            backgroundMode === "solid" ? backgroundColor : undefined,
+          canvas: canvasRef.current,
+        },
+      );
+
+      const blob = await canvasToPngBlob(resultCanvas);
+      await handleCopyToClipboard(blob, { stripMetadata, format: "png" });
+    } catch (cause) {
+      const message =
+        cause instanceof Error ? cause.message : "Could not copy image.";
+      setError(message);
+    }
+  }, [
+    source,
+    backgroundMode,
+    backgroundColor,
+    stripMetadata,
+    handleCopyToClipboard,
     canvasRef,
     setError,
   ]);
@@ -361,23 +397,23 @@ export function BackgroundRemover() {
           </p>
         )}
 
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-5 space-y-2">
           <button
             type="button"
             disabled={!source || isBusy}
             onClick={() => void handleProcess()}
-            className="min-h-11 flex-1 rounded-sm border border-[#333] bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-11 w-full rounded-sm border border-[#333] bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
           >
             {isBusy ? "Processing…" : "Remove Background"}
           </button>
-          <button
-            type="button"
+
+          <ToolOutputActions
+            onDownload={handleDownloadImage}
+            onCopy={handleCopyImage}
+            downloadLabel="Download PNG"
             disabled={!hasProcessed || isBusy}
-            onClick={() => void handleDownloadImage()}
-            className="min-h-11 flex-1 rounded-sm border border-[#333] bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Download PNG
-          </button>
+            isProcessing={isBusy}
+          />
         </div>
       </div>
 

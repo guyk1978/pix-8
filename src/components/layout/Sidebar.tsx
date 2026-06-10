@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { JOIN_MY_PDF_URL } from "@/lib/external-links";
 import { tools, type ToolCategory } from "@/lib/tools";
 
 const SIDEBAR_TOOLS_CATEGORIES: ToolCategory[] = [
@@ -46,6 +47,16 @@ function AdvancedIcon() {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
         <circle cx="12" cy="12" r="3" />
+      </svg>
+    </NavIcon>
+  );
+}
+
+function BlogIcon() {
+  return (
+    <NavIcon>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M4 6h16M4 12h10M4 18h16" />
       </svg>
     </NavIcon>
   );
@@ -202,6 +213,14 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           onNavigate={onMobileClose}
         />
 
+        <NavItem
+          href="/blog"
+          label="Blog"
+          icon={<BlogIcon />}
+          active={pathname === "/blog" || pathname.startsWith("/articles/")}
+          onNavigate={onMobileClose}
+        />
+
         <div className="mt-2">
           <ExpandableSection
             label="Tools"
@@ -240,6 +259,20 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
       </nav>
 
       <div className="border-t border-[#333] p-3">
+        <a
+          href={JOIN_MY_PDF_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-2 block rounded-sm border border-[#333] bg-[#161616] px-3 py-2.5 transition-colors hover:border-muted hover:bg-surface"
+        >
+          <span className="block font-label text-xs text-foreground">
+            Combine images into a PDF
+          </span>
+          <span className="mt-1 block font-mono text-[10px] text-muted">
+            JoinMyPDF →
+          </span>
+        </a>
+
         <NavItem
           href="/settings"
           label="Settings"

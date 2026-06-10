@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   buildDownloadFilename,
   getTransformedDimensions,
@@ -23,6 +24,7 @@ export function RotateFlip() {
     loadFile,
     processImage,
     handleDownload,
+    handleCopyToClipboard,
   } = useImageProcessor();
 
   const [rotation, setRotation] = useState<RotationDegrees>(0);
@@ -64,10 +66,10 @@ export function RotateFlip() {
     setRotation((current) => ((current + 270) % 360) as RotationDegrees);
   }, []);
 
-  const handleDownloadImage = useCallback(async () => {
-    if (!source || !outputDimensions) return;
+  const runTransform = useCallback(async () => {
+    if (!source || !outputDimensions) return null;
 
-    const result = await processImage(source.file, {
+    return processImage(source.file, {
       width: outputDimensions.width,
       height: outputDimensions.height,
       format: resolveFormat(source.mimeType),
@@ -75,25 +77,32 @@ export function RotateFlip() {
       stripMetadata,
       canvas: canvasRef.current,
     });
+  }, [
+    source,
+    outputDimensions,
+    transform,
+    stripMetadata,
+    processImage,
+    canvasRef,
+  ]);
 
-    if (!result) return;
+  const handleDownloadImage = useCallback(async () => {
+    const result = await runTransform();
+    if (!result || !source) return;
 
     await handleDownload(
       result.blob,
       buildDownloadFilename(`${source.name}-transformed`, result.format),
       { stripMetadata },
     );
-  }, [
-    source,
-    outputDimensions,
-    rotation,
-    flipHorizontal,
-    flipVertical,
-    stripMetadata,
-    processImage,
-    handleDownload,
-    canvasRef,
-  ]);
+  }, [runTransform, source, stripMetadata, handleDownload]);
+
+  const handleCopyImage = useCallback(async () => {
+    const result = await runTransform();
+    if (!result) return;
+
+    await handleCopyToClipboard(result.blob, { stripMetadata });
+  }, [runTransform, stripMetadata, handleCopyToClipboard]);
 
   const canDownload = !!source && !isProcessing;
 
@@ -216,14 +225,13 @@ export function RotateFlip() {
           </p>
         )}
 
-        <button
-          type="button"
+        <ToolOutputActions
+          onDownload={handleDownloadImage}
+          onCopy={handleCopyImage}
+          downloadLabel="Download Transformed"
           disabled={!canDownload}
-          onClick={() => void handleDownloadImage()}
-          className="mt-5 min-h-11 w-full rounded-sm border border-[#333] bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {isProcessing ? "Processing…" : "Download Transformed"}
-        </button>
+          isProcessing={isProcessing}
+        />
       </div>
 
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />

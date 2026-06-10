@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   buildDownloadFilename,
   type CropRegion,
@@ -127,6 +128,7 @@ export function Cropper() {
     loadFile,
     processImage,
     handleDownload,
+    handleCopyToClipboard,
   } = useImageProcessor();
 
   const imageRef = useRef<HTMLImageElement>(null);
@@ -280,12 +282,12 @@ export function Cropper() {
     };
   }, [source, aspectRatio, toNaturalDelta]);
 
-  const handleCrop = useCallback(async () => {
-    if (!source || !crop) return;
+  const runCrop = useCallback(async () => {
+    if (!source || !crop) return null;
 
     const cropRegion = clampCrop(crop, source.width, source.height);
 
-    const result = await processImage(source.file, {
+    return processImage(source.file, {
       width: cropRegion.width,
       height: cropRegion.height,
       crop: cropRegion,
@@ -293,15 +295,25 @@ export function Cropper() {
       stripMetadata,
       canvas: canvasRef.current,
     });
+  }, [source, crop, stripMetadata, processImage, canvasRef]);
 
-    if (!result) return;
+  const handleCropDownload = useCallback(async () => {
+    const result = await runCrop();
+    if (!result || !source) return;
 
     await handleDownload(
       result.blob,
       buildDownloadFilename(`${source.name}-cropped`, result.format),
       { stripMetadata },
     );
-  }, [source, crop, stripMetadata, processImage, handleDownload, canvasRef]);
+  }, [runCrop, source, stripMetadata, handleDownload]);
+
+  const handleCropCopy = useCallback(async () => {
+    const result = await runCrop();
+    if (!result) return;
+
+    await handleCopyToClipboard(result.blob, { stripMetadata });
+  }, [runCrop, stripMetadata, handleCopyToClipboard]);
 
   const canCrop =
     !!source && !!crop && crop.width > 0 && crop.height > 0 && !isProcessing;
@@ -469,14 +481,13 @@ export function Cropper() {
           </p>
         )}
 
-        <button
-          type="button"
+        <ToolOutputActions
+          onDownload={handleCropDownload}
+          onCopy={handleCropCopy}
+          downloadLabel="Crop & Download"
           disabled={!canCrop}
-          onClick={() => void handleCrop()}
-          className="mt-5 min-h-11 w-full rounded-sm border border-[#333] bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {isProcessing ? "Processing…" : "Crop & Download"}
-        </button>
+          isProcessing={isProcessing}
+        />
       </div>
 
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />

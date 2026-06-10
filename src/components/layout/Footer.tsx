@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { JOIN_MY_PDF_URL } from "@/lib/external-links";
 import { tools } from "@/lib/tools";
 
 export function Footer() {
@@ -37,13 +38,29 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-2 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <span className="font-mono text-xs text-muted">
-            © {year} pix-8
-          </span>
-          <span className="font-label text-muted">
-            Zero uploads · Zero tracking
-          </span>
+        <div className="mt-8 border-t border-border pt-6">
+          <a
+            href={JOIN_MY_PDF_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex max-w-md flex-col gap-1 rounded-sm border border-[#333] bg-[#161616] px-4 py-3 transition-colors hover:border-muted hover:bg-[#1a1a1a]"
+          >
+            <span className="font-label text-foreground">
+              Done editing? Combine these images into a PDF
+            </span>
+            <span className="font-mono text-xs text-muted transition-colors group-hover:text-accent">
+              Open JoinMyPDF →
+            </span>
+          </a>
+
+          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <span className="font-mono text-xs text-muted">
+              © {year} pix-8
+            </span>
+            <span className="font-label text-muted">
+              Zero uploads · Zero tracking
+            </span>
+          </div>
         </div>
       </div>
     </footer>

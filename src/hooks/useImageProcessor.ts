@@ -525,6 +525,47 @@ export async function processImage(
   }
 }
 
+async function blobToPngBlob(blob: Blob): Promise<Blob> {
+  const bitmap = await createImageBitmap(blob);
+  const canvas = document.createElement("canvas");
+  canvas.width = bitmap.width;
+  canvas.height = bitmap.height;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    bitmap.close();
+    throw new Error("Canvas context unavailable.");
+  }
+
+  ctx.drawImage(bitmap, 0, 0);
+  bitmap.close();
+
+  return exportCanvasBlob(canvas, "png", undefined, true);
+}
+
+export async function copyImageToClipboard(
+  output: HTMLCanvasElement | Blob,
+  options?: DownloadOptions,
+): Promise<void> {
+  if (!navigator.clipboard?.write) {
+    throw new Error("Clipboard is not supported in this browser.");
+  }
+
+  const stripMetadata = resolveStripMetadata(options ?? {});
+  const format = options?.format ?? "png";
+
+  const pngBlob =
+    output instanceof HTMLCanvasElement
+      ? await exportCanvasBlob(output, "png", options?.quality, stripMetadata)
+      : output.type === "image/png"
+        ? output
+        : await blobToPngBlob(output);
+
+  await navigator.clipboard.write([
+    new ClipboardItem({ "image/png": pngBlob }),
+  ]);
+}
+
 export async function handleDownload(
   output: HTMLCanvasElement | Blob,
   filename: string,
@@ -661,6 +702,28 @@ export function useImageProcessor() {
     [showToast],
   );
 
+  const runHandleCopyToClipboard = useCallback(
+    async (output: HTMLCanvasElement | Blob, options?: DownloadOptions) => {
+      setError(null);
+
+      try {
+        await copyImageToClipboard(output, {
+          stripMetadata: DEFAULT_STRIP_METADATA,
+          ...options,
+        });
+
+        showToast("Image copied — paste into Slack, WhatsApp, or Docs", {
+          title: "Copied to clipboard",
+        });
+      } catch (cause) {
+        const message =
+          cause instanceof Error ? cause.message : "Could not copy image.";
+        setError(message);
+      }
+    },
+    [showToast],
+  );
+
   useEffect(() => {
     return () => clearPreviewUrl();
   }, [clearPreviewUrl]);
@@ -674,6 +737,7 @@ export function useImageProcessor() {
     clear,
     processImage: runProcessImage,
     handleDownload: runHandleDownload,
+    handleCopyToClipboard: runHandleCopyToClipboard,
     setError,
   };
 }

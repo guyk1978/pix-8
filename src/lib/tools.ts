@@ -8,7 +8,21 @@ export type ToolId =
   | "rotate-flip"
   | "watermark"
   | "bg-remover"
-  | "palette-extractor";
+  | "palette-extractor"
+  | "metadata-remover"
+  | "color-picker"
+  | "text-overlay"
+  | "border-generator"
+  | "grayscale-converter"
+  | "favicon-generator"
+  | "sharpener"
+  | "light-adjuster"
+  | "image-inverter"
+  | "denoiser"
+  | "css-palette-gen"
+  | "lens-corrector"
+  | "grain-generator"
+  | "base64-encoder";
 
 export interface Tool {
   id: ToolId;
@@ -91,6 +105,132 @@ export const tools: Tool[] = [
     href: "/tools/palette-extractor",
     tag: "COLOR",
     category: "advanced",
+    status: "ready",
+  },
+  {
+    id: "metadata-remover",
+    name: "Metadata Remover",
+    description: "Strip EXIF, GPS, and device info from images before sharing online.",
+    href: "/tools/metadata-remover",
+    tag: "PRIVACY",
+    category: "optimization",
+    status: "ready",
+  },
+  {
+    id: "color-picker",
+    name: "Color Picker",
+    description: "Sample any pixel from an image and copy exact HEX, RGB, or HSL values.",
+    href: "/tools/color-picker",
+    tag: "SAMPLE",
+    category: "advanced",
+    status: "ready",
+  },
+  {
+    id: "text-overlay",
+    name: "Text Overlay",
+    description: "Add quotes, labels, and captions to images with draggable text and live preview.",
+    href: "/tools/text-overlay",
+    tag: "TYPE",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "border-generator",
+    name: "Border Generator",
+    description: "Add clean borders and rounded frames for gallery-ready, feed-polished images.",
+    href: "/tools/border-generator",
+    tag: "FRAME",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "grayscale-converter",
+    name: "Grayscale Converter",
+    description: "Convert images to black and white with adjustable contrast and brightness.",
+    href: "/tools/grayscale-converter",
+    tag: "MONO",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "favicon-generator",
+    name: "Favicon Generator",
+    description: "Turn any logo into browser-ready favicon.ico or PNG icons in seconds.",
+    href: "/tools/favicon-generator",
+    tag: "ICON",
+    category: "optimization",
+    status: "ready",
+  },
+  {
+    id: "sharpener",
+    name: "Sharpener",
+    description: "Recover edge clarity and detail with adjustable convolution sharpening.",
+    href: "/tools/sharpener",
+    tag: "SHARP",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "light-adjuster",
+    name: "Light Adjuster",
+    description: "Fix exposure with live brightness and contrast controls on full-color images.",
+    href: "/tools/light-adjuster",
+    tag: "LIGHT",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "image-inverter",
+    name: "Image Inverter",
+    description: "Flip RGB values to create negative effects, masks, and high-contrast visuals.",
+    href: "/tools/image-inverter",
+    tag: "INVERT",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "denoiser",
+    name: "Denoiser",
+    description: "Reduce digital grain with median filtering and edge-preserving smoothing.",
+    href: "/tools/denoiser",
+    tag: "CLEAN",
+    category: "advanced",
+    status: "ready",
+  },
+  {
+    id: "css-palette-gen",
+    name: "CSS Palette Generator",
+    description: "Extract colors from images and export CSS variables, JSON, or Tailwind config.",
+    href: "/tools/css-palette-gen",
+    tag: "CODE",
+    category: "advanced",
+    status: "ready",
+  },
+  {
+    id: "lens-corrector",
+    name: "Lens Corrector",
+    description: "Fix barrel and pincushion distortion with radial warp and grid alignment.",
+    href: "/tools/lens-corrector",
+    tag: "GEOMETRY",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "grain-generator",
+    name: "Grain Generator",
+    description: "Add cinematic film grain with adjustable Gaussian noise intensity.",
+    href: "/tools/grain-generator",
+    tag: "GRAIN",
+    category: "advanced",
+    status: "ready",
+  },
+  {
+    id: "base64-encoder",
+    name: "Base64 Encoder",
+    description: "Convert images to Base64 data URLs for embedding in CSS or HTML.",
+    href: "/tools/base64-encoder",
+    tag: "ENCODE",
+    category: "optimization",
     status: "ready",
   },
 ];

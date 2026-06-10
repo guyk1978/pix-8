@@ -13,14 +13,17 @@ export function ToolCard({ tool, index }: ToolCardProps) {
       href={tool.href}
       className="group flex gap-4 border border-[#333] bg-[#161616] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-muted hover:bg-[#1a1a1a] hover:shadow-[0_6px_20px_rgba(0,0,0,0.35)] sm:p-5"
     >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#333] bg-background text-muted transition-colors duration-200 group-hover:border-muted group-hover:text-foreground">
-        <ToolIcon id={tool.id} />
+      <div
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-[#333] bg-background text-muted transition-colors duration-200 group-hover:border-muted group-hover:text-foreground"
+        aria-hidden
+      >
+        <ToolIcon id={tool.id} className="h-[18px] w-[18px]" />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-sm font-medium tracking-tight text-foreground transition-colors group-hover:text-foreground">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+            <h3 className="text-sm font-medium leading-none tracking-tight text-foreground">
               {tool.name}
             </h3>
             {tool.status === "ready" && (

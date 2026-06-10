@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   buildDownloadFilename,
   loadImageFromFile,
@@ -41,6 +42,7 @@ export function Watermark() {
     loadFile,
     processImage,
     handleDownload,
+    handleCopyToClipboard,
     setError,
   } = useImageProcessor();
 
@@ -114,10 +116,10 @@ export function Watermark() {
     mainImage.src = source.url;
   }, [source, watermark, opacity, position, scale]);
 
-  const handleDownloadImage = useCallback(async () => {
-    if (!source || !watermark) return;
+  const runWatermark = useCallback(async () => {
+    if (!source || !watermark) return null;
 
-    const result = await processImage(source.file, {
+    return processImage(source.file, {
       width: source.width,
       height: source.height,
       format: resolveFormat(source.mimeType),
@@ -130,14 +132,6 @@ export function Watermark() {
         scale: scale / 100,
       },
     });
-
-    if (!result) return;
-
-    await handleDownload(
-      result.blob,
-      buildDownloadFilename(`${source.name}-watermarked`, result.format),
-      { stripMetadata },
-    );
   }, [
     source,
     watermark,
@@ -146,9 +140,26 @@ export function Watermark() {
     scale,
     stripMetadata,
     processImage,
-    handleDownload,
     canvasRef,
   ]);
+
+  const handleDownloadImage = useCallback(async () => {
+    const result = await runWatermark();
+    if (!result || !source) return;
+
+    await handleDownload(
+      result.blob,
+      buildDownloadFilename(`${source.name}-watermarked`, result.format),
+      { stripMetadata },
+    );
+  }, [runWatermark, source, stripMetadata, handleDownload]);
+
+  const handleCopyImage = useCallback(async () => {
+    const result = await runWatermark();
+    if (!result) return;
+
+    await handleCopyToClipboard(result.blob, { stripMetadata });
+  }, [runWatermark, stripMetadata, handleCopyToClipboard]);
 
   const canDownload = !!source && !!watermark && !isProcessing;
 
@@ -286,14 +297,13 @@ export function Watermark() {
           </p>
         )}
 
-        <button
-          type="button"
+        <ToolOutputActions
+          onDownload={handleDownloadImage}
+          onCopy={handleCopyImage}
+          downloadLabel="Download Watermarked"
           disabled={!canDownload}
-          onClick={() => void handleDownloadImage()}
-          className="mt-5 min-h-11 w-full rounded-sm border border-[#333] bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {isProcessing ? "Processing…" : "Download Watermarked"}
-        </button>
+          isProcessing={isProcessing}
+        />
       </div>
 
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />

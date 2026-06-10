@@ -1,13 +1,18 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { RelatedArticles } from "@/components/articles/RelatedArticles";
+import { WorkflowSuggestions } from "@/components/WorkflowSuggestions";
+import type { Article } from "@/lib/blog";
 import type { Tool } from "@/lib/tools";
+import { getWorkflowSuggestions } from "@/lib/workflows";
 
 interface ToolShellProps {
   tool: Tool;
   children?: ReactNode;
+  relatedArticles?: Article[];
 }
 
-export function ToolShell({ tool, children }: ToolShellProps) {
+export function ToolShell({ tool, children, relatedArticles = [] }: ToolShellProps) {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
       <div className="mb-6 flex items-center gap-3">
@@ -32,7 +37,10 @@ export function ToolShell({ tool, children }: ToolShellProps) {
 
       <div className="border border-[#333] bg-[#161616] p-4 sm:p-6">
         {children}
+        <WorkflowSuggestions suggestions={getWorkflowSuggestions(tool.id)} />
       </div>
+
+      <RelatedArticles articles={relatedArticles} />
     </div>
   );
 }
