@@ -1,12 +1,18 @@
-import { existsSync } from "node:fs";
+import { copyFileSync, existsSync } from "node:fs";
 
-const required = [".open-next/worker.js", ".open-next/assets"];
+const workerSrc = ".open-next/worker.js";
+const workerDest = ".open-next/_worker.js";
 
-for (const path of required) {
-  if (!existsSync(path)) {
-    console.error(`ERROR: Missing required build artifact: ${path}`);
-    process.exit(1);
-  }
+if (!existsSync(workerSrc)) {
+  console.error("ERROR: .open-next/worker.js not found after OpenNext build.");
+  process.exit(1);
 }
 
-console.log("OpenNext build artifacts verified (worker.js + assets).");
+if (!existsSync(".open-next/assets")) {
+  console.error("ERROR: .open-next/assets not found after OpenNext build.");
+  process.exit(1);
+}
+
+copyFileSync(workerSrc, workerDest);
+console.log("Pages: copied worker.js -> _worker.js (Advanced Mode)");
+console.log("Output directory: .open-next");
