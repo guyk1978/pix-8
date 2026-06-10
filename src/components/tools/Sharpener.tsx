@@ -1,24 +1,27 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { SliderControl } from "@/components/ui/SliderControl";
 import {
   DEFAULT_SHARPEN_SETTINGS,
   drawImageToCanvas,
   renderSharpenedCanvas,
-  type SharpenSettings,
 } from "@/lib/sharpenRender";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   buildDownloadFilename,
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 
-const inputClassName =
-  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
-
 export function Sharpener() {
+  const { t, language } = useLanguage();
   const {
     canvasRef,
     source,
@@ -38,15 +41,14 @@ export function Sharpener() {
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isSharpening, setIsSharpening] = useState(false);
   const [stripMetadata, setStripMetadata] = useState(true);
-  const [settings, setSettings] = useState<SharpenSettings>(
-    DEFAULT_SHARPEN_SETTINGS,
-  );
+  const [intensity, setIntensity] = useState(DEFAULT_SHARPEN_SETTINGS.intensity);
+  const debouncedIntensity = useDebouncedValue(intensity, 150);
   const [comparePosition, setComparePosition] = useState(50);
 
   const handleFileChange = useCallback(
     (file: File | null) => {
       if (file) {
-        setSettings(DEFAULT_SHARPEN_SETTINGS);
+        setIntensity(DEFAULT_SHARPEN_SETTINGS.intensity);
         setComparePosition(50);
         void loadFile(file);
       }
@@ -81,14 +83,14 @@ export function Sharpener() {
               image,
               source.width,
               source.height,
-              settings,
+              { intensity: debouncedIntensity },
               afterCanvasRef.current,
             );
           }
         } catch (cause) {
-          const message =
-            cause instanceof Error ? cause.message : "Sharpening failed.";
-          setError(message);
+          setError(
+            resolveErrorMessage(language, cause, "toolUi.sharpener.sharpeningFailed"),
+          );
         } finally {
           if (!cancelled) setIsSharpening(false);
         }
@@ -96,7 +98,7 @@ export function Sharpener() {
 
       image.onerror = () => {
         if (!cancelled) {
-          setError("Failed to load image for sharpening.");
+          setError(t("toolUi.sharpener.loadFailed"));
           setIsSharpening(false);
         }
       };
@@ -108,7 +110,7 @@ export function Sharpener() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [source, settings, setError]);
+  }, [source, debouncedIntensity, setError, t]);
 
   const updateComparePosition = useCallback((clientX: number) => {
     const container = comparisonRef.current;
@@ -173,80 +175,36 @@ export function Sharpener() {
   }, [source, stripMetadata, handleCopyToClipboard]);
 
   const busy = isProcessing || isSharpening;
-  const canDownload = !!source && !busy;
+  const isUpdatingPreview = intensity !== debouncedIntensity;
+  const canDownload = !!source && !busy && !isUpdatingPreview;
 
   return (
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDraggingFile
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDraggingFile(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="sharpener-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                Edge recovery · clarity · detail
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="sharpener-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDraggingFile}
+            onDraggingChange={setIsDraggingFile}
+            formatHint={t("toolUi.sharpener.uploadHint")}
+          />
         ) : (
-          <div className="space-y-2">
-            <label htmlFor="sharpener-replace" className="font-label text-muted">
-              Replace Image
-            </label>
-            <input
-              id="sharpener-replace"
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-              className={`${inputClassName} file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted`}
-            />
-          </div>
+          <ImageFileInput
+            id="sharpener-replace"
+            fileName={source.file.name}
+            onFileChange={handleFileChange}
+          />
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <span className="font-label text-muted">Before / After</span>
+              <span className="font-label text-muted">
+                {t("toolUi.sharpener.beforeAfter")}
+              </span>
               <span className="font-mono text-[10px] text-muted">
-                Drag divider to compare
+                {t("toolUi.sharpener.compareHint")}
               </span>
             </div>
 
@@ -284,17 +242,17 @@ export function Sharpener() {
                     style={{ left: `${comparePosition}%` }}
                   >
                     <span className="rounded-sm border border-border bg-card px-2 py-1 font-mono text-[9px] text-muted">
-                      Before
+                      {t("common.before")}
                     </span>
                     <span className="h-8 w-4 rounded-sm border border-border bg-card" />
                     <span className="rounded-sm border border-border bg-card px-2 py-1 font-mono text-[9px] text-muted">
-                      After
+                      {t("common.after")}
                     </span>
                   </div>
                 </div>
               ) : (
                 <p className="px-4 text-center text-sm text-muted">
-                  Upload an image to compare sharpening results.
+                  {t("toolUi.sharpener.previewHint")}
                 </p>
               )}
             </div>
@@ -302,46 +260,36 @@ export function Sharpener() {
             {source && (
               <p className="text-center font-mono text-[10px] text-muted">
                 {source.width} × {source.height}px ·{" "}
-                {isSharpening ? "Sharpening…" : `${settings.intensity}% intensity`}
+                {isSharpening || isUpdatingPreview
+                  ? t("toolUi.sharpener.sharpening")
+                  : t("toolUi.sharpener.intensityPercent", {
+                      percent: intensity,
+                    })}
               </p>
             )}
           </div>
 
           <div className="space-y-4 border border-border bg-background p-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <label htmlFor="sharpener-intensity" className="font-label text-muted">
-                  Sharpen
-                </label>
-                <span className="font-mono text-[10px] text-foreground">
-                  {settings.intensity}%
-                </span>
-              </div>
-              <input
-                id="sharpener-intensity"
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                disabled={!source || isSharpening}
-                value={settings.intensity}
-                onChange={(event) =>
-                  setSettings({ intensity: Number(event.target.value) })
-                }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
-              />
-              <p className="font-mono text-[10px] text-muted">
-                3×3 convolution kernel — increase slowly to avoid halos.
-              </p>
-            </div>
+            <SliderControl
+              id="sharpener-intensity"
+              label={t("toolUi.sharpener.sharpen")}
+              value={intensity}
+              min={0}
+              max={100}
+              step={1}
+              suffix="%"
+              disabled={!source}
+              onChange={setIntensity}
+              description={t("toolUi.sharpener.description")}
+            />
 
             <button
               type="button"
               disabled={!source}
-              onClick={() => setSettings(DEFAULT_SHARPEN_SETTINGS)}
+              onClick={() => setIntensity(DEFAULT_SHARPEN_SETTINGS.intensity)}
               className="min-h-9 w-full rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
             >
-              Reset intensity
+              {t("toolUi.sharpener.resetIntensity")}
             </button>
           </div>
         </div>
@@ -363,13 +311,13 @@ export function Sharpener() {
         <ToolOutputActions
           onDownload={handleDownloadImage}
           onCopy={handleCopyImage}
-          downloadLabel="Download"
+          downloadLabel={t("downloads.download")}
           disabled={!canDownload}
           isProcessing={busy}
         />
 
         <p className="mt-3 text-center font-mono text-[10px] text-muted">
-          Sharpening runs locally — your image never leaves the browser.
+          {t("toolUi.sharpener.footer")}
         </p>
       </div>
 

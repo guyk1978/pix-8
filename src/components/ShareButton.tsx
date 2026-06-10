@@ -1,6 +1,7 @@
 "use client";
 
 import { Share2 } from "lucide-react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 
 async function copyPageUrl(): Promise<boolean> {
@@ -13,6 +14,7 @@ async function copyPageUrl(): Promise<boolean> {
 }
 
 export function ShareButton() {
+  const { t } = useLanguage();
   const { showToast } = useToast();
 
   const handleShare = async () => {
@@ -31,7 +33,9 @@ export function ShareButton() {
     }
 
     const copied = await copyPageUrl();
-    showToast(copied ? "Link copied!" : "Could not copy link");
+    showToast(
+      copied ? t("share.linkCopied") : t("share.couldNotCopy"),
+    );
   };
 
   return (
@@ -39,8 +43,8 @@ export function ShareButton() {
       type="button"
       onClick={handleShare}
       className="flex h-9 w-9 items-center justify-center rounded-sm border border-border bg-background text-muted transition-colors hover:border-muted hover:text-foreground"
-      aria-label="Share this page"
-      title="Share"
+      aria-label={t("share.ariaLabel")}
+      title={t("share.title")}
     >
       <Share2 className="h-4 w-4" strokeWidth={1.5} aria-hidden />
     </button>

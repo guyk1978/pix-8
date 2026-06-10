@@ -1,6 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import {
@@ -101,6 +105,7 @@ function drawMagnifier(
 }
 
 export function ColorPicker() {
+  const { t, language } = useLanguage();
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -149,7 +154,7 @@ export function ColorPicker() {
 
       const ctx = canvas.getContext("2d");
       if (!ctx) {
-        setError("Canvas context unavailable.");
+        setError(t("toolUi.colorPicker.canvasUnavailable"));
         return;
       }
 
@@ -158,7 +163,7 @@ export function ColorPicker() {
     };
 
     image.onerror = () => {
-      if (!cancelled) setError("Failed to load image for sampling.");
+      if (!cancelled) setError(t("toolUi.colorPicker.loadFailed"));
     };
 
     image.src = source.url;
@@ -166,7 +171,7 @@ export function ColorPicker() {
     return () => {
       cancelled = true;
     };
-  }, [source, setError]);
+  }, [source, setError, t]);
 
   useEffect(() => {
     if (!pointer || !pickCanvasRef.current || !magnifierRef.current) return;
@@ -195,12 +200,12 @@ export function ColorPicker() {
           setPickedColor(color);
         }
       } catch (cause) {
-        const message =
-          cause instanceof Error ? cause.message : "Could not sample color.";
-        setError(message);
+        setError(
+          resolveErrorMessage(language, cause, "toolUi.colorPicker.sampleFailed"),
+        );
       }
     },
-    [isReady, setError],
+    [isReady, language, setError],
   );
 
   const handlePointerMove = useCallback(
@@ -227,13 +232,13 @@ export function ColorPicker() {
       try {
         await navigator.clipboard.writeText(value);
         setCopiedFormat(format);
-        showToast(value, { title: "Copied!" });
+        showToast(value, { title: t("common.copied") });
         window.setTimeout(() => setCopiedFormat(null), 1500);
       } catch {
-        setError("Could not copy to clipboard.");
+        setError(t("toast.couldNotCopy"));
       }
     },
-    [showToast, setError],
+    [showToast, setError, t],
   );
 
   const activeColor = pickedColor ?? hoverColor;
@@ -257,69 +262,26 @@ export function ColorPicker() {
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDragging
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDragging(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDragging(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="color-picker-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                Click any pixel to sample · Hover for zoom
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="color-picker-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDragging}
+            onDraggingChange={setIsDragging}
+            formatHint={t("toolUi.colorPicker.clickHint")}
+          />
         ) : (
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <label htmlFor="color-picker-replace" className="font-label text-muted">
-                Replace Image
-              </label>
+              <span className="font-label text-muted">{t("common.replaceImage")}</span>
               <span className="font-mono text-[10px] text-muted">
                 {source.width} × {source.height}px
               </span>
             </div>
-            <input
+            <ImageFileInput
               id="color-picker-replace"
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-              className="w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
+              label={false}
+              fileName={source.file.name}
+              onFileChange={handleFileChange}
             />
 
             <div
@@ -330,7 +292,7 @@ export function ColorPicker() {
               <img
                 ref={imageRef}
                 src={source.url}
-                alt="Color sampling source"
+                alt={t("alt.colorSamplingSource")}
                 className="mx-auto block max-h-[28rem] w-full cursor-crosshair object-contain"
                 onMouseMove={handlePointerMove}
                 onMouseLeave={handlePointerLeave}
@@ -355,17 +317,17 @@ export function ColorPicker() {
             </div>
 
             <p className="font-mono text-[10px] text-muted">
-              Hover to preview · Click to lock a color sample
+              {t("toolUi.colorPicker.hoverHint")}
             </p>
           </div>
         )}
 
         <section className="mt-6 border-t border-border pt-6">
           <div className="mb-4 flex items-center justify-between gap-2">
-            <h2 className="font-label text-foreground">Sampled Color</h2>
+            <h2 className="font-label text-foreground">{t("toolUi.colorPicker.sampledColor")}</h2>
             {pointer && (
               <span className="font-mono text-[10px] text-muted">
-                Pixel {pointer.x}, {pointer.y}
+                {t("toolUi.colorPicker.pixel", { x: pointer.x, y: pointer.y })}
               </span>
             )}
           </div>
@@ -373,7 +335,7 @@ export function ColorPicker() {
           {!activeColor ? (
             <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
-                Upload an image and click a pixel to sample its color.
+                {t("toolUi.colorPicker.uploadHint")}
               </p>
             </div>
           ) : (
@@ -385,7 +347,9 @@ export function ColorPicker() {
                 />
                 <div className="min-w-0 space-y-1">
                   <p className="font-label text-muted">
-                    {pickedColor ? "Locked sample" : "Live preview"}
+                    {pickedColor
+                      ? t("toolUi.colorPicker.lockedSample")
+                      : t("toolUi.colorPicker.livePreview")}
                   </p>
                   <p className="truncate font-mono text-sm text-foreground">
                     {activeColor.hex}
@@ -415,7 +379,9 @@ export function ColorPicker() {
                           : "text-foreground"
                       }`}
                     >
-                      {copiedFormat === format.key ? "Copied!" : format.value}
+                      {copiedFormat === format.key
+                        ? t("common.copied")
+                        : format.value}
                     </span>
                   </button>
                 ))}
@@ -431,7 +397,7 @@ export function ColorPicker() {
         )}
 
         <p className="mt-4 text-center font-mono text-[10px] text-muted">
-          All sampling runs locally — your image never leaves the browser.
+          {t("toolUi.colorPicker.footer")}
         </p>
       </div>
 

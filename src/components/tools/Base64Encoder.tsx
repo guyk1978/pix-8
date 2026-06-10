@@ -1,6 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { useToast } from "@/components/ui/ToastProvider";
 import {
   fileToDataUrl,
@@ -10,6 +14,7 @@ import {
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 
 export function Base64Encoder() {
+  const { t, language } = useLanguage();
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -47,9 +52,7 @@ export function Base64Encoder() {
       })
       .catch((cause) => {
         if (cancelled) return;
-        const message =
-          cause instanceof Error ? cause.message : "Could not encode image.";
-        setError(message);
+        setError(resolveErrorMessage(language, cause, "errors.encodeImageFailed"));
         setDataUrl(null);
       })
       .finally(() => {
@@ -68,86 +71,39 @@ export function Base64Encoder() {
       await navigator.clipboard.writeText(output);
       setCopied(true);
       showToast(
-        includePrefix ? "Data URL copied" : "Base64 string copied",
-        { title: "Copied!" },
+        includePrefix ? t("toast.dataUrlCopied") : t("toast.base64Copied"),
+        { title: t("common.copied") },
       );
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
-      setError("Could not copy to clipboard.");
+      setError(t("toast.couldNotCopy"));
     }
-  }, [output, includePrefix, showToast, setError]);
+  }, [output, includePrefix, showToast, setError, t]);
 
   return (
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDraggingFile
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDraggingFile(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="base64-encoder-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                PNG · JPEG · WebP · GIF
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="base64-encoder-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDraggingFile}
+            onDraggingChange={setIsDraggingFile}
+            formatHint={t("upload.formatsHint")}
+          />
         ) : (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="base64-encoder-replace" className="font-label text-muted">
-                Replace Image
-              </label>
-              <input
-                id="base64-encoder-replace"
-                type="file"
-                accept="image/*"
-                onChange={(event) => {
-                  handleFileChange(event.target.files?.[0] ?? null);
-                  event.target.value = "";
-                }}
-                className="w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
-              />
-            </div>
+            <ImageFileInput
+              id="base64-encoder-replace"
+              fileName={source.file.name}
+              onFileChange={handleFileChange}
+            />
 
             <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={source.url}
-                alt="Source preview"
+                alt={t("alt.sourcePreview")}
                 className="max-h-40 max-w-full object-contain"
               />
             </div>
@@ -156,11 +112,13 @@ export function Base64Encoder() {
 
         <section className="mt-6 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-label text-foreground">Base64 Output</h2>
+            <h2 className="font-label text-foreground">{t("toolUi.base64.output")}</h2>
             {source && dataUrl && !isEncoding && (
               <span className="font-mono text-[10px] text-muted">
-                {output.length.toLocaleString()} chars ·{" "}
-                {formatByteCount(source.file.size)}
+                {t("toolUi.base64.charsSize", {
+                  chars: output.length.toLocaleString(),
+                  size: formatByteCount(source.file.size),
+                })}
               </span>
             )}
           </div>
@@ -168,14 +126,14 @@ export function Base64Encoder() {
           {!source ? (
             <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
-                Upload an image to generate a Base64 string.
+                {t("toolUi.base64.uploadHint")}
               </p>
             </div>
           ) : isEncoding ? (
             <div className="flex min-h-28 items-center justify-center rounded-sm border border-border bg-background p-6">
               <div className="flex items-center gap-3">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-foreground" />
-                <p className="font-label text-muted">Encoding…</p>
+                <p className="font-label text-muted">{t("toolUi.base64.encoding")}</p>
               </div>
             </div>
           ) : (
@@ -189,7 +147,7 @@ export function Base64Encoder() {
                   className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:cursor-not-allowed disabled:opacity-50"
                 />
                 <span className="font-label text-muted">
-                  Include data-URL prefix
+                  {t("toolUi.base64.includePrefix")}
                 </span>
                 {includePrefix && (
                   <span className="font-mono text-[10px] text-accent">
@@ -202,7 +160,7 @@ export function Base64Encoder() {
                 readOnly
                 value={output}
                 rows={8}
-                aria-label="Base64 output"
+                aria-label={t("toolUi.base64.output")}
                 className="w-full resize-y rounded-sm border border-border bg-background p-4 font-mono text-[11px] leading-relaxed text-muted outline-none focus:border-muted"
               />
 
@@ -212,7 +170,7 @@ export function Base64Encoder() {
                 disabled={!output}
                 className="min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {copied ? "Copied!" : "Copy to Clipboard"}
+                {copied ? t("common.copied") : t("common.copyToClipboard")}
               </button>
             </>
           )}
@@ -220,7 +178,7 @@ export function Base64Encoder() {
 
         {source && (
           <p className="mt-4 text-center font-mono text-[10px] text-muted">
-            {source.width} × {source.height}px · encoding runs locally
+            {source.width} × {source.height}px · {t("toolUi.base64.footer")}
           </p>
         )}
 

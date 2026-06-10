@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
 import { BulkFileQueue } from "@/components/tools/BulkFileQueue";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import {
   ProcessingModeToggle,
   type ProcessingMode,
@@ -48,6 +51,7 @@ function resolveTargetDimensions(
 }
 
 export function Resizer() {
+  const { t, language } = useLanguage();
   const {
     canvasRef,
     source,
@@ -236,9 +240,7 @@ export function Resizer() {
 
       await downloadZipArchive(entries, "pix-8-resized-images.zip");
     } catch (cause) {
-      const message =
-        cause instanceof Error ? cause.message : "Batch resize failed.";
-      setError(message);
+      setError(resolveErrorMessage(language, cause, "errors.batchResizeFailed"));
     } finally {
       setIsBatchProcessing(false);
     }
@@ -257,106 +259,40 @@ export function Resizer() {
         <ProcessingModeToggle mode={mode} onChange={handleModeChange} />
 
         {mode === "single" ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDragging
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDragging(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDragging(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
+          <ImageUploadDropzone
+            inputId="resizer-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDragging}
+            onDraggingChange={setIsDragging}
+            formatHint={t("upload.formatsHint")}
           >
-            <input
-              id="resizer-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
             {source ? (
               <div className="pointer-events-none flex w-full flex-col items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={source.url}
-                  alt="Preview"
+                  alt={t("alt.preview")}
                   className="max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
                 />
                 <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
                   {source.width} × {source.height}px · {source.file.name}
                 </p>
               </div>
-            ) : (
-              <div className="pointer-events-none px-2 text-center">
-                <p className="font-label text-muted">Upload</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
-                  Drop an image here or tap to browse
-                </p>
-                <p className="mt-1 font-mono text-[10px] text-muted">
-                  PNG · JPEG · WebP
-                </p>
-              </div>
-            )}
-          </div>
+            ) : undefined}
+          </ImageUploadDropzone>
         ) : (
           <div className="space-y-4">
-            <div
-              className={`relative flex min-h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-sm border border-dashed p-5 transition-colors ${
-                isDragging
-                  ? "border-accent bg-accent-muted"
-                  : "border-border bg-background hover:border-muted"
-              }`}
-              onDragEnter={(event) => {
-                event.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={(event) => {
-                event.preventDefault();
-                if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                  setIsDragging(false);
-                }
-              }}
-              onDragOver={(event) => event.preventDefault()}
-              onDrop={(event) => {
-                event.preventDefault();
-                setIsDragging(false);
-                void bulk.addFiles(event.dataTransfer.files);
-              }}
-            >
-              <input
-                id="resizer-batch-upload"
-                type="file"
-                accept="image/*"
-                multiple
-                aria-label="Upload images"
-                className="absolute inset-0 cursor-pointer opacity-0"
-                onChange={(event) => {
-                  if (event.target.files) void bulk.addFiles(event.target.files);
-                  event.target.value = "";
-                }}
-              />
-              <p className="font-label text-muted">Add images to batch</p>
-              <p className="text-center text-sm text-muted">
-                Drop multiple files or tap to browse
-              </p>
-            </div>
+            <ImageUploadDropzone
+              inputId="resizer-batch-upload"
+              multiple
+              onFileChange={() => {}}
+              onFilesChange={(files) => void bulk.addFiles(files)}
+              isDragging={isDragging}
+              onDraggingChange={setIsDragging}
+              title={t("upload.addToBatch")}
+              hint={t("upload.dropMultipleHint")}
+              className="min-h-32 sm:min-h-32"
+            />
 
             <BulkFileQueue
               items={bulk.items}
@@ -369,7 +305,7 @@ export function Resizer() {
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <label htmlFor="resizer-width" className="font-label text-muted">
-              Width
+              {t("common.width")}
             </label>
             <input
               id="resizer-width"
@@ -386,7 +322,7 @@ export function Resizer() {
 
           <div className="space-y-2">
             <label htmlFor="resizer-height" className="font-label text-muted">
-              Height
+              {t("common.height")}
             </label>
             <input
               id="resizer-height"
@@ -419,7 +355,9 @@ export function Resizer() {
               onChange={(event) => setLockAspectRatio(event.target.checked)}
               className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent"
             />
-            <span className="font-label text-muted">Maintain Aspect Ratio</span>
+            <span className="font-label text-muted">
+              {t("toolUi.resizer.maintainAspectRatio")}
+            </span>
           </label>
 
           {source && lockAspectRatio && mode === "single" && (
@@ -439,7 +377,7 @@ export function Resizer() {
           <ToolOutputActions
             onDownload={handleResizeDownload}
             onCopy={handleResizeCopy}
-            downloadLabel="Resize & Download"
+            downloadLabel={t("downloads.resizeAndDownload")}
             disabled={!canResize}
             isProcessing={busy}
           />
@@ -450,7 +388,7 @@ export function Resizer() {
             onClick={() => void handleBatchDownload()}
             className="mt-5 min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {busy ? "Processing…" : "Resize All & Download ZIP"}
+            {busy ? t("common.processing") : t("downloads.resizeAllZip")}
           </button>
         )}
       </div>

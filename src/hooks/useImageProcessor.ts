@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useToast } from "@/components/ui/ToastProvider";
+import { translateErrorMessage } from "@/i18n";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -143,7 +145,12 @@ async function fileToImageElement(
 }
 
 async function parseImageFile(file: File): Promise<ParsedImage> {
-  if (!file.type.startsWith("image/")) {
+  const hasImageMime = file.type.startsWith("image/");
+  const hasImageExtension = /\.(jpe?g|png|gif|webp|bmp|avif|svg)$/i.test(
+    file.name,
+  );
+
+  if (!hasImageMime && !hasImageExtension) {
     throw new Error("Please select a valid image file.");
   }
 
@@ -599,6 +606,7 @@ export async function handleDownload(
 export function useImageProcessor() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const previewUrlRef = useRef<string | null>(null);
+  const { t, language } = useLanguage();
   const { showToast } = useToast();
 
   const [source, setSource] = useState<ImageSource | null>(null);
@@ -636,12 +644,12 @@ export function useImageProcessor() {
       } catch (cause) {
         const message =
           cause instanceof Error
-            ? cause.message
-            : "Could not load the selected image.";
+            ? translateErrorMessage(language, cause.message)
+            : t("errors.loadImageFailed");
         setError(message);
       }
     },
-    [clearPreviewUrl],
+    [clearPreviewUrl, language, t],
   );
 
   const runProcessImage = useCallback(
@@ -660,14 +668,16 @@ export function useImageProcessor() {
         });
       } catch (cause) {
         const message =
-          cause instanceof Error ? cause.message : "Processing failed.";
+          cause instanceof Error
+            ? translateErrorMessage(language, cause.message)
+            : t("errors.processingFailed");
         setError(message);
         return null;
       } finally {
         setIsProcessing(false);
       }
     },
-    [],
+    [language, t],
   );
 
   const runHandleDownload = useCallback(
@@ -690,16 +700,18 @@ export function useImageProcessor() {
           ...options,
         });
 
-        showToast(`File ${fullName} generated`, {
-          title: "Conversion History",
+        showToast(t("toast.fileGenerated", { filename: fullName }), {
+          title: t("toast.conversionHistory"),
         });
       } catch (cause) {
         const message =
-          cause instanceof Error ? cause.message : "Download failed.";
+          cause instanceof Error
+            ? translateErrorMessage(language, cause.message)
+            : t("errors.downloadFailed");
         setError(message);
       }
     },
-    [showToast],
+    [language, showToast, t],
   );
 
   const runHandleCopyToClipboard = useCallback(
@@ -712,16 +724,18 @@ export function useImageProcessor() {
           ...options,
         });
 
-        showToast("Image copied — paste into Slack, WhatsApp, or Docs", {
-          title: "Copied to clipboard",
+        showToast(t("toast.imageCopiedPaste"), {
+          title: t("toast.copiedToClipboard"),
         });
       } catch (cause) {
         const message =
-          cause instanceof Error ? cause.message : "Could not copy image.";
+          cause instanceof Error
+            ? translateErrorMessage(language, cause.message)
+            : t("errors.copyImageFailed");
         setError(message);
       }
     },
-    [showToast],
+    [language, showToast, t],
   );
 
   useEffect(() => {

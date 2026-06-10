@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { getToolTranslationKey } from "@/i18n";
 import { JOIN_MY_PDF_URL } from "@/lib/external-links";
-import { tools, type ToolCategory } from "@/lib/tools";
+import { tools, type ToolCategory, type ToolId } from "@/lib/tools";
 
 const SIDEBAR_TOOLS_CATEGORIES: ToolCategory[] = [
   "basic-editing",
@@ -137,7 +139,7 @@ function NestedLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className={`block rounded-sm border border-transparent py-2 pl-9 pr-3 font-mono text-xs transition-colors ${
+      className={`block rounded-sm border border-transparent py-2 ps-9 pe-3 font-mono text-xs transition-colors ${
         active
           ? "border-border bg-surface text-foreground"
           : "text-muted hover:border-border hover:bg-surface hover:text-foreground"
@@ -169,7 +171,7 @@ function ExpandableSection({
         className="flex w-full items-center gap-3 rounded-sm border border-transparent px-3 py-2.5 font-label text-muted transition-colors hover:border-border hover:bg-surface hover:text-foreground"
       >
         {icon}
-        <span className="flex-1 text-left">{label}</span>
+        <span className="flex-1 text-start">{label}</span>
         <ChevronIcon open={open} />
       </button>
       {open && <div className="mt-1 space-y-0.5">{children}</div>}
@@ -179,8 +181,11 @@ function ExpandableSection({
 
 export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [toolsOpen, setToolsOpen] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(true);
+
+  const getToolName = (toolId: ToolId) => t(getToolTranslationKey(toolId, "name"));
 
   const toolsNav = tools.filter((tool) =>
     SIDEBAR_TOOLS_CATEGORIES.includes(tool.category),
@@ -207,7 +212,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
         <NavItem
           href="/"
-          label="Dashboard"
+          label={t("nav.dashboard")}
           icon={<DashboardIcon />}
           active={pathname === "/"}
           onNavigate={onMobileClose}
@@ -215,7 +220,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
 
         <NavItem
           href="/blog"
-          label="Blog"
+          label={t("nav.blog")}
           icon={<BlogIcon />}
           active={pathname === "/blog" || pathname.startsWith("/articles/")}
           onNavigate={onMobileClose}
@@ -223,7 +228,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
 
         <div className="mt-2">
           <ExpandableSection
-            label="Tools"
+            label={t("nav.tools")}
             icon={<ToolsIcon />}
             open={toolsOpen}
             onToggle={() => setToolsOpen((current) => !current)}
@@ -232,7 +237,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
               <NestedLink
                 key={tool.id}
                 href={tool.href}
-                label={tool.name}
+                label={getToolName(tool.id)}
                 active={pathname === tool.href}
                 onNavigate={onMobileClose}
               />
@@ -241,7 +246,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         </div>
 
         <ExpandableSection
-          label="Advanced"
+          label={t("nav.advanced")}
           icon={<AdvancedIcon />}
           open={advancedOpen}
           onToggle={() => setAdvancedOpen((current) => !current)}
@@ -250,7 +255,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             <NestedLink
               key={tool.id}
               href={tool.href}
-              label={tool.name}
+              label={getToolName(tool.id)}
               active={pathname === tool.href}
               onNavigate={onMobileClose}
             />
@@ -266,7 +271,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           className="mb-2 block rounded-sm border border-border bg-card px-3 py-2.5 transition-colors hover:border-muted hover:bg-surface"
         >
           <span className="block font-label text-xs text-foreground">
-            Combine images into a PDF
+            {t("nav.joinMyPdf")}
           </span>
           <span className="mt-1 block font-mono text-[10px] text-muted">
             JoinMyPDF →
@@ -275,13 +280,13 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
 
         <NavItem
           href="/settings"
-          label="Settings"
+          label={t("nav.settings")}
           icon={<SettingsIcon />}
           active={pathname === "/settings"}
           onNavigate={onMobileClose}
         />
         <p className="px-3 pt-3 font-mono text-[10px] text-muted">
-          Zero uploads · Zero tracking
+          {t("nav.zeroUploads")}
         </p>
       </div>
     </>
@@ -292,15 +297,17 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
       {mobileOpen && (
         <button
           type="button"
-          aria-label="Close navigation"
+          aria-label={t("header.closeNav")}
           className="fixed inset-0 z-40 bg-black/60 lg:hidden"
           onClick={onMobileClose}
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r border-border bg-sidebar transition-transform lg:static lg:translate-x-0 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 start-0 z-50 flex w-60 shrink-0 flex-col border-e border-border bg-sidebar transition-transform lg:static lg:translate-x-0 ${
+          mobileOpen
+            ? "translate-x-0"
+            : "max-lg:-translate-x-full max-lg:rtl:translate-x-full"
         }`}
       >
         {sidebarContent}

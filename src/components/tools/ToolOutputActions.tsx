@@ -1,5 +1,7 @@
 "use client";
 
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 interface ToolOutputActionsProps {
   onDownload: () => void | Promise<void>;
   onCopy: () => void | Promise<void>;
@@ -23,8 +25,11 @@ export function ToolOutputActions({
   disabled = false,
   copyDisabled,
   isProcessing = false,
-  copyLabel = "Copy Image",
+  copyLabel,
 }: ToolOutputActionsProps) {
+  const { t } = useLanguage();
+  const resolvedCopyLabel = copyLabel ?? t("common.copyImage");
+
   const copyIsDisabled = copyDisabled ?? disabled;
 
   return (
@@ -35,7 +40,7 @@ export function ToolOutputActions({
         onClick={() => void onDownload()}
         className={primaryButtonClassName}
       >
-        {isProcessing ? "Processing…" : downloadLabel}
+        {isProcessing ? t("common.processing") : downloadLabel}
       </button>
       <button
         type="button"
@@ -43,7 +48,7 @@ export function ToolOutputActions({
         onClick={() => void onCopy()}
         className={secondaryButtonClassName}
       >
-        {isProcessing ? "Processing…" : copyLabel}
+        {isProcessing ? t("common.processing") : resolvedCopyLabel}
       </button>
     </div>
   );

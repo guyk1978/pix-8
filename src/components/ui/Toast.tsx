@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import type { ToastItem } from "@/components/ui/ToastProvider";
 
 interface ToastContainerProps {
@@ -8,13 +9,15 @@ interface ToastContainerProps {
 }
 
 export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
+  const { t } = useLanguage();
+
   if (toasts.length === 0) return null;
 
   return (
     <div
       className="pointer-events-none fixed bottom-5 right-5 z-[100] flex w-full max-w-sm flex-col gap-2"
       aria-live="polite"
-      aria-label="Notifications"
+      aria-label={t("toast.notifications")}
     >
       {toasts.map((toast) => (
         <Toast key={toast.id} toast={toast} onDismiss={onDismiss} />
@@ -29,6 +32,8 @@ interface ToastProps {
 }
 
 function Toast({ toast, onDismiss }: ToastProps) {
+  const { t } = useLanguage();
+
   return (
     <div
       role="status"
@@ -51,7 +56,7 @@ function Toast({ toast, onDismiss }: ToastProps) {
         type="button"
         onClick={() => onDismiss(toast.id)}
         className="shrink-0 font-mono text-xs text-muted transition-colors hover:text-foreground"
-        aria-label="Dismiss notification"
+        aria-label={t("toast.dismiss")}
       >
         ×
       </button>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LensCorrector } from "@/components/tools/LensCorrector";
 import { ToolShell } from "@/components/tools/ToolShell";
-import { getArticlesByToolId } from "@/lib/blog";
+import { getArticleBundlesByToolId } from "@/lib/blog";
 import { getToolById } from "@/lib/tools";
 
 const tool = getToolById("lens-corrector")!;
@@ -11,10 +11,15 @@ export const metadata: Metadata = {
 };
 
 export default function LensCorrectorPage() {
-  const relatedArticles = getArticlesByToolId(tool.id);
+  const { en: relatedArticlesEn, he: relatedArticlesHe } =
+    getArticleBundlesByToolId(tool.id);
 
   return (
-    <ToolShell tool={tool} relatedArticles={relatedArticles}>
+    <ToolShell
+      tool={tool}
+      relatedArticlesEn={relatedArticlesEn}
+      relatedArticlesHe={relatedArticlesHe}
+    >
       <LensCorrector />
     </ToolShell>
   );

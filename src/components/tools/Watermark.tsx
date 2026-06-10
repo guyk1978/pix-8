@@ -1,6 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
+import { SliderControl } from "@/components/ui/SliderControl";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
@@ -12,9 +16,6 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-
-const inputClassName =
-  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-50";
 
 const POSITIONS: { id: WatermarkPosition; label: string }[] = [
   { id: "top-left", label: "TL" },
@@ -34,6 +35,7 @@ const positionButtonClassName =
 const activePositionClassName = "border-accent/40 bg-accent-muted text-accent";
 
 export function Watermark() {
+  const { t, language } = useLanguage();
   const {
     canvasRef,
     source,
@@ -81,14 +83,12 @@ export function Watermark() {
         watermarkUrlRef.current = parsed.objectUrl;
         setWatermark(parsed);
       } catch (cause) {
-        const message =
-          cause instanceof Error
-            ? cause.message
-            : "Could not load the watermark image.";
-        setError(message);
+        setError(
+          resolveErrorMessage(language, cause, "toolUi.watermark.couldNotLoad"),
+        );
       }
     },
-    [revokeWatermarkUrl, setError],
+    [language, revokeWatermarkUrl, setError],
   );
 
   useEffect(() => {
@@ -167,84 +167,52 @@ export function Watermark() {
     <div className="mx-auto w-full max-w-xl">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label htmlFor="watermark-main" className="font-label text-muted">
-              Main Image
-            </label>
-            <input
-              id="watermark-main"
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                handleMainFile(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-              className={inputClassName}
-            />
-          </div>
+          <ImageFileInput
+            id="watermark-main"
+            label={t("watermark.mainImage")}
+            fileName={source?.file.name}
+            onFileChange={handleMainFile}
+          />
 
-          <div className="space-y-2">
-            <label htmlFor="watermark-logo" className="font-label text-muted">
-              Watermark Image
-            </label>
-            <input
-              id="watermark-logo"
-              type="file"
-              accept="image/*"
-              disabled={!source}
-              onChange={(event) => {
-                void handleWatermarkFile(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-              className={inputClassName}
-            />
-          </div>
-        </div>
-
-        <div className="mt-5 space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <label htmlFor="watermark-opacity" className="font-label text-muted">
-              Opacity
-            </label>
-            <span className="font-mono text-sm tabular-nums text-foreground">
-              {opacity}%
-            </span>
-          </div>
-          <input
-            id="watermark-opacity"
-            type="range"
-            min={0}
-            max={100}
-            step={1}
-            value={opacity}
-            disabled={!watermark}
-            onChange={(event) => setOpacity(Number(event.target.value))}
-            className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-background accent-accent disabled:cursor-not-allowed disabled:opacity-50"
+          <ImageFileInput
+            id="watermark-logo"
+            label={t("watermark.watermarkImage")}
+            fileName={watermark?.file.name}
+            disabled={!source}
+            onFileChange={(file) => void handleWatermarkFile(file)}
           />
         </div>
 
-        <div className="mt-5 space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <span className="font-label text-muted">Size</span>
-            <span className="font-mono text-sm tabular-nums text-foreground">
-              {scale}%
-            </span>
-          </div>
-          <input
+        <div className="mt-5">
+          <SliderControl
+            id="watermark-opacity"
+            label={t("common.opacity")}
+            value={opacity}
+            min={0}
+            max={100}
+            step={1}
+            suffix="%"
+            disabled={!watermark}
+            onChange={setOpacity}
+          />
+        </div>
+
+        <div className="mt-5">
+          <SliderControl
             id="watermark-size"
-            type="range"
+            label={t("common.size")}
+            value={scale}
             min={5}
             max={50}
             step={1}
-            value={scale}
+            suffix="%"
             disabled={!watermark}
-            onChange={(event) => setScale(Number(event.target.value))}
-            className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-background accent-accent disabled:cursor-not-allowed disabled:opacity-50"
+            onChange={setScale}
           />
         </div>
 
         <div className="mt-5 space-y-2">
-          <span className="font-label text-muted">Position</span>
+          <span className="font-label text-muted">{t("common.position")}</span>
           <div className="grid grid-cols-3 gap-1.5">
             {POSITIONS.map((item) => (
               <button
@@ -271,8 +239,8 @@ export function Watermark() {
           ) : (
             <p className="px-4 text-center text-sm text-muted">
               {source
-                ? "Add a watermark image to preview the result"
-                : "Upload a main image to begin"}
+                ? t("watermark.addWatermarkHint")
+                : t("watermark.uploadMainHint")}
             </p>
           )}
         </div>
@@ -300,7 +268,7 @@ export function Watermark() {
         <ToolOutputActions
           onDownload={handleDownloadImage}
           onCopy={handleCopyImage}
-          downloadLabel="Download Watermarked"
+          downloadLabel={t("downloads.downloadWatermarked")}
           disabled={!canDownload}
           isProcessing={isProcessing}
         />

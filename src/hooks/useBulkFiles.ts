@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { loadImageFromFile } from "@/hooks/useImageProcessor";
+import { resolveErrorMessage } from "@/i18n";
 
 export interface BulkFileItem {
   id: string;
@@ -14,6 +16,7 @@ export interface BulkFileItem {
 }
 
 export function useBulkFiles() {
+  const { t, language } = useLanguage();
   const [items, setItems] = useState<BulkFileItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +31,7 @@ export function useBulkFiles() {
     );
 
     if (files.length === 0) {
-      setError("Please select valid image files.");
+      setError(t("errors.invalidImageFiles"));
       return;
     }
 
@@ -53,13 +56,11 @@ export function useBulkFiles() {
 
       setItems((current) => [...current, ...parsed]);
     } catch (cause) {
-      const message =
-        cause instanceof Error ? cause.message : "Could not load one or more images.";
-      setError(message);
+      setError(resolveErrorMessage(language, cause, "errors.bulkLoadFailed"));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [language, t]);
 
   const removeFile = useCallback(
     (id: string) => {

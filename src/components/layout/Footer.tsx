@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { getToolTranslationKey } from "@/i18n";
 import { JOIN_MY_PDF_URL } from "@/lib/external-links";
 import { tools } from "@/lib/tools";
 
 export function Footer() {
+  const { t } = useLanguage();
   const year = new Date().getFullYear();
 
   return (
@@ -19,20 +24,21 @@ export function Footer() {
               </span>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-muted">
-              Privacy-first image utilities. All processing runs in your
-              browser — files never leave your device.
+              {t("footer.description")}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-1">
-            <span className="font-label col-span-full text-muted">Tools</span>
+            <span className="font-label col-span-full text-muted">
+              {t("footer.tools")}
+            </span>
             {tools.map((tool) => (
               <Link
                 key={tool.id}
                 href={tool.href}
                 className="font-mono text-xs text-muted transition-colors hover:text-foreground"
               >
-                {tool.name}
+                {t(getToolTranslationKey(tool.id, "name"))}
               </Link>
             ))}
           </div>
@@ -46,20 +52,18 @@ export function Footer() {
             className="group inline-flex max-w-md flex-col gap-1 rounded-sm border border-border bg-card px-4 py-3 transition-colors hover:border-muted hover:bg-card-hover"
           >
             <span className="font-label text-foreground">
-              Done editing? Combine these images into a PDF
+              {t("footer.joinMyPdfTitle")}
             </span>
             <span className="font-mono text-xs text-muted transition-colors group-hover:text-accent">
-              Open JoinMyPDF →
+              {t("footer.joinMyPdfLink")}
             </span>
           </a>
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="font-mono text-xs text-muted">
-              © {year} pix-8
+              {t("footer.copyright", { year })}
             </span>
-            <span className="font-label text-muted">
-              Zero uploads · Zero tracking
-            </span>
+            <span className="font-label text-muted">{t("footer.zeroUploads")}</span>
           </div>
         </div>
       </div>

@@ -1,6 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { SliderControl } from "@/components/ui/SliderControl";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
@@ -19,30 +23,20 @@ const inputClassName =
   "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
 
 const FONT_OPTIONS = [
-  { value: "Inter, system-ui, sans-serif", label: "Sans" },
-  { value: "Georgia, serif", label: "Serif" },
-  { value: '"Roboto Mono", ui-monospace, monospace', label: "Mono" },
-  { value: "Impact, Haettenschweiler, sans-serif", label: "Impact" },
-];
+  { value: "Inter, system-ui, sans-serif", labelKey: "sans" },
+  { value: "Georgia, serif", labelKey: "serif" },
+  { value: '"Roboto Mono", ui-monospace, monospace', labelKey: "mono" },
+  { value: "Impact, Haettenschweiler, sans-serif", labelKey: "impact" },
+] as const;
 
-const ALIGN_OPTIONS: { value: TextAlign; label: string }[] = [
-  { value: "left", label: "Left" },
-  { value: "center", label: "Center" },
-  { value: "right", label: "Right" },
+const ALIGN_OPTIONS: { value: TextAlign; labelKey: "left" | "center" | "right" }[] = [
+  { value: "left", labelKey: "left" },
+  { value: "center", labelKey: "center" },
+  { value: "right", labelKey: "right" },
 ];
-
-const DEFAULT_SETTINGS: Omit<TextOverlaySettings, "x" | "y"> = {
-  text: "Your quote here",
-  fontFamily: FONT_OPTIONS[0].value,
-  fontSizePercent: 6,
-  color: "#ffffff",
-  align: "center",
-  shadow: true,
-  backgroundBox: true,
-  backgroundOpacity: 0.45,
-};
 
 export function TextOverlay() {
+  const { t } = useLanguage();
   const {
     canvasRef,
     source,
@@ -56,14 +50,46 @@ export function TextOverlay() {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const isDraggingRef = useRef(false);
 
+  const defaultSettings = useMemo(
+    (): Omit<TextOverlaySettings, "x" | "y"> => ({
+      text: t("toolUi.textOverlay.defaultText"),
+      fontFamily: FONT_OPTIONS[0].value,
+      fontSizePercent: 6,
+      color: "#ffffff",
+      align: "center",
+      shadow: true,
+      backgroundBox: true,
+      backgroundOpacity: 0.45,
+    }),
+    [t],
+  );
+
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [stripMetadata, setStripMetadata] = useState(true);
   const [settings, setSettings] = useState<TextOverlaySettings>({
-    ...DEFAULT_SETTINGS,
+    ...defaultSettings,
     x: 0,
     y: 0,
   });
+
+  const fontOptions = useMemo(
+    () =>
+      FONT_OPTIONS.map((font) => ({
+        ...font,
+        label: t(`toolUi.textOverlay.${font.labelKey}`),
+      })),
+    [t],
+  );
+
+  const alignOptions = useMemo(
+    () =>
+      ALIGN_OPTIONS.map((option) => ({
+        ...option,
+        label: t(`toolUi.textOverlay.${option.labelKey}`),
+      })),
+    [t],
+  );
 
   const handleFileChange = useCallback(
     (file: File | null) => {
@@ -176,74 +202,27 @@ export function TextOverlay() {
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDraggingFile
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDraggingFile(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="text-overlay-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                Quotes · labels · social captions
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="text-overlay-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDraggingFile}
+            onDraggingChange={setIsDraggingFile}
+            formatHint={t("toolUi.textOverlay.uploadHint")}
+          />
         ) : (
-          <div className="space-y-2">
-            <label htmlFor="text-overlay-replace" className="font-label text-muted">
-              Replace Image
-            </label>
-            <input
-              id="text-overlay-replace"
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-              className={`${inputClassName} file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted`}
-            />
-          </div>
+          <ImageFileInput
+            id="text-overlay-replace"
+            fileName={source.file.name}
+            onFileChange={handleFileChange}
+          />
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <span className="font-label text-muted">Preview</span>
+              <span className="font-label text-muted">{t("common.preview")}</span>
               <span className="font-mono text-[10px] text-muted">
-                Drag to position text
+                {t("toolUi.textOverlay.dragToPosition")}
               </span>
             </div>
             <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
@@ -260,7 +239,7 @@ export function TextOverlay() {
                 />
               ) : (
                 <p className="px-4 text-center text-sm text-muted">
-                  Upload an image to add text overlay.
+                  {t("toolUi.textOverlay.previewHint")}
                 </p>
               )}
             </div>
@@ -274,7 +253,7 @@ export function TextOverlay() {
           <div className="space-y-4 border border-border bg-background p-4">
             <div className="space-y-2">
               <label htmlFor="text-overlay-content" className="font-label text-muted">
-                Text
+                {t("toolUi.textOverlay.text")}
               </label>
               <textarea
                 id="text-overlay-content"
@@ -283,13 +262,13 @@ export function TextOverlay() {
                 value={settings.text}
                 onChange={(event) => patchSettings({ text: event.target.value })}
                 className={`${inputClassName} min-h-24 resize-y py-2.5`}
-                placeholder="Enter quote or label…"
+                placeholder={t("toolUi.textOverlay.placeholder")}
               />
             </div>
 
             <div className="space-y-2">
               <label htmlFor="text-overlay-font" className="font-label text-muted">
-                Font
+                {t("toolUi.textOverlay.font")}
               </label>
               <select
                 id="text-overlay-font"
@@ -300,7 +279,7 @@ export function TextOverlay() {
                 }
                 className={inputClassName}
               >
-                {FONT_OPTIONS.map((font) => (
+                {fontOptions.map((font) => (
                   <option key={font.value} value={font.value}>
                     {font.label}
                   </option>
@@ -308,33 +287,21 @@ export function TextOverlay() {
               </select>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <label htmlFor="text-overlay-size" className="font-label text-muted">
-                  Size
-                </label>
-                <span className="font-mono text-[10px] text-foreground">
-                  {settings.fontSizePercent}%
-                </span>
-              </div>
-              <input
-                id="text-overlay-size"
-                type="range"
-                min={2}
-                max={14}
-                step={0.5}
-                disabled={!source}
-                value={settings.fontSizePercent}
-                onChange={(event) =>
-                  patchSettings({ fontSizePercent: Number(event.target.value) })
-                }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
-              />
-            </div>
+            <SliderControl
+              id="text-overlay-size"
+              label={t("common.size")}
+              value={settings.fontSizePercent}
+              min={2}
+              max={14}
+              step={0.5}
+              suffix="%"
+              disabled={!source}
+              onChange={(fontSizePercent) => patchSettings({ fontSizePercent })}
+            />
 
             <div className="space-y-2">
               <label htmlFor="text-overlay-color" className="font-label text-muted">
-                Color
+                {t("common.color")}
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -352,9 +319,11 @@ export function TextOverlay() {
             </div>
 
             <div className="space-y-2">
-              <span className="font-label text-muted">Alignment</span>
+              <span className="font-label text-muted">
+                {t("toolUi.textOverlay.alignment")}
+              </span>
               <div className="grid grid-cols-3 gap-1.5">
-                {ALIGN_OPTIONS.map((option) => (
+                {alignOptions.map((option) => (
                   <button
                     key={option.value}
                     type="button"
@@ -382,7 +351,9 @@ export function TextOverlay() {
                 }
                 className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
               />
-              <span className="font-label text-muted">Text shadow</span>
+              <span className="font-label text-muted">
+                {t("toolUi.textOverlay.textShadow")}
+              </span>
             </label>
 
             <label className="flex min-h-11 cursor-pointer items-center gap-3">
@@ -395,36 +366,25 @@ export function TextOverlay() {
                 }
                 className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
               />
-              <span className="font-label text-muted">Background box</span>
+              <span className="font-label text-muted">
+                {t("toolUi.textOverlay.backgroundBox")}
+              </span>
             </label>
 
             {settings.backgroundBox && (
               <div className="space-y-2">
-                <div className="flex items-center justify-between gap-2">
-                  <label
-                    htmlFor="text-overlay-bg-opacity"
-                    className="font-label text-muted"
-                  >
-                    Box opacity
-                  </label>
-                  <span className="font-mono text-[10px] text-foreground">
-                    {Math.round(settings.backgroundOpacity * 100)}%
-                  </span>
-                </div>
-                <input
+                <SliderControl
                   id="text-overlay-bg-opacity"
-                  type="range"
+                  label={t("toolUi.textOverlay.boxOpacity")}
+                  value={Math.round(settings.backgroundOpacity * 100)}
                   min={10}
                   max={90}
                   step={5}
+                  suffix="%"
                   disabled={!source}
-                  value={Math.round(settings.backgroundOpacity * 100)}
-                  onChange={(event) =>
-                    patchSettings({
-                      backgroundOpacity: Number(event.target.value) / 100,
-                    })
+                  onChange={(value) =>
+                    patchSettings({ backgroundOpacity: value / 100 })
                   }
-                  className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
                 />
               </div>
             )}
@@ -448,13 +408,13 @@ export function TextOverlay() {
         <ToolOutputActions
           onDownload={handleDownloadImage}
           onCopy={handleCopyImage}
-          downloadLabel="Download"
+          downloadLabel={t("downloads.download")}
           disabled={!canDownload}
           isProcessing={isProcessing}
         />
 
         <p className="mt-3 text-center font-mono text-[10px] text-muted">
-          Text is baked into the export locally — nothing is uploaded.
+          {t("toolUi.textOverlay.footer")}
         </p>
       </div>
 

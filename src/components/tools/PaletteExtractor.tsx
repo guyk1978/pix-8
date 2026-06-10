@@ -1,7 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import {
@@ -9,16 +13,20 @@ import {
   type PaletteColor,
 } from "@/lib/paletteExtraction";
 
-function loadImageElement(url: string): Promise<HTMLImageElement> {
+function loadImageElement(
+  url: string,
+  loadFailedMessage: string,
+): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("Failed to load image."));
+    image.onerror = () => reject(new Error(loadFailedMessage));
     image.src = url;
   });
 }
 
 export function PaletteExtractor() {
+  const { t, language } = useLanguage();
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -38,18 +46,16 @@ export function PaletteExtractor() {
     setIsExtracting(true);
     setError(null);
 
-    void loadImageElement(source.url)
+    void loadImageElement(source.url, t("toolUi.paletteExtractor.loadFailed"))
       .then((image) => {
         if (cancelled) return;
         setPalette(extractDominantColors(image));
       })
       .catch((cause) => {
         if (cancelled) return;
-        const message =
-          cause instanceof Error
-            ? cause.message
-            : "Could not extract palette.";
-        setError(message);
+        setError(
+          resolveErrorMessage(language, cause, "toolUi.paletteExtractor.extractFailed"),
+        );
         setPalette([]);
       })
       .finally(() => {
@@ -59,7 +65,7 @@ export function PaletteExtractor() {
     return () => {
       cancelled = true;
     };
-  }, [source, setError]);
+  }, [source, setError, t]);
 
   const handleFileChange = useCallback(
     (file: File | null) => {
@@ -73,89 +79,39 @@ export function PaletteExtractor() {
       try {
         await navigator.clipboard.writeText(hex);
         setCopiedHex(hex);
-        showToast(hex, { title: "Copied!" });
+        showToast(hex, { title: t("common.copied") });
         window.setTimeout(() => setCopiedHex(null), 1500);
       } catch {
-        setError("Could not copy to clipboard.");
+        setError(t("toast.couldNotCopy"));
       }
     },
-    [showToast, setError],
+    [showToast, setError, t],
   );
 
   return (
     <div className="mx-auto w-full max-w-xl">
       <div className="rounded-sm border border-border bg-card p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDragging
-                ? "border-muted bg-surface"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDragging(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDragging(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="palette-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                PNG · JPEG · WebP
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="palette-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDragging}
+            onDraggingChange={setIsDragging}
+            formatHint={t("upload.formatsHint")}
+          />
         ) : (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label
-                htmlFor="palette-replace"
-                className="font-label text-muted"
-              >
-                Replace Image
-              </label>
-              <input
-                id="palette-replace"
-                type="file"
-                accept="image/*"
-                onChange={(event) => {
-                  handleFileChange(event.target.files?.[0] ?? null);
-                  event.target.value = "";
-                }}
-                className="w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
-              />
-            </div>
+            <ImageFileInput
+              id="palette-replace"
+              fileName={source.file.name}
+              onFileChange={handleFileChange}
+            />
 
             <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={source.url}
-                alt="Source preview"
+                alt={t("alt.sourcePreview")}
                 className="max-h-48 max-w-full object-contain"
               />
             </div>
@@ -164,10 +120,16 @@ export function PaletteExtractor() {
 
         <section className="mt-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-label text-foreground">Extracted Palette</h2>
+            <h2 className="font-label text-foreground">
+              {t("toolUi.paletteExtractor.extractedPalette")}
+            </h2>
             {source && (
               <span className="font-mono text-xs text-muted">
-                {isExtracting ? "Analyzing…" : `${palette.length} colors`}
+                {isExtracting
+                  ? t("toolUi.paletteExtractor.analyzing")
+                  : t("toolUi.paletteExtractor.colorCount", {
+                      count: palette.length,
+                    })}
               </span>
             )}
           </div>
@@ -175,20 +137,22 @@ export function PaletteExtractor() {
           {!source ? (
             <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
-                Upload an image to extract dominant colors.
+                {t("toolUi.paletteExtractor.uploadHint")}
               </p>
             </div>
           ) : isExtracting ? (
             <div className="flex min-h-28 items-center justify-center rounded-sm border border-border bg-background p-6">
               <div className="flex items-center gap-3">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-foreground" />
-                <p className="font-label text-muted">Extracting colors…</p>
+                <p className="font-label text-muted">
+                  {t("toolUi.paletteExtractor.extracting")}
+                </p>
               </div>
             </div>
           ) : palette.length === 0 ? (
             <div className="flex min-h-28 items-center justify-center rounded-sm border border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
-                No colors could be extracted from this image.
+                {t("toolUi.paletteExtractor.noColors")}
               </p>
             </div>
           ) : (
@@ -199,7 +163,9 @@ export function PaletteExtractor() {
                   type="button"
                   onClick={() => void handleCopyHex(color.hex)}
                   className="group flex flex-col items-center gap-2 rounded-sm border border-transparent p-1 transition-colors hover:border-border focus-visible:border-muted focus-visible:outline-none"
-                  aria-label={`Copy ${color.hex} to clipboard`}
+                  aria-label={t("toolUi.paletteExtractor.copyHex", {
+                    hex: color.hex,
+                  })}
                 >
                   <span
                     className="h-14 w-full rounded-md border border-border shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)] transition-transform group-hover:scale-[1.03] sm:h-16"
@@ -212,7 +178,7 @@ export function PaletteExtractor() {
                         : "text-muted group-hover:text-foreground"
                     }`}
                   >
-                    {copiedHex === color.hex ? "Copied!" : color.hex}
+                    {copiedHex === color.hex ? t("common.copied") : color.hex}
                   </span>
                 </button>
               ))}
@@ -234,8 +200,7 @@ export function PaletteExtractor() {
           />
           {stripMetadata && source && (
             <p className="mt-2 font-mono text-[10px] text-muted">
-              Privacy Mode active — source metadata stays local and is never
-              transmitted.
+              {t("privacy.privacyModeActive")}
             </p>
           )}
         </div>

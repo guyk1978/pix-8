@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
@@ -16,6 +18,7 @@ const buttonClassName =
   "min-h-10 rounded-sm border border-border bg-background px-3 py-2 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
 
 export function RotateFlip() {
+  const { t } = useLanguage();
   const {
     canvasRef,
     source,
@@ -110,47 +113,12 @@ export function RotateFlip() {
     <div className="mx-auto w-full max-w-xl">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDragging
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDragging(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDragging(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="rotate-flip-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="rotate-flip-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDragging}
+            onDraggingChange={setIsDragging}
+          />
         ) : (
           <>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -159,14 +127,14 @@ export function RotateFlip() {
                 onClick={rotateClockwise}
                 className={buttonClassName}
               >
-                Rotate 90° CW
+                {t("toolUi.rotateFlip.rotateCw")}
               </button>
               <button
                 type="button"
                 onClick={rotateCounterClockwise}
                 className={buttonClassName}
               >
-                Rotate 90° CCW
+                {t("toolUi.rotateFlip.rotateCcw")}
               </button>
               <button
                 type="button"
@@ -175,7 +143,7 @@ export function RotateFlip() {
                   flipHorizontal ? "border-accent/40 bg-accent-muted text-accent" : ""
                 }`}
               >
-                Flip Horizontal
+                {t("toolUi.rotateFlip.flipHorizontal")}
               </button>
               <button
                 type="button"
@@ -184,7 +152,7 @@ export function RotateFlip() {
                   flipVertical ? "border-accent/40 bg-accent-muted text-accent" : ""
                 }`}
               >
-                Flip Vertical
+                {t("toolUi.rotateFlip.flipVertical")}
               </button>
             </div>
 
@@ -192,7 +160,7 @@ export function RotateFlip() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={source.url}
-                alt="Transform preview"
+                alt={t("alt.transformPreview")}
                 draggable={false}
                 className="max-h-[min(50vh,420px)] max-w-full select-none object-contain transition-transform duration-200"
                 style={{
@@ -228,7 +196,7 @@ export function RotateFlip() {
         <ToolOutputActions
           onDownload={handleDownloadImage}
           onCopy={handleCopyImage}
-          downloadLabel="Download Transformed"
+          downloadLabel={t("downloads.downloadTransformed")}
           disabled={!canDownload}
           isProcessing={isProcessing}
         />

@@ -1,29 +1,38 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { SliderControl } from "@/components/ui/SliderControl";
 import {
   DEFAULT_LIGHT_ADJUST_SETTINGS,
   renderLightAdjustedCanvas,
   type LightAdjustSettings,
 } from "@/lib/lightAdjustRender";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   buildDownloadFilename,
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 
-const inputClassName =
-  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
+const PRESET_KEYS = ["balanced", "brighten", "punch"] as const;
 
-const PRESETS: { label: string; settings: LightAdjustSettings }[] = [
-  { label: "Balanced", settings: { brightness: 0, contrast: 100 } },
-  { label: "Brighten", settings: { brightness: 18, contrast: 105 } },
-  { label: "Punch", settings: { brightness: 5, contrast: 125 } },
-];
+const PRESET_SETTINGS: Record<
+  (typeof PRESET_KEYS)[number],
+  LightAdjustSettings
+> = {
+  balanced: { brightness: 0, contrast: 100 },
+  brighten: { brightness: 18, contrast: 105 },
+  punch: { brightness: 5, contrast: 125 },
+};
 
 export function LightAdjuster() {
+  const { t, language } = useLanguage();
   const {
     canvasRef,
     source,
@@ -43,6 +52,21 @@ export function LightAdjuster() {
   const [settings, setSettings] = useState<LightAdjustSettings>(
     DEFAULT_LIGHT_ADJUST_SETTINGS,
   );
+  const debouncedSettings = useDebouncedValue(settings, 150);
+
+  const presets = useMemo(
+    () =>
+      PRESET_KEYS.map((key) => ({
+        key,
+        label: t(`toolUi.lightAdjuster.${key}`),
+        settings: PRESET_SETTINGS[key],
+      })),
+    [t],
+  );
+
+  const patchSettings = useCallback((patch: Partial<LightAdjustSettings>) => {
+    setSettings((current) => ({ ...current, ...patch }));
+  }, []);
 
   const handleFileChange = useCallback(
     (file: File | null) => {
@@ -71,13 +95,13 @@ export function LightAdjuster() {
             image,
             source.width,
             source.height,
-            settings,
+            debouncedSettings,
             previewCanvasRef.current,
           );
         } catch (cause) {
-          const message =
-            cause instanceof Error ? cause.message : "Adjustment failed.";
-          setError(message);
+          setError(
+            resolveErrorMessage(language, cause, "toolUi.lightAdjuster.adjustmentFailed"),
+          );
         } finally {
           if (!cancelled) setIsAdjusting(false);
         }
@@ -85,7 +109,7 @@ export function LightAdjuster() {
 
       image.onerror = () => {
         if (!cancelled) {
-          setError("Failed to load image.");
+          setError(t("toolUi.lightAdjuster.loadFailed"));
           setIsAdjusting(false);
         }
       };
@@ -97,7 +121,7 @@ export function LightAdjuster() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [source, settings, setError]);
+  }, [source, debouncedSettings, setError, t]);
 
   const handleDownloadImage = useCallback(async () => {
     if (!source || !previewCanvasRef.current) return;
@@ -127,82 +151,37 @@ export function LightAdjuster() {
     });
   }, [source, stripMetadata, handleCopyToClipboard]);
 
-  const patchSettings = useCallback((patch: Partial<LightAdjustSettings>) => {
-    setSettings((current) => ({ ...current, ...patch }));
-  }, []);
-
   const busy = isProcessing || isAdjusting;
-  const canDownload = !!source && !busy;
+  const isUpdatingPreview =
+    settings.brightness !== debouncedSettings.brightness ||
+    settings.contrast !== debouncedSettings.contrast;
+  const canDownload = !!source && !busy && !isUpdatingPreview;
+
+  const brightnessLabel =
+    settings.brightness > 0 ? `+${settings.brightness}` : String(settings.brightness);
 
   return (
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDraggingFile
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDraggingFile(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="light-adjuster-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                Brightness · contrast · exposure fix
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="light-adjuster-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDraggingFile}
+            onDraggingChange={setIsDraggingFile}
+            formatHint={t("toolUi.lightAdjuster.uploadHint")}
+          />
         ) : (
-          <div className="space-y-2">
-            <label htmlFor="light-adjuster-replace" className="font-label text-muted">
-              Replace Image
-            </label>
-            <input
-              id="light-adjuster-replace"
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-              className={`${inputClassName} file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted`}
-            />
-          </div>
+          <ImageFileInput
+            id="light-adjuster-replace"
+            fileName={source.file.name}
+            onFileChange={handleFileChange}
+          />
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="space-y-3">
-            <span className="font-label text-muted">Preview</span>
+            <span className="font-label text-muted">{t("common.preview")}</span>
             <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
               {source ? (
                 <canvas
@@ -211,7 +190,7 @@ export function LightAdjuster() {
                 />
               ) : (
                 <p className="px-4 text-center text-sm text-muted">
-                  Upload an image to adjust brightness and contrast.
+                  {t("toolUi.lightAdjuster.previewHint")}
                 </p>
               )}
             </div>
@@ -219,19 +198,22 @@ export function LightAdjuster() {
               <p className="text-center font-mono text-[10px] text-muted">
                 {source.width} × {source.height}px ·{" "}
                 {isAdjusting
-                  ? "Applying…"
-                  : `brightness ${settings.brightness > 0 ? "+" : ""}${settings.brightness} · contrast ${settings.contrast}%`}
+                  ? t("toolUi.lightAdjuster.applying")
+                  : t("toolUi.lightAdjuster.values", {
+                      brightness: brightnessLabel,
+                      contrast: settings.contrast,
+                    })}
               </p>
             )}
           </div>
 
           <div className="space-y-4 border border-border bg-background p-4">
             <div className="space-y-2">
-              <span className="font-label text-muted">Presets</span>
+              <span className="font-label text-muted">{t("common.presets")}</span>
               <div className="grid grid-cols-3 gap-1.5">
-                {PRESETS.map((preset) => (
+                {presets.map((preset) => (
                   <button
-                    key={preset.label}
+                    key={preset.key}
                     type="button"
                     disabled={!source}
                     onClick={() => setSettings(preset.settings)}
@@ -243,54 +225,29 @@ export function LightAdjuster() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <label htmlFor="light-brightness" className="font-label text-muted">
-                  Brightness
-                </label>
-                <span className="font-mono text-[10px] text-foreground">
-                  {settings.brightness > 0 ? "+" : ""}
-                  {settings.brightness}
-                </span>
-              </div>
-              <input
-                id="light-brightness"
-                type="range"
-                min={-50}
-                max={50}
-                step={1}
-                disabled={!source || isAdjusting}
-                value={settings.brightness}
-                onChange={(event) =>
-                  patchSettings({ brightness: Number(event.target.value) })
-                }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
-              />
-            </div>
+            <SliderControl
+              id="light-brightness"
+              label={t("common.brightness")}
+              value={settings.brightness}
+              min={-50}
+              max={50}
+              step={1}
+              suffix=""
+              disabled={!source}
+              onChange={(brightness) => patchSettings({ brightness })}
+            />
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <label htmlFor="light-contrast" className="font-label text-muted">
-                  Contrast
-                </label>
-                <span className="font-mono text-[10px] text-foreground">
-                  {settings.contrast}%
-                </span>
-              </div>
-              <input
-                id="light-contrast"
-                type="range"
-                min={50}
-                max={150}
-                step={1}
-                disabled={!source || isAdjusting}
-                value={settings.contrast}
-                onChange={(event) =>
-                  patchSettings({ contrast: Number(event.target.value) })
-                }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
-              />
-            </div>
+            <SliderControl
+              id="light-contrast"
+              label={t("common.contrast")}
+              value={settings.contrast}
+              min={50}
+              max={150}
+              step={1}
+              suffix="%"
+              disabled={!source}
+              onChange={(contrast) => patchSettings({ contrast })}
+            />
 
             <button
               type="button"
@@ -298,7 +255,7 @@ export function LightAdjuster() {
               onClick={() => setSettings(DEFAULT_LIGHT_ADJUST_SETTINGS)}
               className="min-h-9 w-full rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
             >
-              Reset
+              {t("common.reset")}
             </button>
           </div>
         </div>
@@ -320,13 +277,13 @@ export function LightAdjuster() {
         <ToolOutputActions
           onDownload={handleDownloadImage}
           onCopy={handleCopyImage}
-          downloadLabel="Download"
+          downloadLabel={t("downloads.download")}
           disabled={!canDownload}
           isProcessing={busy}
         />
 
         <p className="mt-3 text-center font-mono text-[10px] text-muted">
-          Adjustments run locally — your image never leaves the browser.
+          {t("toolUi.lightAdjuster.footer")}
         </p>
       </div>
 

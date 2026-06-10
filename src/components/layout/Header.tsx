@@ -1,6 +1,8 @@
 "use client";
 
 import { ShareButton } from "@/components/ShareButton";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const GITHUB_REPO_URL = "https://github.com/guyk1978/pix-8";
@@ -10,6 +12,8 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuToggle }: HeaderProps) {
+  const { t } = useLanguage();
+
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-border bg-header/95 px-4 backdrop-blur-sm sm:px-6">
       <div className="flex items-center gap-3">
@@ -17,7 +21,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
           type="button"
           onClick={onMenuToggle}
           className="flex h-9 w-9 items-center justify-center rounded-sm border border-border text-muted transition-colors hover:border-muted hover:text-foreground lg:hidden"
-          aria-label="Toggle navigation"
+          aria-label={t("header.toggleNav")}
         >
           <svg
             viewBox="0 0 24 24"
@@ -32,23 +36,22 @@ export function Header({ onMenuToggle }: HeaderProps) {
         </button>
 
         <div className="hidden sm:block">
-          <p className="font-label text-muted">Platform</p>
-          <p className="font-mono text-xs text-foreground">
-            Client-side image utilities
-          </p>
+          <p className="font-label text-muted">{t("header.platform")}</p>
+          <p className="font-mono text-xs text-foreground">{t("header.tagline")}</p>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
+        <LanguageSwitcher />
         <ShareButton />
         <ThemeToggle />
 
         <span
           className="hidden items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 sm:flex"
-          title="All processing runs in your browser — files never upload to a server"
+          title={t("header.localOnlyTitle")}
         >
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-foreground" />
-          <span className="font-label text-muted">Local only</span>
+          <span className="font-label text-muted">{t("header.localOnly")}</span>
         </span>
 
         <a
@@ -56,8 +59,8 @@ export function Header({ onMenuToggle }: HeaderProps) {
           target="_blank"
           rel="noopener noreferrer"
           className="flex h-9 w-9 items-center justify-center rounded-sm border border-border text-muted transition-colors hover:border-muted hover:text-foreground"
-          aria-label="View source code on GitHub"
-          title="GitHub repository"
+          aria-label={t("header.github")}
+          title={t("header.githubTitle")}
         >
           <svg
             viewBox="0 0 24 24"

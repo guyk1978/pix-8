@@ -1,6 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { renderInvertedCanvas } from "@/lib/invertRender";
@@ -10,10 +13,8 @@ import {
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 
-const inputClassName =
-  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
-
 export function ImageInverter() {
+  const { t } = useLanguage();
   const {
     canvasRef,
     source,
@@ -91,74 +92,29 @@ export function ImageInverter() {
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDraggingFile
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDraggingFile(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="image-inverter-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                Negative effect · color swap · masks
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="image-inverter-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDraggingFile}
+            onDraggingChange={setIsDraggingFile}
+            formatHint={t("toolUi.imageInverter.uploadHint")}
+          />
         ) : (
-          <div className="space-y-2">
-            <label htmlFor="image-inverter-replace" className="font-label text-muted">
-              Replace Image
-            </label>
-            <input
-              id="image-inverter-replace"
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-              className={`${inputClassName} file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted`}
-            />
-          </div>
+          <ImageFileInput
+            id="image-inverter-replace"
+            fileName={source.file.name}
+            onFileChange={handleFileChange}
+          />
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <span className="font-label text-muted">Preview</span>
+              <span className="font-label text-muted">{t("common.preview")}</span>
               <span className="font-mono text-[10px] text-muted">
-                {inverted ? "Inverted" : "Original"}
+                {inverted
+                  ? t("toolUi.imageInverter.inverted")
+                  : t("common.original")}
               </span>
             </div>
             <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
@@ -169,7 +125,7 @@ export function ImageInverter() {
                 />
               ) : (
                 <p className="px-4 text-center text-sm text-muted">
-                  Upload an image to preview the inverted result.
+                  {t("toolUi.imageInverter.previewHint")}
                 </p>
               )}
             </div>
@@ -189,11 +145,12 @@ export function ImageInverter() {
                 onChange={(event) => setInverted(event.target.checked)}
                 className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
               />
-              <span className="font-label text-muted">Invert colors</span>
+              <span className="font-label text-muted">
+                {t("toolUi.imageInverter.invertColors")}
+              </span>
             </label>
             <p className="font-mono text-[10px] leading-relaxed text-muted">
-              Swaps each RGB channel to its complement (255 − value). Alpha is
-              preserved.
+              {t("toolUi.imageInverter.invertHint")}
             </p>
           </div>
         </div>
@@ -215,13 +172,13 @@ export function ImageInverter() {
         <ToolOutputActions
           onDownload={handleDownloadImage}
           onCopy={handleCopyImage}
-          downloadLabel="Download"
+          downloadLabel={t("downloads.download")}
           disabled={!canDownload}
           isProcessing={isProcessing}
         />
 
         <p className="mt-3 text-center font-mono text-[10px] text-muted">
-          Inversion runs locally — your image never leaves the browser.
+          {t("toolUi.imageInverter.footer")}
         </p>
       </div>
 

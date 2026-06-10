@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import type { BulkFileItem } from "@/hooks/useBulkFiles";
 
 interface BulkFileQueueProps {
@@ -15,20 +16,25 @@ function formatFileSize(bytes: number): string {
 }
 
 export function BulkFileQueue({ items, onRemove, onClear }: BulkFileQueueProps) {
+  const { t } = useLanguage();
+
   if (items.length === 0) return null;
+
+  const queueLabel =
+    items.length === 1
+      ? t("bulk.imagesQueuedOne")
+      : t("bulk.imagesQueued", { count: items.length });
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="font-label text-muted">
-          {items.length} image{items.length === 1 ? "" : "s"} queued
-        </p>
+        <p className="font-label text-muted">{queueLabel}</p>
         <button
           type="button"
           onClick={onClear}
           className="font-mono text-[10px] text-muted transition-colors hover:text-foreground"
         >
-          Clear all
+          {t("bulk.clearAll")}
         </button>
       </div>
 
@@ -56,9 +62,9 @@ export function BulkFileQueue({ items, onRemove, onClear }: BulkFileQueueProps) 
               type="button"
               onClick={() => onRemove(item.id)}
               className="shrink-0 font-mono text-[10px] text-muted transition-colors hover:text-foreground"
-              aria-label={`Remove ${item.file.name}`}
+              aria-label={t("bulk.removeFile", { filename: item.file.name })}
             >
-              Remove
+              {t("bulk.remove")}
             </button>
           </li>
         ))}

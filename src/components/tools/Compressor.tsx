@@ -1,11 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
 import { BulkFileQueue } from "@/components/tools/BulkFileQueue";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import {
   ProcessingModeToggle,
   type ProcessingMode,
 } from "@/components/tools/ProcessingModeToggle";
+import { SliderControl } from "@/components/ui/SliderControl";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
@@ -30,6 +34,7 @@ function getCompressionFormat(sourceMime: string): ImageFormat {
 }
 
 export function Compressor() {
+  const { t, language } = useLanguage();
   const {
     canvasRef,
     source,
@@ -205,9 +210,7 @@ export function Compressor() {
 
       await downloadZipArchive(entries, "pix-8-compressed-images.zip");
     } catch (cause) {
-      const message =
-        cause instanceof Error ? cause.message : "Batch compression failed.";
-      setError(message);
+      setError(resolveErrorMessage(language, cause, "errors.batchCompressFailed"));
     } finally {
       setIsBatchProcessing(false);
     }
@@ -229,106 +232,40 @@ export function Compressor() {
         <ProcessingModeToggle mode={mode} onChange={handleModeChange} />
 
         {mode === "single" ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDragging
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDragging(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDragging(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
+          <ImageUploadDropzone
+            inputId="compressor-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDragging}
+            onDraggingChange={setIsDragging}
+            formatHint={t("upload.formatsHint")}
           >
-            <input
-              id="compressor-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
             {source ? (
               <div className="pointer-events-none flex w-full flex-col items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={source.url}
-                  alt="Preview"
+                  alt={t("alt.preview")}
                   className="max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
                 />
                 <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
                   {source.width} × {source.height}px · {source.file.name}
                 </p>
               </div>
-            ) : (
-              <div className="pointer-events-none px-2 text-center">
-                <p className="font-label text-muted">Upload</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
-                  Drop an image here or tap to browse
-                </p>
-                <p className="mt-1 font-mono text-[10px] text-muted">
-                  PNG · JPEG · WebP
-                </p>
-              </div>
-            )}
-          </div>
+            ) : undefined}
+          </ImageUploadDropzone>
         ) : (
           <div className="space-y-4">
-            <div
-              className={`relative flex min-h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-sm border border-dashed p-5 transition-colors ${
-                isDragging
-                  ? "border-accent bg-accent-muted"
-                  : "border-border bg-background hover:border-muted"
-              }`}
-              onDragEnter={(event) => {
-                event.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={(event) => {
-                event.preventDefault();
-                if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                  setIsDragging(false);
-                }
-              }}
-              onDragOver={(event) => event.preventDefault()}
-              onDrop={(event) => {
-                event.preventDefault();
-                setIsDragging(false);
-                void bulk.addFiles(event.dataTransfer.files);
-              }}
-            >
-              <input
-                id="compressor-batch-upload"
-                type="file"
-                accept="image/*"
-                multiple
-                aria-label="Upload images"
-                className="absolute inset-0 cursor-pointer opacity-0"
-                onChange={(event) => {
-                  if (event.target.files) void bulk.addFiles(event.target.files);
-                  event.target.value = "";
-                }}
-              />
-              <p className="font-label text-muted">Add images to batch</p>
-              <p className="text-center text-sm text-muted">
-                Drop multiple files or tap to browse
-              </p>
-            </div>
+            <ImageUploadDropzone
+              inputId="compressor-batch-upload"
+              multiple
+              onFileChange={() => {}}
+              onFilesChange={(files) => void bulk.addFiles(files)}
+              isDragging={isDragging}
+              onDraggingChange={setIsDragging}
+              title={t("upload.addToBatch")}
+              hint={t("upload.dropMultipleHint")}
+              className="min-h-32 sm:min-h-32"
+            />
 
             <BulkFileQueue
               items={bulk.items}
@@ -339,28 +276,20 @@ export function Compressor() {
         )}
 
         <div className="mt-5 space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <label htmlFor="compressor-quality" className="font-label text-muted">
-              Quality
-            </label>
-            <span className="font-mono text-sm tabular-nums text-foreground">
-              {quality}%
-            </span>
-          </div>
-          <input
+          <SliderControl
             id="compressor-quality"
-            type="range"
+            label={t("common.quality")}
+            value={quality}
             min={0}
             max={100}
             step={1}
-            value={quality}
+            suffix="%"
             disabled={mode === "single" ? !source : bulk.items.length === 0}
-            onChange={(event) => setQuality(Number(event.target.value))}
-            className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-background accent-accent disabled:cursor-not-allowed disabled:opacity-50"
+            onChange={setQuality}
           />
           <div className="flex justify-between font-mono text-[10px] text-muted">
-            <span>Smaller file</span>
-            <span>Higher quality</span>
+            <span>{t("toolUi.compressor.smallerFile")}</span>
+            <span>{t("toolUi.compressor.higherQuality")}</span>
           </div>
         </div>
 
@@ -375,16 +304,20 @@ export function Compressor() {
         {source && mode === "single" && (
           <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border pt-5">
             <div className="space-y-1">
-              <p className="font-label text-muted">Original Size</p>
+              <p className="font-label text-muted">
+                {t("toolUi.compressor.originalSize")}
+              </p>
               <p className="font-mono text-sm text-foreground">
                 {formatFileSize(originalSize)}
               </p>
             </div>
             <div className="space-y-1">
-              <p className="font-label text-muted">Estimated Size</p>
+              <p className="font-label text-muted">
+                {t("toolUi.compressor.estimatedSize")}
+              </p>
               <p className="font-mono text-sm text-foreground">
                 {isEstimating
-                  ? "Calculating…"
+                  ? t("toolUi.compressor.calculating")
                   : estimatedSize !== null
                     ? formatFileSize(estimatedSize)
                     : "—"}
@@ -395,7 +328,7 @@ export function Compressor() {
 
         {source && savings !== null && !isEstimating && mode === "single" && (
           <p className="mt-3 font-mono text-xs text-accent">
-            ~{savings}% reduction
+            {t("toolUi.compressor.reduction", { percent: savings })}
           </p>
         )}
 
@@ -409,7 +342,7 @@ export function Compressor() {
           <ToolOutputActions
             onDownload={handleCompressDownload}
             onCopy={handleCompressCopy}
-            downloadLabel="Download Optimized"
+            downloadLabel={t("downloads.downloadOptimized")}
             disabled={!canCompress}
             isProcessing={busy}
           />
@@ -420,7 +353,7 @@ export function Compressor() {
             onClick={() => void handleBatchDownload()}
             className="mt-5 min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {busy ? "Processing…" : "Compress All & Download ZIP"}
+            {busy ? t("common.processing") : t("downloads.compressAllZip")}
           </button>
         )}
       </div>

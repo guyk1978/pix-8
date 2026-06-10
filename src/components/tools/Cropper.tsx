@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
@@ -12,13 +14,12 @@ import {
 
 type AspectPreset = "free" | "1:1" | "16:9" | "4:3";
 
-const ASPECT_PRESETS: { id: AspectPreset; label: string; ratio: number | null }[] =
-  [
-    { id: "free", label: "Free", ratio: null },
-    { id: "1:1", label: "1:1", ratio: 1 },
-    { id: "16:9", label: "16:9", ratio: 16 / 9 },
-    { id: "4:3", label: "4:3", ratio: 4 / 3 },
-  ];
+const ASPECT_PRESETS: { id: AspectPreset; ratio: number | null }[] = [
+  { id: "free", ratio: null },
+  { id: "1:1", ratio: 1 },
+  { id: "16:9", ratio: 16 / 9 },
+  { id: "4:3", ratio: 4 / 3 },
+];
 
 const buttonClassName =
   "min-h-9 rounded-sm border border-border px-3 py-1.5 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
@@ -120,6 +121,7 @@ function clampCrop(
 type DragMode = "move" | "resize-se" | "resize-sw" | "resize-ne" | "resize-nw";
 
 export function Cropper() {
+  const { t } = useLanguage();
   const {
     canvasRef,
     source,
@@ -331,47 +333,12 @@ export function Cropper() {
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDraggingFile
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDraggingFile(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="cropper-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="cropper-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDraggingFile}
+            onDraggingChange={setIsDraggingFile}
+          />
         ) : (
           <div className="space-y-4 rounded-sm border border-border bg-background p-2 sm:p-3">
             <div className="flex justify-center">
@@ -380,7 +347,7 @@ export function Cropper() {
                 <img
                   ref={imageRef}
                   src={source.url}
-                  alt="Crop preview"
+                  alt={t("alt.cropPreview")}
                   draggable={false}
                   onLoad={updateDisplaySize}
                   className="block h-auto max-h-[min(60vh,480px)] w-auto max-w-full select-none"
@@ -441,12 +408,11 @@ export function Cropper() {
 
             <p className="text-center font-mono text-xs text-muted">
               {source.width} × {source.height}px
-              {crop && (
-                <>
-                  {" "}
-                  · Crop {crop.width} × {crop.height}px
-                </>
-              )}
+              {crop &&
+                t("toolUi.cropper.cropStatus", {
+                  width: crop.width,
+                  height: crop.height,
+                })}
             </p>
           </div>
         )}
@@ -462,7 +428,7 @@ export function Cropper() {
                 aspectPreset === preset.id ? activeButtonClassName : "bg-background"
               }`}
             >
-              {preset.label}
+              {preset.id === "free" ? t("toolUi.cropper.free") : preset.id}
             </button>
           ))}
         </div>
@@ -484,7 +450,7 @@ export function Cropper() {
         <ToolOutputActions
           onDownload={handleCropDownload}
           onCopy={handleCropCopy}
-          downloadLabel="Crop & Download"
+          downloadLabel={t("downloads.cropAndDownload")}
           disabled={!canCrop}
           isProcessing={isProcessing}
         />

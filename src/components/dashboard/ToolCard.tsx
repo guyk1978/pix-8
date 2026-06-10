@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { ToolIcon } from "@/components/dashboard/ToolIcon";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { getToolTranslationKey } from "@/i18n";
 import type { Tool } from "@/lib/tools";
 
 interface ToolCardProps {
@@ -8,6 +12,8 @@ interface ToolCardProps {
 }
 
 export function ToolCard({ tool, index }: ToolCardProps) {
+  const { t } = useLanguage();
+
   return (
     <Link
       href={tool.href}
@@ -24,11 +30,11 @@ export function ToolCard({ tool, index }: ToolCardProps) {
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
             <h3 className="text-sm font-medium leading-none tracking-tight text-foreground">
-              {tool.name}
+              {t(getToolTranslationKey(tool.id, "name"))}
             </h3>
             {tool.status === "ready" && (
               <span className="border border-border bg-background px-1.5 py-0.5 font-label text-muted">
-                Ready
+                {t("common.ready")}
               </span>
             )}
           </div>
@@ -38,13 +44,13 @@ export function ToolCard({ tool, index }: ToolCardProps) {
         </div>
 
         <p className="line-clamp-2 text-xs leading-relaxed text-muted">
-          {tool.description}
+          {t(getToolTranslationKey(tool.id, "description"))}
         </p>
 
         <div className="mt-auto flex items-center justify-between pt-1">
           <span className="font-label text-muted">{tool.tag}</span>
           <span className="font-label text-muted opacity-0 transition-opacity group-hover:opacity-100">
-            Open →
+            {t("common.open")}
           </span>
         </div>
       </div>

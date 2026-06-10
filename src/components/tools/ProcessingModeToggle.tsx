@@ -1,5 +1,7 @@
 "use client";
 
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 export type ProcessingMode = "single" | "batch";
 
 interface ProcessingModeToggleProps {
@@ -14,6 +16,8 @@ export function ProcessingModeToggle({
   mode,
   onChange,
 }: ProcessingModeToggleProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="mb-5 flex gap-2 border border-border bg-background p-1">
       <button
@@ -25,7 +29,7 @@ export function ProcessingModeToggle({
             : "border-transparent text-muted hover:text-foreground"
         }`}
       >
-        Single Image
+        {t("processingMode.single")}
       </button>
       <button
         type="button"
@@ -36,7 +40,7 @@ export function ProcessingModeToggle({
             : "border-transparent text-muted hover:text-foreground"
         }`}
       >
-        Batch (ZIP)
+        {t("processingMode.batch")}
       </button>
     </div>
   );

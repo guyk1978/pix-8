@@ -99,3 +99,58 @@ body {
 @utility animate-toast-in {
   animation: toast-in 0.2s ease-out forwards;
 }
+
+input[type="range"].slider-control {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 1.25rem;
+  background: transparent;
+  cursor: pointer;
+  touch-action: none;
+}
+
+input[type="range"].slider-control:disabled {
+  cursor: not-allowed;
+}
+
+input[type="range"].slider-control::-webkit-slider-runnable-track {
+  height: 0.5rem;
+  border-radius: 2px;
+  background: var(--track);
+}
+
+input[type="range"].slider-control::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  margin-top: -0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--foreground);
+  cursor: grab;
+}
+
+input[type="range"].slider-control:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+
+input[type="range"].slider-control::-moz-range-track {
+  height: 0.5rem;
+  border: none;
+  border-radius: 2px;
+  background: var(--track);
+}
+
+input[type="range"].slider-control::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--foreground);
+  cursor: grab;
+}
+
+input[type="range"].slider-control:active::-moz-range-thumb {
+  cursor: grabbing;
+}

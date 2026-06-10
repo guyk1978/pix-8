@@ -23,7 +23,7 @@ import { Resizer } from "@/components/tools/Resizer";
 import { RotateFlip } from "@/components/tools/RotateFlip";
 import { Watermark } from "@/components/tools/Watermark";
 import { ToolShell } from "@/components/tools/ToolShell";
-import { getArticlesByToolId } from "@/lib/blog";
+import { getArticleBundlesByToolId } from "@/lib/blog";
 import { getToolById, tools, type ToolId } from "@/lib/tools";
 import type { ComponentType } from "react";
 
@@ -82,10 +82,15 @@ export default async function ToolPage({ params }: ToolPageProps) {
   }
 
   const ToolComponent = TOOL_COMPONENTS[tool.id];
-  const relatedArticles = getArticlesByToolId(tool.id);
+  const { en: relatedArticlesEn, he: relatedArticlesHe } =
+    getArticleBundlesByToolId(tool.id);
 
   return (
-    <ToolShell tool={tool} relatedArticles={relatedArticles}>
+    <ToolShell
+      tool={tool}
+      relatedArticlesEn={relatedArticlesEn}
+      relatedArticlesHe={relatedArticlesHe}
+    >
       {ToolComponent ? (
         <ToolComponent />
       ) : (

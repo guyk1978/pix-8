@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { Language } from "@/lib/language";
 import type { ToolId } from "@/lib/tools";
 import { getToolById } from "@/lib/tools";
 
@@ -12,7 +13,11 @@ export type Article = {
   content: string;
 };
 
-const ARTICLES_DIR = join(process.cwd(), "src/content/articles");
+function getArticlesDir(language: Language = "en"): string {
+  return language === "he"
+    ? join(process.cwd(), "src/content/articles/he")
+    : join(process.cwd(), "src/content/articles");
+}
 
 function parseFrontmatter(raw: string): {
   data: Record<string, string>;
@@ -85,14 +90,15 @@ function loadJsonArticle(filePath: string, fileName: string): Article | null {
 
 /** Central class for loading and querying markdown articles from disk. */
 export class BlogManager {
-  static getAllArticles(): Article[] {
-    if (!existsSync(ARTICLES_DIR)) {
+  static getAllArticles(language: Language = "en"): Article[] {
+    const articlesDir = getArticlesDir(language);
+    if (!existsSync(articlesDir)) {
       return [];
     }
 
-    return readdirSync(ARTICLES_DIR)
+    return readdirSync(articlesDir)
       .flatMap((fileName) => {
-        const filePath = join(ARTICLES_DIR, fileName);
+        const filePath = join(articlesDir, fileName);
         if (fileName.endsWith(".md")) {
           return [loadMarkdownArticle(filePath, fileName)];
         }
@@ -105,25 +111,49 @@ export class BlogManager {
       .sort((a, b) => b.date.localeCompare(a.date));
   }
 
-  static getArticleBySlug(slug: string): Article | undefined {
-    return BlogManager.getAllArticles().find((article) => article.slug === slug);
+  static getArticleBySlug(
+    slug: string,
+    language: Language = "en",
+  ): Article | undefined {
+    const localized = BlogManager.getAllArticles(language).find(
+      (article) => article.slug === slug,
+    );
+
+    if (localized || language === "en") {
+      return localized;
+    }
+
+    return BlogManager.getAllArticles("en").find(
+      (article) => article.slug === slug,
+    );
   }
 
-  static getArticlesByToolId(toolId: string): Article[] {
-    return BlogManager.getAllArticles().filter(
+  static getArticlesByToolId(
+    toolId: string,
+    language: Language = "en",
+  ): Article[] {
+    return BlogManager.getAllArticles(language).filter(
       (article) => article.toolId === toolId,
     );
   }
 
-  static getRecentArticles(limit = 5): Article[] {
-    return BlogManager.getAllArticles().slice(0, limit);
+  static getRecentArticles(limit = 5, language: Language = "en"): Article[] {
+    return BlogManager.getAllArticles(language).slice(0, limit);
   }
 }
 
-export const getAllArticles = () => BlogManager.getAllArticles();
-export const getArticleBySlug = (slug: string) =>
-  BlogManager.getArticleBySlug(slug);
-export const getArticlesByToolId = (toolId: string) =>
-  BlogManager.getArticlesByToolId(toolId);
-export const getRecentArticles = (limit?: number) =>
-  BlogManager.getRecentArticles(limit);
+export const getAllArticles = (language?: Language) =>
+  BlogManager.getAllArticles(language);
+export const getArticleBySlug = (slug: string, language?: Language) =>
+  BlogManager.getArticleBySlug(slug, language);
+export const getArticlesByToolId = (toolId: string, language?: Language) =>
+  BlogManager.getArticlesByToolId(toolId, language);
+export const getRecentArticles = (limit?: number, language?: Language) =>
+  BlogManager.getRecentArticles(limit, language);
+
+export function getArticleBundlesByToolId(toolId: string) {
+  return {
+    en: BlogManager.getArticlesByToolId(toolId, "en"),
+    he: BlogManager.getArticlesByToolId(toolId, "he"),
+  };
+}

@@ -1,29 +1,26 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { SliderControl } from "@/components/ui/SliderControl";
 import {
   DEFAULT_LENS_CORRECTION_SETTINGS,
   renderLensCorrectedCanvas,
-  type LensCorrectionSettings,
 } from "@/lib/lensCorrectorRender";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   buildDownloadFilename,
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 
-const inputClassName =
-  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
-
-function correctionLabel(value: number): string {
-  if (value === 0) return "Neutral";
-  if (value < 0) return `Barrel ${value}`;
-  return `Pincushion +${value}`;
-}
-
 export function LensCorrector() {
+  const { t, language } = useLanguage();
   const {
     canvasRef,
     source,
@@ -41,14 +38,24 @@ export function LensCorrector() {
   const [isCorrecting, setIsCorrecting] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
   const [stripMetadata, setStripMetadata] = useState(true);
-  const [settings, setSettings] = useState<LensCorrectionSettings>(
-    DEFAULT_LENS_CORRECTION_SETTINGS,
+  const [correction, setCorrection] = useState(
+    DEFAULT_LENS_CORRECTION_SETTINGS.correction,
+  );
+  const debouncedCorrection = useDebouncedValue(correction, 150);
+
+  const correctionLabel = useCallback(
+    (value: number): string => {
+      if (value === 0) return t("toolUi.lensCorrector.neutral");
+      if (value < 0) return t("toolUi.lensCorrector.barrel", { value });
+      return t("toolUi.lensCorrector.pincushion", { value });
+    },
+    [t],
   );
 
   const handleFileChange = useCallback(
     (file: File | null) => {
       if (file) {
-        setSettings(DEFAULT_LENS_CORRECTION_SETTINGS);
+        setCorrection(DEFAULT_LENS_CORRECTION_SETTINGS.correction);
         void loadFile(file);
       }
     },
@@ -72,13 +79,11 @@ export function LensCorrector() {
             image,
             source.width,
             source.height,
-            settings,
+            { correction: debouncedCorrection },
             previewCanvasRef.current,
           );
         } catch (cause) {
-          const message =
-            cause instanceof Error ? cause.message : "Correction failed.";
-          setError(message);
+          setError(resolveErrorMessage(language, cause, "errors.correctionFailed"));
         } finally {
           if (!cancelled) setIsCorrecting(false);
         }
@@ -86,7 +91,7 @@ export function LensCorrector() {
 
       image.onerror = () => {
         if (!cancelled) {
-          setError("Failed to load image.");
+          setError(t("errors.loadImage"));
           setIsCorrecting(false);
         }
       };
@@ -98,7 +103,7 @@ export function LensCorrector() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [source, settings, setError]);
+  }, [source, debouncedCorrection, setError]);
 
   const handleDownloadImage = useCallback(async () => {
     if (!source || !previewCanvasRef.current) return;
@@ -129,80 +134,34 @@ export function LensCorrector() {
   }, [source, stripMetadata, handleCopyToClipboard]);
 
   const busy = isProcessing || isCorrecting;
-  const canDownload = !!source && !busy;
+  const isUpdatingPreview = correction !== debouncedCorrection;
+  const canDownload = !!source && !busy && !isUpdatingPreview;
 
   return (
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDraggingFile
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDraggingFile(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="lens-corrector-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                Barrel · pincushion · perspective
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="lens-corrector-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDraggingFile}
+            onDraggingChange={setIsDraggingFile}
+            formatHint={t("toolUi.lensCorrector.uploadHint")}
+          />
         ) : (
-          <div className="space-y-2">
-            <label htmlFor="lens-corrector-replace" className="font-label text-muted">
-              Replace Image
-            </label>
-            <input
-              id="lens-corrector-replace"
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-              className={`${inputClassName} file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted`}
-            />
-          </div>
+          <ImageFileInput
+            id="lens-corrector-replace"
+            fileName={source.file.name}
+            onFileChange={handleFileChange}
+          />
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <span className="font-label text-muted">Preview</span>
+              <span className="font-label text-muted">{t("common.preview")}</span>
               <span className="font-mono text-[10px] text-muted">
-                {correctionLabel(settings.correction)}
+                {correctionLabel(correction)}
               </span>
             </div>
             <div className="relative flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
@@ -228,47 +187,36 @@ export function LensCorrector() {
                 </>
               ) : (
                 <p className="px-4 text-center text-sm text-muted">
-                  Upload an image to preview lens correction.
+                  {t("toolUi.lensCorrector.previewHint")}
                 </p>
               )}
             </div>
             {source && (
               <p className="text-center font-mono text-[10px] text-muted">
                 {source.width} × {source.height}px ·{" "}
-                {isCorrecting ? "Correcting…" : "Drag slider to straighten lines"}
+                {isCorrecting || isUpdatingPreview
+                  ? t("toolUi.lensCorrector.correcting")
+                  : t("toolUi.lensCorrector.dragToStraighten")}
               </p>
             )}
           </div>
 
           <div className="space-y-4 border border-border bg-background p-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <label htmlFor="lens-correction" className="font-label text-muted">
-                  Lens correction
-                </label>
-                <span className="font-mono text-[10px] text-foreground">
-                  {settings.correction > 0 ? "+" : ""}
-                  {settings.correction}
-                </span>
-              </div>
-              <input
-                id="lens-correction"
-                type="range"
-                min={-100}
-                max={100}
-                step={1}
-                disabled={!source || isCorrecting}
-                value={settings.correction}
-                onChange={(event) =>
-                  setSettings({ correction: Number(event.target.value) })
-                }
-                className="h-2 w-full cursor-pointer appearance-none rounded-sm bg-track accent-accent disabled:opacity-50"
-              />
-              <div className="flex justify-between font-mono text-[9px] text-muted">
-                <span>Barrel</span>
-                <span>0</span>
-                <span>Pincushion</span>
-              </div>
+            <SliderControl
+              id="lens-correction"
+              label={t("toolUi.lensCorrector.lensCorrection")}
+              value={correction}
+              min={-100}
+              max={100}
+              step={1}
+              suffix=""
+              disabled={!source}
+              onChange={setCorrection}
+            />
+            <div className="flex justify-between font-mono text-[9px] text-muted">
+              <span>{t("toolUi.lensCorrector.barrelLabel")}</span>
+              <span>0</span>
+              <span>{t("toolUi.lensCorrector.pincushionLabel")}</span>
             </div>
 
             <label className="flex min-h-11 cursor-pointer items-center gap-3">
@@ -279,16 +227,20 @@ export function LensCorrector() {
                 onChange={(event) => setShowGrid(event.target.checked)}
                 className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
               />
-              <span className="font-label text-muted">Grid overlay</span>
+              <span className="font-label text-muted">
+                {t("toolUi.lensCorrector.gridOverlay")}
+              </span>
             </label>
 
             <button
               type="button"
               disabled={!source}
-              onClick={() => setSettings(DEFAULT_LENS_CORRECTION_SETTINGS)}
+              onClick={() =>
+                setCorrection(DEFAULT_LENS_CORRECTION_SETTINGS.correction)
+              }
               className="min-h-9 w-full rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
             >
-              Reset correction
+              {t("toolUi.lensCorrector.resetCorrection")}
             </button>
           </div>
         </div>
@@ -310,13 +262,13 @@ export function LensCorrector() {
         <ToolOutputActions
           onDownload={handleDownloadImage}
           onCopy={handleCopyImage}
-          downloadLabel="Download"
+          downloadLabel={t("downloads.download")}
           disabled={!canDownload}
           isProcessing={busy}
         />
 
         <p className="mt-3 text-center font-mono text-[10px] text-muted">
-          Geometric correction runs locally — your image never leaves the browser.
+          {t("toolUi.lensCorrector.footer")}
         </p>
       </div>
 

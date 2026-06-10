@@ -69,7 +69,7 @@ function renderTable(block: string) {
             {header.map((cell) => (
               <th
                 key={cell}
-                className="border border-border bg-card-hover px-3 py-2 text-left font-label text-muted"
+                className="border border-border bg-card-hover px-3 py-2 text-start font-label text-muted"
               >
                 {renderInline(cell)}
               </th>
@@ -168,7 +168,7 @@ export function ArticleBody({ content }: ArticleBodyProps) {
 
         if (trimmed.startsWith("*") && trimmed.endsWith("*")) {
           return (
-            <p key={index} className="border-l-2 border-border pl-4 italic text-muted">
+            <p key={index} className="border-s-2 border-border ps-4 italic text-muted">
               {renderInline(trimmed.replace(/^\*|\*$/g, ""))}
             </p>
           );

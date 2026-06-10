@@ -1,6 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
@@ -15,9 +19,6 @@ import {
   type BackgroundMode,
   type SegmentationMask,
 } from "@/lib/bodyPixRemoval";
-
-const inputClassName =
-  "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-accent";
 
 const toggleButtonClassName =
   "min-h-10 flex-1 rounded-sm border border-border bg-background px-3 py-2 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
@@ -36,6 +37,7 @@ function loadImageElement(url: string): Promise<HTMLImageElement> {
 }
 
 export function BackgroundRemover() {
+  const { t, language } = useLanguage();
   const {
     canvasRef,
     source,
@@ -139,9 +141,7 @@ export function BackgroundRemover() {
       maskRef.current = mask;
       setHasProcessed(true);
     } catch (cause) {
-      const message =
-        cause instanceof Error ? cause.message : "Background removal failed.";
-      setError(message);
+      setError(resolveErrorMessage(language, cause, "errors.backgroundRemovalFailed"));
     } finally {
       setProcessingPhase("idle");
     }
@@ -172,9 +172,7 @@ export function BackgroundRemover() {
         { stripMetadata },
       );
     } catch (cause) {
-      const message =
-        cause instanceof Error ? cause.message : "Download failed.";
-      setError(message);
+      setError(resolveErrorMessage(language, cause, "errors.downloadFailed"));
     }
   }, [
     source,
@@ -206,9 +204,7 @@ export function BackgroundRemover() {
       const blob = await canvasToPngBlob(resultCanvas);
       await handleCopyToClipboard(blob, { stripMetadata, format: "png" });
     } catch (cause) {
-      const message =
-        cause instanceof Error ? cause.message : "Could not copy image.";
-      setError(message);
+      setError(resolveErrorMessage(language, cause, "errors.copyImageFailed"));
     }
   }, [
     source,
@@ -222,79 +218,32 @@ export function BackgroundRemover() {
 
   const processingLabel =
     processingPhase === "loading-model"
-      ? "Loading AI model…"
+      ? t("toolUi.bgRemover.loadingModel")
       : processingPhase === "segmenting"
-        ? "Running segmentation…"
+        ? t("toolUi.bgRemover.segmenting")
         : null;
 
   return (
     <div className="mx-auto w-full max-w-xl">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDragging
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDragging(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDragging(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="bg-remover-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                Best results with people in photos
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="bg-remover-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDragging}
+            onDraggingChange={setIsDragging}
+            formatHint={t("toolUi.bgRemover.bestResults")}
+          />
         ) : (
-          <div className="space-y-2">
-            <label htmlFor="bg-remover-replace" className="font-label text-muted">
-              Replace Image
-            </label>
-            <input
-              id="bg-remover-replace"
-              type="file"
-              accept="image/*"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-              className={inputClassName}
-            />
-          </div>
+          <ImageFileInput
+            id="bg-remover-replace"
+            fileName={source.file.name}
+            onFileChange={handleFileChange}
+          />
         )}
 
         <div className="mt-5 space-y-2">
-          <span className="font-label text-muted">Background</span>
+          <span className="font-label text-muted">{t("toolUi.bgRemover.background")}</span>
           <div className="flex gap-2">
             <button
               type="button"
@@ -304,7 +253,7 @@ export function BackgroundRemover() {
                 backgroundMode === "transparent" ? activeToggleClassName : ""
               }`}
             >
-              Transparent (PNG)
+              {t("toolUi.bgRemover.transparent")}
             </button>
             <button
               type="button"
@@ -314,7 +263,7 @@ export function BackgroundRemover() {
                 backgroundMode === "solid" ? activeToggleClassName : ""
               }`}
             >
-              Solid Color
+              {t("toolUi.bgRemover.solidColor")}
             </button>
           </div>
         </div>
@@ -322,7 +271,7 @@ export function BackgroundRemover() {
         {backgroundMode === "solid" && (
           <div className="mt-4 flex items-center gap-3">
             <label htmlFor="bg-remover-color" className="font-label text-muted">
-              Color
+              {t("common.color")}
             </label>
             <input
               id="bg-remover-color"
@@ -352,7 +301,7 @@ export function BackgroundRemover() {
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
               <p className="font-label text-accent">{processingLabel}</p>
               <p className="font-mono text-[10px] text-muted">
-                Processing locally in your browser
+                {t("toolUi.bgRemover.processingLocal")}
               </p>
             </div>
           )}
@@ -368,7 +317,7 @@ export function BackgroundRemover() {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={source.url}
-              alt="Original preview"
+              alt={t("alt.originalPreview")}
               className="max-h-[min(50vh,420px)] max-w-full object-contain"
             />
           )}
@@ -378,7 +327,7 @@ export function BackgroundRemover() {
           <p className="mt-3 text-center font-mono text-xs text-muted">
             {source.width} × {source.height}px · {source.file.name}
             {hasProcessed && backgroundMode === "solid" && (
-              <> · Background {backgroundColor}</>
+              <> · {t("toolUi.bgRemover.backgroundColor", { color: backgroundColor })}</>
             )}
           </p>
         )}
@@ -404,13 +353,13 @@ export function BackgroundRemover() {
             onClick={() => void handleProcess()}
             className="min-h-11 w-full rounded-sm border border-border bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {isBusy ? "Processing…" : "Remove Background"}
+            {isBusy ? t("common.processing") : t("toolUi.bgRemover.removeBackground")}
           </button>
 
           <ToolOutputActions
             onDownload={handleDownloadImage}
             onCopy={handleCopyImage}
-            downloadLabel="Download PNG"
+            downloadLabel={t("downloads.downloadPng")}
             disabled={!hasProcessed || isBusy}
             isProcessing={isBusy}
           />

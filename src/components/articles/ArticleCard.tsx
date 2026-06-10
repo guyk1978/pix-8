@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { getToolTranslationKey } from "@/i18n";
 import type { Article } from "@/lib/blog";
 import { getToolById } from "@/lib/tools";
 
@@ -7,7 +11,11 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article }: ArticleCardProps) {
+  const { t } = useLanguage();
   const tool = getToolById(article.toolId);
+  const toolName = tool
+    ? t(getToolTranslationKey(tool.id, "name"))
+    : article.toolId;
 
   return (
     <Link
@@ -15,7 +23,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
       className="group block border border-border bg-card p-5 transition-colors hover:border-muted hover:bg-card-hover"
     >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <span className="font-label text-muted">{tool?.name ?? article.toolId}</span>
+        <span className="font-label text-muted">{toolName}</span>
         <time dateTime={article.date} className="font-mono text-[10px] text-muted">
           {article.date}
         </time>
@@ -25,7 +33,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
       </h2>
       <p className="mt-2 text-sm leading-relaxed text-muted">{article.excerpt}</p>
       <span className="mt-4 inline-block font-label text-muted opacity-0 transition-opacity group-hover:opacity-100">
-        Read article →
+        {t("blog.readArticle")}
       </span>
     </Link>
   );

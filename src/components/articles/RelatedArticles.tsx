@@ -1,19 +1,35 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useLocalizedArticles } from "@/hooks/useLocalizedArticle";
 import type { Article } from "@/lib/blog";
 
 interface RelatedArticlesProps {
-  articles: Article[];
+  articlesEn: Article[];
+  articlesHe: Article[];
 }
 
-export function RelatedArticles({ articles }: RelatedArticlesProps) {
+export function RelatedArticles({
+  articlesEn,
+  articlesHe,
+}: RelatedArticlesProps) {
+  const { t } = useLanguage();
+  const articles = useLocalizedArticles(articlesEn, articlesHe);
+
   if (articles.length === 0) return null;
 
   return (
     <section className="mt-8 border-t border-border pt-8">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-label text-foreground">Related Articles</h2>
+        <h2 className="font-label text-foreground">{t("blog.relatedArticles")}</h2>
         <span className="font-mono text-xs text-muted">
-          {articles.length} article{articles.length === 1 ? "" : "s"}
+          {t(
+            articles.length === 1
+              ? "blog.articleCountOne"
+              : "blog.articleCount",
+            { count: articles.length },
+          )}
         </span>
       </div>
 

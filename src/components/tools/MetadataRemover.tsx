@@ -2,7 +2,10 @@
 
 import exifr from "exifr";
 import { useCallback, useEffect, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import {
   buildDownloadFilename,
   resolveFormat,
@@ -20,7 +23,10 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
-async function readMetadataFields(file: File): Promise<MetadataField[]> {
+async function readMetadataFields(
+  file: File,
+  t: (key: string) => string,
+): Promise<MetadataField[]> {
   try {
     const data = await exifr.parse(file, {
       gps: true,
@@ -35,21 +41,21 @@ async function readMetadataFields(file: File): Promise<MetadataField[]> {
 
     if (record.Make || record.Model) {
       fields.push({
-        label: "Device",
+        label: t("toolUi.metadataRemover.device"),
         value: [record.Make, record.Model].filter(Boolean).join(" "),
       });
     }
 
     if (record.DateTimeOriginal) {
       fields.push({
-        label: "Captured",
+        label: t("toolUi.metadataRemover.captured"),
         value: String(record.DateTimeOriginal),
       });
     }
 
     if (record.Software) {
       fields.push({
-        label: "Software",
+        label: t("toolUi.metadataRemover.software"),
         value: String(record.Software),
       });
     }
@@ -59,14 +65,14 @@ async function readMetadataFields(file: File): Promise<MetadataField[]> {
       typeof record.longitude === "number"
     ) {
       fields.push({
-        label: "GPS",
+        label: t("toolUi.metadataRemover.gps"),
         value: `${record.latitude.toFixed(5)}, ${record.longitude.toFixed(5)}`,
       });
     }
 
     if (record.Orientation) {
       fields.push({
-        label: "Orientation",
+        label: t("toolUi.metadataRemover.orientation"),
         value: String(record.Orientation),
       });
     }
@@ -78,7 +84,10 @@ async function readMetadataFields(file: File): Promise<MetadataField[]> {
         record.ISO ? `ISO ${record.ISO}` : null,
       ].filter(Boolean);
       if (parts.length > 0) {
-        fields.push({ label: "Camera", value: parts.join(" · ") });
+        fields.push({
+          label: t("toolUi.metadataRemover.camera"),
+          value: parts.join(" · "),
+        });
       }
     }
 
@@ -89,6 +98,7 @@ async function readMetadataFields(file: File): Promise<MetadataField[]> {
 }
 
 export function MetadataRemover() {
+  const { t, language } = useLanguage();
   const {
     canvasRef,
     source,
@@ -130,7 +140,7 @@ export function MetadataRemover() {
     setError(null);
 
     void (async () => {
-      const fields = await readMetadataFields(source.file);
+      const fields = await readMetadataFields(source.file, t);
       if (cancelled) return;
       setMetadataFields(fields);
 
@@ -154,16 +164,14 @@ export function MetadataRemover() {
         setCleanFormat(result.format);
         setMetadataRemoved(true);
       } else if (result) {
-        setError("Metadata could not be verified as removed.");
+        setError(t("toolUi.metadataRemover.verifyFailed"));
       }
     })()
       .catch((cause) => {
         if (cancelled) return;
-        const message =
-          cause instanceof Error
-            ? cause.message
-            : "Failed to remove metadata.";
-        setError(message);
+        setError(
+          resolveErrorMessage(language, cause, "toolUi.metadataRemover.removeFailed"),
+        );
       })
       .finally(() => {
         if (!cancelled) setIsScanning(false);
@@ -172,7 +180,7 @@ export function MetadataRemover() {
     return () => {
       cancelled = true;
     };
-  }, [source, processImage, canvasRef, setError]);
+  }, [source, processImage, canvasRef, setError, t]);
 
   const handleDownloadClean = useCallback(async () => {
     if (!source || !cleanBlob || !metadataRemoved) return;
@@ -199,72 +207,38 @@ export function MetadataRemover() {
   return (
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
-        <div
-          className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-            isDragging
-              ? "border-accent bg-accent-muted"
-              : "border-border bg-background hover:border-muted"
-          }`}
-          onDragEnter={(event) => {
-            event.preventDefault();
-            setIsDragging(true);
-          }}
-          onDragLeave={(event) => {
-            event.preventDefault();
-            if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-              setIsDragging(false);
-            }
-          }}
-          onDragOver={(event) => event.preventDefault()}
-          onDrop={(event) => {
-            event.preventDefault();
-            setIsDragging(false);
-            const file = event.dataTransfer.files[0];
-            handleFileChange(file ?? null);
-          }}
+        <ImageUploadDropzone
+          inputId="metadata-remover-upload"
+          onFileChange={handleFileChange}
+          isDragging={isDragging}
+          onDraggingChange={setIsDragging}
+          formatHint={t("toolUi.metadataRemover.uploadHint")}
         >
-          <input
-            id="metadata-remover-upload"
-            type="file"
-            accept="image/*"
-            aria-label="Upload image"
-            className="absolute inset-0 cursor-pointer opacity-0"
-            onChange={(event) => {
-              handleFileChange(event.target.files?.[0] ?? null);
-              event.target.value = "";
-            }}
-          />
           {source ? (
             <div className="pointer-events-none flex w-full flex-col items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={source.url}
-                alt="Preview"
+                alt={t("alt.preview")}
                 className="max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
               />
               <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
                 {source.width} × {source.height}px · {formatFileSize(source.file.size)}
               </p>
             </div>
-          ) : (
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                EXIF · GPS · IPTC stripped locally
-              </p>
-            </div>
-          )}
-        </div>
+          ) : undefined}
+        </ImageUploadDropzone>
 
         {source && (
           <div className="mt-5 border border-border bg-background p-4">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <p className="font-label text-muted">Detected metadata</p>
+              <p className="font-label text-muted">
+                {t("toolUi.metadataRemover.detectedMetadata")}
+              </p>
               {isScanning && (
-                <span className="font-mono text-[10px] text-muted">Scanning…</span>
+                <span className="font-mono text-[10px] text-muted">
+                  {t("toolUi.metadataRemover.scanning")}
+                </span>
               )}
             </div>
 
@@ -283,8 +257,8 @@ export function MetadataRemover() {
             ) : (
               <p className="font-mono text-xs text-muted">
                 {isScanning
-                  ? "Reading embedded tags…"
-                  : "No EXIF metadata detected in this file."}
+                  ? t("toolUi.metadataRemover.readingTags")
+                  : t("toolUi.metadataRemover.noMetadata")}
               </p>
             )}
           </div>
@@ -293,20 +267,24 @@ export function MetadataRemover() {
         {source && metadataRemoved && cleanBlob && (
           <div className="mt-4 grid gap-3 border border-dashed border-border bg-card p-4 sm:grid-cols-3">
             <div>
-              <p className="font-label text-muted">Original</p>
+              <p className="font-label text-muted">{t("common.original")}</p>
               <p className="mt-1 font-mono text-sm text-foreground">
                 {formatFileSize(source.file.size)}
               </p>
             </div>
             <div>
-              <p className="font-label text-muted">Clean</p>
+              <p className="font-label text-muted">
+                {t("toolUi.metadataRemover.clean")}
+              </p>
               <p className="mt-1 font-mono text-sm text-foreground">
                 {formatFileSize(cleanBlob.size)}
               </p>
             </div>
             <div>
-              <p className="font-label text-muted">Status</p>
-              <p className="mt-1 font-mono text-sm text-accent">Metadata removed</p>
+              <p className="font-label text-muted">{t("common.status")}</p>
+              <p className="mt-1 font-mono text-sm text-accent">
+                {t("toolUi.metadataRemover.metadataRemoved")}
+              </p>
             </div>
           </div>
         )}
@@ -320,13 +298,13 @@ export function MetadataRemover() {
         <ToolOutputActions
           onDownload={handleDownloadClean}
           onCopy={handleCopyClean}
-          downloadLabel="Download Clean Image"
+          downloadLabel={t("downloads.downloadCleanImage")}
           disabled={!canDownload}
           isProcessing={isWorking}
         />
 
         <p className="mt-3 text-center font-mono text-[10px] text-muted">
-          Processing stays in your browser — nothing is uploaded.
+          {t("toolUi.metadataRemover.footer")}
         </p>
       </div>
 

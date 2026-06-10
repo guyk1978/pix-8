@@ -1,6 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { resolveErrorMessage } from "@/i18n";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
+import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import {
@@ -22,6 +26,7 @@ function loadImageElement(url: string): Promise<HTMLImageElement> {
 }
 
 export function CssPaletteGenerator() {
+  const { t, language } = useLanguage();
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -53,9 +58,7 @@ export function CssPaletteGenerator() {
       })
       .catch((cause) => {
         if (cancelled) return;
-        const message =
-          cause instanceof Error ? cause.message : "Could not extract palette.";
-        setError(message);
+        setError(resolveErrorMessage(language, cause, "errors.extractPaletteFailed"));
         setPalette([]);
       })
       .finally(() => {
@@ -79,86 +82,39 @@ export function CssPaletteGenerator() {
       try {
         await navigator.clipboard.writeText(value);
         setCopiedKey(key);
-        showToast(value, { title: "Copied!" });
+        showToast(value, { title: t("common.copied") });
         window.setTimeout(() => setCopiedKey(null), 1500);
       } catch {
-        setError("Could not copy to clipboard.");
+        setError(t("toast.couldNotCopy"));
       }
     },
-    [showToast, setError],
+    [showToast, setError, t],
   );
 
   return (
     <div className="w-full">
       <div className="glass-panel rounded-sm border border-border p-4 sm:p-6">
         {!source ? (
-          <div
-            className={`relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border border-dashed p-5 transition-colors sm:min-h-48 sm:p-6 ${
-              isDraggingFile
-                ? "border-accent bg-accent-muted"
-                : "border-border bg-background hover:border-muted"
-            }`}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(true);
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                setIsDraggingFile(false);
-              }
-            }}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              setIsDraggingFile(false);
-              handleFileChange(event.dataTransfer.files[0] ?? null);
-            }}
-          >
-            <input
-              id="css-palette-upload"
-              type="file"
-              accept="image/*"
-              aria-label="Upload image"
-              className="absolute inset-0 cursor-pointer opacity-0"
-              onChange={(event) => {
-                handleFileChange(event.target.files?.[0] ?? null);
-                event.target.value = "";
-              }}
-            />
-            <div className="pointer-events-none px-2 text-center">
-              <p className="font-label text-muted">Upload</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                Drop an image here or tap to browse
-              </p>
-              <p className="mt-1 font-mono text-[10px] text-muted">
-                CSS · SCSS · JSON · Tailwind
-              </p>
-            </div>
-          </div>
+          <ImageUploadDropzone
+            inputId="css-palette-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDraggingFile}
+            onDraggingChange={setIsDraggingFile}
+            formatHint={t("toolUi.cssPalette.uploadHint")}
+          />
         ) : (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="css-palette-replace" className="font-label text-muted">
-                Replace Image
-              </label>
-              <input
-                id="css-palette-replace"
-                type="file"
-                accept="image/*"
-                onChange={(event) => {
-                  handleFileChange(event.target.files?.[0] ?? null);
-                  event.target.value = "";
-                }}
-                className="w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors file:mr-3 file:border-0 file:bg-transparent file:font-label file:text-muted focus:border-muted"
-              />
-            </div>
+            <ImageFileInput
+              id="css-palette-replace"
+              fileName={source.file.name}
+              onFileChange={handleFileChange}
+            />
 
             <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={source.url}
-                alt="Source preview"
+                alt={t("alt.sourcePreview")}
                 className="max-h-40 max-w-full object-contain"
               />
             </div>
@@ -167,10 +123,12 @@ export function CssPaletteGenerator() {
 
         <section className="mt-6 space-y-4">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="font-label text-foreground">Extracted Palette</h2>
+            <h2 className="font-label text-foreground">{t("toolUi.cssPalette.extractedPalette")}</h2>
             {source && (
               <span className="font-mono text-[10px] text-muted">
-                {isExtracting ? "Analyzing…" : `${palette.length} colors`}
+                {isExtracting
+                  ? t("toolUi.cssPalette.analyzing")
+                  : t("toolUi.cssPalette.colorCount", { count: palette.length })}
               </span>
             )}
           </div>
@@ -178,20 +136,20 @@ export function CssPaletteGenerator() {
           {!source ? (
             <div className="flex min-h-28 items-center justify-center rounded-sm border border-dashed border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
-                Upload an image to generate a CSS palette.
+                {t("toolUi.cssPalette.uploadHintLong")}
               </p>
             </div>
           ) : isExtracting ? (
             <div className="flex min-h-28 items-center justify-center rounded-sm border border-border bg-background p-6">
               <div className="flex items-center gap-3">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-foreground" />
-                <p className="font-label text-muted">Extracting colors…</p>
+                <p className="font-label text-muted">{t("toolUi.cssPalette.extracting")}</p>
               </div>
             </div>
           ) : palette.length === 0 ? (
             <div className="flex min-h-28 items-center justify-center rounded-sm border border-border bg-background p-6 text-center">
               <p className="text-sm text-muted">
-                No colors could be extracted from this image.
+                {t("toolUi.cssPalette.noColors")}
               </p>
             </div>
           ) : (
@@ -208,15 +166,15 @@ export function CssPaletteGenerator() {
                     style={{ backgroundColor: color.hex }}
                   />
                   <span className="min-w-0">
-                    <span className="block font-label text-muted capitalize">
-                      {color.role}
+                    <span className="block font-label text-muted">
+                      {t(`toolUi.cssPalette.roles.${color.role}`)}
                     </span>
                     <span
                       className={`block truncate font-mono text-xs ${
                         copiedKey === color.hex ? "text-accent" : "text-foreground"
                       }`}
                     >
-                      {copiedKey === color.hex ? "Copied!" : color.hex}
+                      {copiedKey === color.hex ? t("common.copied") : color.hex}
                     </span>
                   </span>
                 </button>
@@ -228,7 +186,7 @@ export function CssPaletteGenerator() {
         {palette.length > 0 && (
           <section className="mt-6 space-y-3 border-t border-border pt-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="font-label text-foreground">Code Export</h2>
+              <h2 className="font-label text-foreground">{t("toolUi.cssPalette.codeExport")}</h2>
               <select
                 value={codeFormat}
                 onChange={(event) =>
@@ -238,7 +196,7 @@ export function CssPaletteGenerator() {
               >
                 {CODE_FORMAT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                    {t(`toolUi.cssPalette.formats.${option.value}`)}
                   </option>
                 ))}
               </select>
@@ -253,14 +211,16 @@ export function CssPaletteGenerator() {
               onClick={() => void handleCopy(codeSnippet, "snippet")}
               className="min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20"
             >
-              {copiedKey === "snippet" ? "Snippet copied!" : "Copy code snippet"}
+              {copiedKey === "snippet"
+                ? t("toolUi.cssPalette.snippetCopied")
+                : t("toolUi.cssPalette.copySnippet")}
             </button>
           </section>
         )}
 
         {source && (
           <p className="mt-4 text-center font-mono text-[10px] text-muted">
-            {source.width} × {source.height}px · analysis runs locally
+            {source.width} × {source.height}px · {t("toolUi.cssPalette.footer")}
           </p>
         )}
 
