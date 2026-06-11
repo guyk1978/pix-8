@@ -1,12 +1,14 @@
 "use client";
 
 import { Share2 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useToast } from "@/components/ui/ToastProvider";
+import { buildShareablePageUrl, getShareTheme } from "@/lib/shareImages";
 
-async function copyPageUrl(): Promise<boolean> {
+async function copyUrl(url: string): Promise<boolean> {
   try {
-    await navigator.clipboard.writeText(window.location.href);
+    await navigator.clipboard.writeText(url);
     return true;
   } catch {
     return false;
@@ -14,12 +16,18 @@ async function copyPageUrl(): Promise<boolean> {
 }
 
 export function ShareButton() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const { resolvedTheme } = useTheme();
   const { showToast } = useToast();
 
   const handleShare = async () => {
     const title = document.title;
-    const url = window.location.href;
+    const isDark = resolvedTheme !== "light";
+    const url = buildShareablePageUrl(
+      window.location.href,
+      language,
+      getShareTheme(isDark),
+    );
 
     if (typeof navigator.share === "function") {
       try {
@@ -32,7 +40,7 @@ export function ShareButton() {
       }
     }
 
-    const copied = await copyPageUrl();
+    const copied = await copyUrl(url);
     showToast(
       copied ? t("share.linkCopied") : t("share.couldNotCopy"),
     );

@@ -14,6 +14,7 @@ import {
   DEFAULT_LANGUAGE,
   getDocumentDirection,
   getStoredLanguage,
+  isLanguage,
   storeLanguage,
   type Language,
 } from "@/lib/language";
@@ -32,9 +33,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = getStoredLanguage();
-    if (stored) {
-      setLanguageState(stored);
+    const params = new URLSearchParams(window.location.search);
+    const urlLang = params.get("lang");
+
+    if (isLanguage(urlLang)) {
+      setLanguageState(urlLang);
+      storeLanguage(urlLang);
+    } else {
+      const stored = getStoredLanguage();
+      if (stored) {
+        setLanguageState(stored);
+      }
     }
 
     setMounted(true);

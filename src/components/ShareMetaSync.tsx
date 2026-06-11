@@ -3,7 +3,12 @@
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { getShareHeaderImage, resolveShareImageUrl } from "@/lib/shareImages";
+import {
+  getShareHeaderImage,
+  getShareTheme,
+  resolveShareImageUrl,
+  withShareParams,
+} from "@/lib/shareImages";
 
 function upsertMetaProperty(property: string, content: string) {
   let element = document.querySelector<HTMLMetaElement>(
@@ -39,9 +44,19 @@ export function ShareMetaSync() {
   useEffect(() => {
     const imagePath = getShareHeaderImage(language, isDark);
     const imageUrl = resolveShareImageUrl(imagePath, window.location.origin);
+    const theme = getShareTheme(isDark);
 
     upsertMetaProperty("og:image", imageUrl);
     upsertMetaName("twitter:image", imageUrl);
+
+    const url = withShareParams(
+      new URL(window.location.href),
+      language,
+      theme,
+    );
+    if (url.href !== window.location.href) {
+      window.history.replaceState(null, "", url.href);
+    }
   }, [language, isDark]);
 
   return null;

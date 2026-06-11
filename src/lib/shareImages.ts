@@ -23,3 +23,29 @@ export function getShareHeaderImage(
 export function resolveShareImageUrl(path: string, origin: string): string {
   return new URL(path, origin).href;
 }
+
+export type ShareTheme = "dark" | "light";
+
+export function getShareTheme(isDark: boolean): ShareTheme {
+  return isDark ? "dark" : "light";
+}
+
+/** URL params read by Cloudflare middleware for Facebook / other crawlers. */
+export function withShareParams(
+  url: URL,
+  language: Language,
+  theme: ShareTheme,
+): URL {
+  const next = new URL(url.href);
+  next.searchParams.set("lang", language);
+  next.searchParams.set("theme", theme);
+  return next;
+}
+
+export function buildShareablePageUrl(
+  href: string,
+  language: Language,
+  theme: ShareTheme,
+): string {
+  return withShareParams(new URL(href), language, theme).href;
+}
