@@ -1,12 +1,13 @@
 "use client";
 
-import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import {
@@ -17,6 +18,7 @@ import {
   type PaletteSwatch,
 } from "@/lib/cssPaletteFormat";
 import { extractDominantColors } from "@/lib/paletteExtraction";
+import { CHARACTER_SIZES } from "@/lib/characters";
 
 function loadImageElement(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -29,6 +31,7 @@ function loadImageElement(url: string): Promise<HTMLImageElement> {
 
 export function CssPaletteGenerator() {
   const { t, language } = useLanguage();
+  const characterSize = CHARACTER_SIZES.field + 8;
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -94,9 +97,16 @@ export function CssPaletteGenerator() {
   );
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace
+      workflowState={{
+        hasSource: !!source,
+        hasConfigured: true,
+        isProcessing: false,
+        isReady: !!source,
+      }}
+    >
         {!source ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="css-palette-upload"
             onFileChange={handleFileChange}
             isDragging={isDraggingFile}
@@ -111,18 +121,34 @@ export function CssPaletteGenerator() {
               onFileChange={handleFileChange}
             />
 
-            <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={source.url}
-                alt={t("alt.sourcePreview")}
-                className="max-h-40 max-w-full object-contain"
-              />
+            <div className="relative overflow-visible pb-20 sm:pb-24">
+              <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={source.url}
+                  alt={t("alt.sourcePreview")}
+                  className="max-h-40 max-w-full object-contain"
+                />
+              </div>
+
+              <div
+                className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
+                dir="ltr"
+              >
+                <HelperCharacter
+                  character="robot"
+                  alt={t("characters.robotAlt")}
+                  size={characterSize}
+                  glow="soft"
+                  pixelated
+                  animate="float"
+                />
+              </div>
             </div>
           </div>
         )}
 
-        <section className="mt-6 space-y-4">
+        <section className="relative mt-6 space-y-4 overflow-visible pb-20 sm:pb-24">
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-label text-foreground">{t("toolUi.cssPalette.extractedPalette")}</h2>
             {source && (
@@ -182,6 +208,20 @@ export function CssPaletteGenerator() {
               ))}
             </div>
           )}
+
+          <div
+            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
+            dir="ltr"
+          >
+            <HelperCharacter
+              character="widthAlt"
+              alt={t("characters.widthAlt")}
+              size={characterSize}
+              glow="soft"
+              pixelated
+              animate="float"
+            />
+          </div>
         </section>
 
         {palette.length > 0 && (

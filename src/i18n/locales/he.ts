@@ -86,7 +86,7 @@ export const he: TranslationDictionary = {
     noFileChosen: "לא נבחר קובץ",
     replaceImage: "החלפת תמונה",
     download: "הורדה",
-    copyImage: "העתקת תמונה",
+    copyImage: "העתק תמונה",
     processing: "מעבד…",
     copied: "הועתק!",
     copyToClipboard: "העתקה ללוח",
@@ -113,6 +113,7 @@ export const he: TranslationDictionary = {
   },
   upload: {
     title: "העלאה",
+    dropHeadline: "גרור תמונה לכאן...",
     dropHint: "גרור תמונה לכאן או לחץ לבחירה",
     dropLogoHint: "גרור לוגו לכאן או לחץ לבחירה",
     dropMultipleHint: "גרור מספר קבצים לכאן או לחץ לבחירה",
@@ -143,7 +144,7 @@ export const he: TranslationDictionary = {
     download: "הורדה",
     downloadOptimized: "הורדת קובץ מותאם",
     convertAndDownload: "המרה והורדה",
-    resizeAndDownload: "שינוי גודל והורדה",
+    resizeAndDownload: "שינוי גודל & הורדה",
     cropAndDownload: "חיתוך והורדה",
     downloadTransformed: "הורדת תמונה מעובדת",
     downloadWatermarked: "הורדה עם סימן מים",
@@ -183,14 +184,45 @@ export const he: TranslationDictionary = {
     process: "עיבוד",
     download: "הורדה",
   },
+  workflow: {
+    steps: {
+      start: {
+        label: "התחלה",
+        hint: "הכלי רץ לגמרי בדפדפן — שום דבר לא עולה לשרת.",
+      },
+      upload: {
+        label: "העלאה",
+        hint: "גרור תמונה לכאן או לחץ לבחירת קובץ.",
+      },
+      configure: {
+        label: "הגדרות",
+        hint: "הגדר את האפשרויות לתמונה שלך.",
+      },
+      process: {
+        label: "עיבוד",
+        hint: "הפעל את הכלי — העיבוד נשאר במכשיר שלך.",
+      },
+      download: {
+        label: "הורדה",
+        hint: "שמור או העתק את התמונה המוכנה.",
+      },
+    },
+  },
   characters: {
     guideAlt: "מדריך ידידותי של pix-8",
     uploadAlt: "מדריך העלאה מנופף",
+    uploadSmileAlt: "מדריך העלאה מצביע",
+    resizerAlt: "מדריך משנה גודל",
+    blueAlt: "מדריך כחול עם מברשת",
+    robotAlt: "רובוט מדריך גובה",
     widthAlt: "מדריך רוחב",
+    widthAlt2Alt: "מדריך גובה רובוט",
     heightAlt: "מדריך גובה",
     processingAlt: "מדריך עיבוד",
+    processingAlt2Alt: "מדריך עיבוד חלופי",
     downloadAlt: "מדריך הורדה מוכן",
     errorAlt: "מדריך שגיאה",
+    readAlt: "מדריך קריאה",
     readyToDownload: "הקובץ מוכן — אפשר להוריד!",
     localProcessing: "כל העיבוד נשאר בדפדפן שלך",
     rosterAria: "שבע דמויות העזר של pix-8",
@@ -236,6 +268,9 @@ export const he: TranslationDictionary = {
   },
   toolUi: {
     rotateFlip: {
+      transform: "טרנספורמציה",
+      outputSize: "גודל פלט",
+      outputPlaceholder: "העלה תמונה תחילה",
       rotateCw: "סיבוב 90° עם כיוון השעון",
       rotateCcw: "סיבוב 90° נגד כיוון השעון",
       flipHorizontal: "היפוך אופקי",
@@ -246,7 +281,9 @@ export const he: TranslationDictionary = {
     },
     converter: {
       targetFormat: "פורמט יעד",
+      outputLabel: "פלט",
       output: "פלט: {name}.{ext}",
+      outputPlaceholder: "בחר תמונה תחילה",
     },
     compressor: {
       originalSize: "גודל מקורי",
@@ -258,7 +295,10 @@ export const he: TranslationDictionary = {
     },
     cropper: {
       free: "חופשי",
+      aspectRatio: "יחס גובה-רוחב",
+      cropSize: "גודל חיתוך",
       cropStatus: "· חיתוך {width} × {height}px",
+      cropPlaceholder: "העלה תמונה לחיתוך",
     },
     bgRemover: {
       formatsHint: "אנשים, מוצרים, אובייקטים — PNG, JPG, WebP",
@@ -416,6 +456,8 @@ export const he: TranslationDictionary = {
     },
     metadataRemover: {
       uploadHint: "EXIF · GPS · IPTC מוסרים מקומית",
+      cleanOutput: "פלט נקי",
+      scanPlaceholder: "העלה תמונה לסריקה",
       detectedMetadata: "מטא-דאטה שזוהה",
       scanning: "סורק…",
       readingTags: "קורא תגיות מוטמעות…",
@@ -462,6 +504,9 @@ export const he: TranslationDictionary = {
       uploadHint: "ציטוטים · תוויות · כיתובים לרשתות",
       dragToPosition: "גרור למיקום הטקסט",
       previewHint: "העלה תמונה להוספת שכבת טקסט.",
+      style: "סגנון",
+      position: "מיקום",
+      positionPlaceholder: "—",
       text: "טקסט",
       defaultText: "הציטוט שלך כאן",
       placeholder: "הזן ציטוט או תווית…",

@@ -4,8 +4,9 @@ import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   buildDownloadFilename,
@@ -331,10 +332,22 @@ export function Cropper() {
       }
     : null;
 
+  const cropSizeDisplay =
+    crop && source
+      ? `${crop.width} × ${crop.height}px`
+      : t("toolUi.cropper.cropPlaceholder");
+
   return (
-    <ToolWorkspace>
+    <ToolWorkspace
+      workflowState={{
+        hasSource: !!source,
+        hasConfigured: !!crop && crop.width > 0 && crop.height > 0,
+        isProcessing,
+        isReady: canCrop,
+      }}
+    >
         {!source ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="cropper-upload"
             onFileChange={handleFileChange}
             isDragging={isDraggingFile}
@@ -351,7 +364,7 @@ export function Cropper() {
                   alt={t("alt.cropPreview")}
                   draggable={false}
                   onLoad={updateDisplaySize}
-                  className="block h-auto max-h-[min(60vh,480px)] w-auto max-w-full select-none"
+                  className="character-pixelated block h-auto max-h-[min(60vh,480px)] w-auto max-w-full select-none"
                 />
 
                 {displayCrop && displaySize.width > 0 && (
@@ -409,32 +422,61 @@ export function Cropper() {
 
             <p className="text-center font-mono text-xs text-muted">
               {source.width} × {source.height}px
-              {crop &&
-                t("toolUi.cropper.cropStatus", {
-                  width: crop.width,
-                  height: crop.height,
-                })}
             </p>
           </div>
         )}
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          {ASPECT_PRESETS.map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              disabled={!source}
-              onClick={() => setAspectPreset(preset.id)}
-              className={`${buttonClassName} ${
-                aspectPreset === preset.id ? activeButtonClassName : "bg-background"
-              }`}
-            >
-              {preset.id === "free" ? t("toolUi.cropper.free") : preset.id}
-            </button>
-          ))}
-        </div>
+        <ToolFieldsStage
+          robotAlt={t("characters.robotAlt")}
+          widthAlt={t("characters.widthAlt")}
+          fields={[
+            {
+              label: t("toolUi.cropper.aspectRatio"),
+              englishLabel: "Aspect",
+              htmlFor: "cropper-aspect-free",
+              children: (
+                <div className="flex flex-wrap gap-2 px-1 py-2.5">
+                  {ASPECT_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      id={preset.id === "free" ? "cropper-aspect-free" : undefined}
+                      type="button"
+                      disabled={!source}
+                      onClick={() => setAspectPreset(preset.id)}
+                      className={`${buttonClassName} ${
+                        aspectPreset === preset.id
+                          ? activeButtonClassName
+                          : "bg-background"
+                      }`}
+                    >
+                      {preset.id === "free"
+                        ? t("toolUi.cropper.free")
+                        : preset.id}
+                    </button>
+                  ))}
+                </div>
+              ),
+            },
+            {
+              label: t("toolUi.cropper.cropSize"),
+              englishLabel: "Crop",
+              htmlFor: "cropper-size-preview",
+              accentClass: "text-[var(--glow-purple)]",
+              children: (
+                <output
+                  id="cropper-size-preview"
+                  className={`tool-input block truncate border-transparent bg-transparent ${
+                    !source ? "text-muted" : ""
+                  }`}
+                >
+                  {cropSizeDisplay}
+                </output>
+              ),
+            },
+          ]}
+        />
 
-        <div className="mt-5 border-t border-border pt-5">
+        <div className="mt-2 flex justify-end border-t border-border pt-5 rtl:justify-start">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={!source}

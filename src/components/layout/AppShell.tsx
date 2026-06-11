@@ -20,7 +20,7 @@ export function AppShell({ children }: AppShellProps) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Header onMenuToggle={() => setMobileNavOpen((open) => !open)} />
-        <main className="flex-1 overflow-y-auto bg-background">
+        <main className="flex-1 bg-background">
           {children}
         </main>
       </div>

@@ -1,13 +1,14 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { SliderControl } from "@/components/ui/SliderControl";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   getBorderedCanvasSize,
@@ -19,6 +20,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { CHARACTER_SIZES } from "@/lib/characters";
 
 const PRESETS: { key: "gallery" | "minimal" | "soft"; settings: BorderSettings }[] = [
   {
@@ -43,6 +45,7 @@ const DEFAULT_SETTINGS: BorderSettings = {
 
 export function BorderGenerator() {
   const { t } = useLanguage();
+  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -123,7 +126,7 @@ export function BorderGenerator() {
   return (
     <ToolWorkspace>
         {!source ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="border-generator-upload"
             onFileChange={handleFileChange}
             isDragging={isDraggingFile}
@@ -139,7 +142,7 @@ export function BorderGenerator() {
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="space-y-3">
+          <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
             <span className="font-label text-muted">{t("common.preview")}</span>
             <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
               {source ? (
@@ -159,9 +162,23 @@ export function BorderGenerator() {
                 {outputSize.height}px
               </p>
             )}
+
+            <div
+              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="robot"
+                alt={t("characters.robotAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
+            </div>
           </div>
 
-          <div className="space-y-4 border border-border bg-background p-4">
+          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
             <div className="space-y-2">
               <span className="font-label text-muted">{t("common.presets")}</span>
               <div className="grid grid-cols-3 gap-1.5">
@@ -221,6 +238,20 @@ export function BorderGenerator() {
               disabled={!source}
               onChange={(cornerRadius) => patchSettings({ cornerRadius })}
             />
+
+            <div
+              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="widthAlt"
+                alt={t("characters.widthAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
+            </div>
           </div>
         </div>
 

@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
-import { HelperFieldGuide } from "@/components/characters/HelperFieldGuide";
+import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { BulkFileQueue } from "@/components/tools/BulkFileQueue";
@@ -11,7 +12,6 @@ import {
   type ProcessingMode,
 } from "@/components/tools/ProcessingModeToggle";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
@@ -255,17 +255,25 @@ export function Resizer() {
   const busy = isProcessing || isBatchProcessing || bulk.isLoading;
   const displayError = error ?? bulk.error;
 
+  const hasSource = mode === "single" ? !!source : bulk.items.length > 0;
+
   return (
-    <ToolWorkspace>
+    <ToolWorkspace
+      workflowState={{
+        hasSource,
+        hasConfigured: hasValidDimensions,
+        isProcessing: busy,
+        isReady: mode === "single" ? canResize : canBatchResize,
+      }}
+    >
         <ProcessingModeToggle mode={mode} onChange={handleModeChange} />
 
         {mode === "single" ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="resizer-upload"
             onFileChange={handleFileChange}
             isDragging={isDragging}
             onDraggingChange={setIsDragging}
-            formatHint={t("upload.formatsHint")}
           >
             {source ? (
               <div className="pointer-events-none flex w-full flex-col items-center gap-3">
@@ -273,26 +281,26 @@ export function Resizer() {
                 <img
                   src={source.url}
                   alt={t("alt.preview")}
-                  className="max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
+                  className="character-pixelated max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
                 />
                 <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
                   {source.width} × {source.height}px · {source.file.name}
                 </p>
               </div>
             ) : undefined}
-          </ImageUploadDropzone>
+          </ToolStyledUploadZone>
         ) : (
           <div className="space-y-4">
-            <ImageUploadDropzone
+            <ToolStyledUploadZone
               inputId="resizer-batch-upload"
               multiple
+              compact
               onFileChange={() => {}}
               onFilesChange={(files) => void bulk.addFiles(files)}
               isDragging={isDragging}
               onDraggingChange={setIsDragging}
-              title={t("upload.addToBatch")}
-              hint={t("upload.dropMultipleHint")}
-              className="min-h-32 sm:min-h-32"
+              headline={t("upload.dropMultipleHint")}
+              formatHint={t("upload.addToBatch")}
             />
 
             <BulkFileQueue
@@ -303,51 +311,51 @@ export function Resizer() {
           </div>
         )}
 
-        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <HelperFieldGuide
-            character="width"
-            label={t("common.width")}
-            englishLabel="Width"
-            htmlFor="resizer-width"
-            characterAlt={t("characters.widthAlt")}
-            characterSide="end"
-          >
-            <input
-              id="resizer-width"
-              type="number"
-              inputMode="numeric"
-              min={1}
-              value={width}
-              disabled={mode === "single" ? !source : bulk.items.length === 0}
-              onChange={(event) => handleWidthChange(event.target.value)}
-              className={inputClassName}
-              placeholder="—"
-            />
-          </HelperFieldGuide>
+        <ToolFieldsStage
+          robotAlt={t("characters.robotAlt")}
+          widthAlt={t("characters.widthAlt")}
+          fields={[
+            {
+              label: t("common.height"),
+              englishLabel: "Height",
+              htmlFor: "resizer-height",
+              children: (
+                <input
+                  id="resizer-height"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  value={height}
+                  disabled={mode === "single" ? !source : bulk.items.length === 0}
+                  onChange={(event) => handleHeightChange(event.target.value)}
+                  className={inputClassName}
+                  placeholder={t("common.height")}
+                />
+              ),
+            },
+            {
+              label: t("common.width"),
+              englishLabel: "Width",
+              htmlFor: "resizer-width",
+              accentClass: "text-[var(--glow-purple)]",
+              children: (
+                <input
+                  id="resizer-width"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  value={width}
+                  disabled={mode === "single" ? !source : bulk.items.length === 0}
+                  onChange={(event) => handleWidthChange(event.target.value)}
+                  className={inputClassName}
+                  placeholder={t("common.width")}
+                />
+              ),
+            },
+          ]}
+        />
 
-          <HelperFieldGuide
-            character="height"
-            label={t("common.height")}
-            englishLabel="Height"
-            htmlFor="resizer-height"
-            characterAlt={t("characters.heightAlt")}
-            characterSide="start"
-          >
-            <input
-              id="resizer-height"
-              type="number"
-              inputMode="numeric"
-              min={1}
-              value={height}
-              disabled={mode === "single" ? !source : bulk.items.length === 0}
-              onChange={(event) => handleHeightChange(event.target.value)}
-              className={inputClassName}
-              placeholder="—"
-            />
-          </HelperFieldGuide>
-        </div>
-
-        <div className="mt-5 space-y-3 border-t border-border pt-5">
+        <div className="mt-2 flex justify-end border-t border-border pt-5 rtl:justify-start">
           <StripMetadataToggle
             checked={stripMetadata}
             disabled={mode === "single" ? !source : bulk.items.length === 0}

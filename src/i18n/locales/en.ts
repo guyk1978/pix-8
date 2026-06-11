@@ -112,6 +112,7 @@ export const en = {
   },
   upload: {
     title: "Upload",
+    dropHeadline: "Drop image here...",
     dropHint: "Drop an image here or tap to browse",
     dropLogoHint: "Drop your logo here or tap to browse",
     dropMultipleHint: "Drop multiple files or tap to browse",
@@ -182,14 +183,45 @@ export const en = {
     process: "Process",
     download: "Download",
   },
+  workflow: {
+    steps: {
+      start: {
+        label: "Start",
+        hint: "This tool runs entirely in your browser — nothing is uploaded.",
+      },
+      upload: {
+        label: "Upload",
+        hint: "Drag an image here or click to choose a file.",
+      },
+      configure: {
+        label: "Configure",
+        hint: "Set the options for your image.",
+      },
+      process: {
+        label: "Process",
+        hint: "Run the tool — processing stays on your device.",
+      },
+      download: {
+        label: "Download",
+        hint: "Save or copy your finished image.",
+      },
+    },
+  },
   characters: {
     guideAlt: "Friendly pix-8 guide",
     uploadAlt: "Upload guide waving",
+    uploadSmileAlt: "Upload guide pointing",
+    resizerAlt: "Resizer guide",
+    blueAlt: "Blue paintbrush guide",
+    robotAlt: "Robot height guide",
     widthAlt: "Width guide",
+    widthAlt2Alt: "Height guide robot",
     heightAlt: "Height guide",
     processingAlt: "Processing guide",
+    processingAlt2Alt: "Processing guide alternate",
     downloadAlt: "Download ready guide",
     errorAlt: "Error guide",
+    readAlt: "Reading guide",
     readyToDownload: "Your file is ready — download when you like!",
     localProcessing: "All processing stays in your browser",
     rosterAria: "All seven pix-8 helper characters",
@@ -235,6 +267,9 @@ export const en = {
   },
   toolUi: {
     rotateFlip: {
+      transform: "Transform",
+      outputSize: "Output Size",
+      outputPlaceholder: "Upload an image first",
       rotateCw: "Rotate 90° CW",
       rotateCcw: "Rotate 90° CCW",
       flipHorizontal: "Flip Horizontal",
@@ -245,7 +280,9 @@ export const en = {
     },
     converter: {
       targetFormat: "Target Format",
+      outputLabel: "Output",
       output: "Output: {name}.{ext}",
+      outputPlaceholder: "Select an image first",
     },
     compressor: {
       originalSize: "Original Size",
@@ -257,7 +294,10 @@ export const en = {
     },
     cropper: {
       free: "Free",
+      aspectRatio: "Aspect Ratio",
+      cropSize: "Crop Size",
       cropStatus: "· Crop {width} × {height}px",
+      cropPlaceholder: "Upload an image to crop",
     },
     bgRemover: {
       formatsHint: "People, products, objects — PNG, JPG, WebP",
@@ -416,6 +456,8 @@ export const en = {
     },
     metadataRemover: {
       uploadHint: "EXIF · GPS · IPTC stripped locally",
+      cleanOutput: "Clean Output",
+      scanPlaceholder: "Upload an image to scan",
       detectedMetadata: "Detected metadata",
       scanning: "Scanning…",
       readingTags: "Reading embedded tags…",
@@ -462,6 +504,9 @@ export const en = {
       uploadHint: "Quotes · labels · social captions",
       dragToPosition: "Drag to position text",
       previewHint: "Upload an image to add text overlay.",
+      style: "Style",
+      position: "Position",
+      positionPlaceholder: "—",
       text: "Text",
       defaultText: "Your quote here",
       placeholder: "Enter quote or label…",

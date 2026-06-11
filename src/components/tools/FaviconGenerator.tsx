@@ -1,12 +1,13 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { SliderControl } from "@/components/ui/SliderControl";
 import { useToast } from "@/components/ui/ToastProvider";
 import {
@@ -23,6 +24,7 @@ import {
   type FaviconExportFormat,
   type FaviconSettings,
 } from "@/lib/faviconRender";
+import { CHARACTER_SIZES } from "@/lib/characters";
 
 const inputClassName =
   "w-full min-h-11 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50";
@@ -31,6 +33,7 @@ const FORMAT_VALUES: FaviconExportFormat[] = ["ico", "png"];
 
 export function FaviconGenerator() {
   const { t, language } = useLanguage();
+  const characterSize = CHARACTER_SIZES.field + 8;
   const { source, error, isProcessing, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -149,13 +152,14 @@ export function FaviconGenerator() {
   return (
     <ToolWorkspace>
         {!source ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="favicon-generator-upload"
             onFileChange={handleFileChange}
             isDragging={isDraggingFile}
             onDraggingChange={setIsDraggingFile}
             ariaLabel={t("upload.uploadLogoAria")}
             hint={t("upload.dropLogoHint")}
+            formatHint={t("toolUi.favicon.uploadHint")}
           />
         ) : (
           <ImageFileInput
@@ -166,7 +170,7 @@ export function FaviconGenerator() {
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="space-y-4">
+          <div className="relative space-y-4 overflow-visible pb-20 sm:pb-24">
             <div className="space-y-3">
               <span className="font-label text-muted">
                 {t("toolUi.favicon.cropPreview")}
@@ -233,9 +237,23 @@ export function FaviconGenerator() {
                 })}
               </p>
             )}
+
+            <div
+              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="robot"
+                alt={t("characters.robotAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
+            </div>
           </div>
 
-          <div className="space-y-4 border border-border bg-background p-4">
+          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
             <SliderControl
               id="favicon-zoom"
               label={t("toolUi.favicon.zoom")}
@@ -268,6 +286,20 @@ export function FaviconGenerator() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div
+              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="widthAlt"
+                alt={t("characters.widthAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
             </div>
           </div>
         </div>

@@ -7,7 +7,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import {
   buildDownloadFilename,
   resolveFormat,
@@ -182,7 +183,7 @@ export function MetadataRemover() {
     return () => {
       cancelled = true;
     };
-  }, [source, processImage, canvasRef, setError, t]);
+  }, [source, processImage, canvasRef, setError, t, language]);
 
   const handleDownloadClean = useCallback(async () => {
     if (!source || !cleanBlob || !metadataRemoved) return;
@@ -206,106 +207,136 @@ export function MetadataRemover() {
   const isWorking = isScanning || isProcessing;
   const canDownload = !!source && metadataRemoved && !!cleanBlob && !isWorking;
 
-  return (
-    <ToolWorkspace>
-        <ImageUploadDropzone
-          inputId="metadata-remover-upload"
-          onFileChange={handleFileChange}
-          isDragging={isDragging}
-          onDraggingChange={setIsDragging}
-          formatHint={t("toolUi.metadataRemover.uploadHint")}
-        >
-          {source ? (
-            <div className="pointer-events-none flex w-full flex-col items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={source.url}
-                alt={t("alt.preview")}
-                className="max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
-              />
-              <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
-                {source.width} × {source.height}px · {formatFileSize(source.file.size)}
-              </p>
-            </div>
-          ) : undefined}
-        </ImageUploadDropzone>
-
-        {source && (
-          <div className="mt-5 border border-border bg-background p-4">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <p className="font-label text-muted">
-                {t("toolUi.metadataRemover.detectedMetadata")}
-              </p>
-              {isScanning && (
-                <span className="font-mono text-[10px] text-muted">
-                  {t("toolUi.metadataRemover.scanning")}
-                </span>
-              )}
-            </div>
-
-            {metadataFields.length > 0 ? (
-              <dl className="space-y-2">
-                {metadataFields.map((field) => (
-                  <div
-                    key={field.label}
-                    className="grid gap-1 border-b border-border pb-2 last:border-0 last:pb-0 sm:grid-cols-[7rem_1fr]"
-                  >
-                    <dt className="font-label text-muted">{field.label}</dt>
-                    <dd className="font-mono text-xs text-foreground">{field.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            ) : (
-              <p className="font-mono text-xs text-muted">
-                {isScanning
-                  ? t("toolUi.metadataRemover.readingTags")
-                  : t("toolUi.metadataRemover.noMetadata")}
-              </p>
-            )}
-          </div>
-        )}
-
-        {source && metadataRemoved && cleanBlob && (
-          <div className="mt-4 grid gap-3 border border-dashed border-border bg-card p-4 sm:grid-cols-3">
-            <div>
-              <p className="font-label text-muted">{t("common.original")}</p>
-              <p className="mt-1 font-mono text-sm text-foreground">
-                {formatFileSize(source.file.size)}
-              </p>
-            </div>
-            <div>
-              <p className="font-label text-muted">
-                {t("toolUi.metadataRemover.clean")}
-              </p>
-              <p className="mt-1 font-mono text-sm text-foreground">
-                {formatFileSize(cleanBlob.size)}
-              </p>
-            </div>
-            <div>
-              <p className="font-label text-muted">{t("common.status")}</p>
-              <p className="mt-1 font-mono text-sm text-accent">
-                {t("toolUi.metadataRemover.metadataRemoved")}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {error ? (
-          <HelperErrorAlert message={error} className="mt-4" />
+  const cleanOutputContent = !source ? (
+    <span className="text-muted">{t("toolUi.metadataRemover.scanPlaceholder")}</span>
+  ) : isScanning ? (
+    <span className="text-muted">{t("toolUi.metadataRemover.scanning")}</span>
+  ) : (
+    <div className="space-y-2 py-1">
+      <p className="font-mono text-sm text-foreground">
+        {cleanBlob ? formatFileSize(cleanBlob.size) : "—"}
+        {source ? (
+          <span className="text-muted">
+            {" "}
+            · {t("common.original")}: {formatFileSize(source.file.size)}
+          </span>
         ) : null}
-
-        <ToolOutputActions
-          onDownload={handleDownloadClean}
-          onCopy={handleCopyClean}
-          downloadLabel={t("downloads.downloadCleanImage")}
-          disabled={!canDownload}
-          isProcessing={isWorking}
-        />
-
-        <p className="mt-3 text-center font-mono text-[10px] text-muted">
-          {t("toolUi.metadataRemover.footer")}
+      </p>
+      {metadataRemoved ? (
+        <p className="font-mono text-[10px] text-accent">
+          {t("toolUi.metadataRemover.metadataRemoved")}
         </p>
-      
+      ) : null}
+    </div>
+  );
+
+  return (
+    <ToolWorkspace
+      workflowState={{
+        hasSource: !!source,
+        hasConfigured: metadataRemoved && !!cleanBlob,
+        isProcessing: isWorking,
+        isReady: canDownload,
+      }}
+    >
+      <ToolStyledUploadZone
+        inputId="metadata-remover-upload"
+        onFileChange={handleFileChange}
+        isDragging={isDragging}
+        onDraggingChange={setIsDragging}
+        formatHint={t("toolUi.metadataRemover.uploadHint")}
+      >
+        {source ? (
+          <div className="pointer-events-none flex w-full flex-col items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={source.url}
+              alt={t("alt.preview")}
+              className="character-pixelated max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
+            />
+            <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
+              {source.width} × {source.height}px · {formatFileSize(source.file.size)}
+            </p>
+          </div>
+        ) : undefined}
+      </ToolStyledUploadZone>
+
+      <ToolFieldsStage
+        robotAlt={t("characters.robotAlt")}
+        widthAlt={t("characters.widthAlt")}
+        fields={[
+          {
+            label: t("toolUi.metadataRemover.detectedMetadata"),
+            englishLabel: "Metadata",
+            htmlFor: "metadata-remover-detected",
+            children: (
+              <div
+                id="metadata-remover-detected"
+                className="max-h-40 overflow-y-auto px-1 py-2.5"
+              >
+                {!source ? (
+                  <p className="font-mono text-xs text-muted">
+                    {t("toolUi.metadataRemover.scanPlaceholder")}
+                  </p>
+                ) : isScanning ? (
+                  <p className="font-mono text-xs text-muted">
+                    {t("toolUi.metadataRemover.readingTags")}
+                  </p>
+                ) : metadataFields.length > 0 ? (
+                  <dl className="space-y-2">
+                    {metadataFields.map((field) => (
+                      <div
+                        key={field.label}
+                        className="grid gap-1 border-b border-border pb-2 last:border-0 last:pb-0 sm:grid-cols-[6.5rem_1fr]"
+                      >
+                        <dt className="font-label text-muted">{field.label}</dt>
+                        <dd className="font-mono text-xs text-foreground">
+                          {field.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <p className="font-mono text-xs text-muted">
+                    {t("toolUi.metadataRemover.noMetadata")}
+                  </p>
+                )}
+              </div>
+            ),
+          },
+          {
+            label: t("toolUi.metadataRemover.cleanOutput"),
+            englishLabel: "Clean",
+            htmlFor: "metadata-remover-clean-output",
+            accentClass: "text-[var(--glow-purple)]",
+            children: (
+              <output
+                id="metadata-remover-clean-output"
+                className="tool-input block min-h-[2.75rem] border-transparent bg-transparent py-2"
+              >
+                {cleanOutputContent}
+              </output>
+            ),
+          },
+        ]}
+      />
+
+      {error ? (
+        <HelperErrorAlert message={error} className="mt-4" />
+      ) : null}
+
+      <ToolOutputActions
+        onDownload={handleDownloadClean}
+        onCopy={handleCopyClean}
+        downloadLabel={t("downloads.downloadCleanImage")}
+        disabled={!canDownload}
+        isProcessing={isWorking}
+      />
+
+      <p className="mt-3 text-center font-mono text-[10px] text-muted">
+        {t("toolUi.metadataRemover.footer")}
+      </p>
+
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
     </ToolWorkspace>
   );

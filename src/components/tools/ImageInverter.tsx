@@ -1,11 +1,12 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { renderInvertedCanvas } from "@/lib/invertRender";
@@ -14,9 +15,11 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { CHARACTER_SIZES } from "@/lib/characters";
 
 export function ImageInverter() {
   const { t } = useLanguage();
+  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -93,7 +96,7 @@ export function ImageInverter() {
   return (
     <ToolWorkspace>
         {!source ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="image-inverter-upload"
             onFileChange={handleFileChange}
             isDragging={isDraggingFile}
@@ -109,7 +112,7 @@ export function ImageInverter() {
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="space-y-3">
+          <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
             <div className="flex items-center justify-between gap-2">
               <span className="font-label text-muted">{t("common.preview")}</span>
               <span className="font-mono text-[10px] text-muted">
@@ -135,9 +138,23 @@ export function ImageInverter() {
                 {source.width} × {source.height}px · {source.file.name}
               </p>
             )}
+
+            <div
+              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="robot"
+                alt={t("characters.robotAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
+            </div>
           </div>
 
-          <div className="space-y-4 border border-border bg-background p-4">
+          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
             <label className="flex min-h-11 cursor-pointer items-center gap-3">
               <input
                 type="checkbox"
@@ -153,6 +170,20 @@ export function ImageInverter() {
             <p className="font-mono text-[10px] leading-relaxed text-muted">
               {t("toolUi.imageInverter.invertHint")}
             </p>
+
+            <div
+              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="widthAlt"
+                alt={t("characters.widthAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
+            </div>
           </div>
         </div>
 

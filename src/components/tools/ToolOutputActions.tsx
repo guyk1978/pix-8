@@ -3,6 +3,7 @@
 import { HelperSuccessHint } from "@/components/characters/HelperSuccessHint";
 import { ProcessingIndicator } from "@/components/characters/ProcessingIndicator";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { WorkflowStep } from "@/components/tools/workflow/WorkflowStep";
 
 interface ToolOutputActionsProps {
   onDownload: () => void | Promise<void>;
@@ -38,32 +39,39 @@ export function ToolOutputActions({
   const isReady = showSuccessHint && !disabled && !isProcessing;
 
   return (
-    <div className="mt-5 space-y-4">
-      {isProcessing ? (
-        <div className="flex justify-center py-2">
-          <ProcessingIndicator active size="md" progress={80} />
+    <>
+      <WorkflowStep step="process">
+        <div className={`flex justify-center ${isProcessing ? "py-2" : "h-0 overflow-hidden"}`}>
+          {isProcessing ? (
+            <ProcessingIndicator active size="md" progress={80} />
+          ) : null}
         </div>
-      ) : null}
-      {isReady ? <HelperSuccessHint /> : null}
+      </WorkflowStep>
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => void onDownload()}
-          className={primaryButtonClassName}
-        >
-          {isProcessing ? t("common.processing") : downloadLabel}
-        </button>
-        <button
-          type="button"
-          disabled={copyIsDisabled}
-          onClick={() => void onCopy()}
-          className={secondaryButtonClassName}
-        >
-          {isProcessing ? t("common.processing") : resolvedCopyLabel}
-        </button>
-      </div>
-    </div>
+      <WorkflowStep step="download">
+        <div className="mt-5 space-y-4">
+          {isReady ? <HelperSuccessHint /> : null}
+
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => void onDownload()}
+              className={primaryButtonClassName}
+            >
+              {isProcessing ? t("common.processing") : downloadLabel}
+            </button>
+            <button
+              type="button"
+              disabled={copyIsDisabled}
+              onClick={() => void onCopy()}
+              className={secondaryButtonClassName}
+            >
+              {isProcessing ? t("common.processing") : resolvedCopyLabel}
+            </button>
+          </div>
+        </div>
+      </WorkflowStep>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -7,13 +8,14 @@ import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import {
   extractDominantColors,
   type PaletteColor,
 } from "@/lib/paletteExtraction";
+import { CHARACTER_SIZES } from "@/lib/characters";
 
 function loadImageElement(
   url: string,
@@ -29,6 +31,7 @@ function loadImageElement(
 
 export function PaletteExtractor() {
   const { t, language } = useLanguage();
+  const characterSize = CHARACTER_SIZES.field + 8;
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -91,14 +94,21 @@ export function PaletteExtractor() {
   );
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace
+      workflowState={{
+        hasSource: !!source,
+        hasConfigured: true,
+        isProcessing: false,
+        isReady: !!source,
+      }}
+    >
         {!source ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="palette-upload"
             onFileChange={handleFileChange}
             isDragging={isDragging}
             onDraggingChange={setIsDragging}
-            formatHint={t("upload.formatsHint")}
+            formatHint={t("toolUi.paletteExtractor.uploadHint")}
           />
         ) : (
           <div className="space-y-4">
@@ -108,18 +118,34 @@ export function PaletteExtractor() {
               onFileChange={handleFileChange}
             />
 
-            <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={source.url}
-                alt={t("alt.sourcePreview")}
-                className="max-h-48 max-w-full object-contain"
-              />
+            <div className="relative overflow-visible pb-20 sm:pb-24">
+              <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={source.url}
+                  alt={t("alt.sourcePreview")}
+                  className="max-h-48 max-w-full object-contain"
+                />
+              </div>
+
+              <div
+                className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
+                dir="ltr"
+              >
+                <HelperCharacter
+                  character="robot"
+                  alt={t("characters.robotAlt")}
+                  size={characterSize}
+                  glow="soft"
+                  pixelated
+                  animate="float"
+                />
+              </div>
             </div>
           </div>
         )}
 
-        <section className="mt-6">
+        <section className="relative mt-6 overflow-visible pb-20 sm:pb-24">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-label text-foreground">
               {t("toolUi.paletteExtractor.extractedPalette")}
@@ -185,6 +211,20 @@ export function PaletteExtractor() {
               ))}
             </div>
           )}
+
+          <div
+            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
+            dir="ltr"
+          >
+            <HelperCharacter
+              character="widthAlt"
+              alt={t("characters.widthAlt")}
+              size={characterSize}
+              glow="soft"
+              pixelated
+              animate="float"
+            />
+          </div>
         </section>
 
         {source && (

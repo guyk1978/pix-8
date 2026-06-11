@@ -1,13 +1,42 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { CHARACTER_SIZES } from "@/lib/characters";
+import {
+  getPublishedWorkflowStep,
+  subscribeWorkflowStep,
+} from "@/lib/workflowStatus";
 
 const STEP_KEYS = ["upload", "process", "download"] as const;
 
+const ACTIVE_RING: Record<(typeof STEP_KEYS)[number], string> = {
+  upload: "120 94",
+  process: "90 124",
+  download: "60 154",
+};
+
 export function SidebarProgressTracker() {
   const { t } = useLanguage();
+  const activeStep = useSyncExternalStore(
+    subscribeWorkflowStep,
+    getPublishedWorkflowStep,
+    () => null,
+  );
+
+  const sidebarStep =
+    activeStep === "upload"
+      ? "upload"
+      : activeStep === "download"
+        ? "download"
+        : activeStep === "process" || activeStep === "configure"
+          ? "process"
+          : "upload";
+
+  const ringDash = ACTIVE_RING[sidebarStep];
+  const processingCharacter =
+    sidebarStep === "process" ? "processingAlt" : "processing";
 
   return (
     <div className="mx-3 mb-4 flex flex-col items-center gap-3 rounded-md border border-border bg-card p-4">
@@ -33,7 +62,7 @@ export function SidebarProgressTracker() {
             stroke="url(#sidebar-progress-gradient)"
             strokeWidth="4"
             strokeLinecap="round"
-            strokeDasharray="60 154"
+            strokeDasharray={ringDash}
           />
           <defs>
             <linearGradient
@@ -53,7 +82,7 @@ export function SidebarProgressTracker() {
         </svg>
 
         <HelperCharacter
-          character="processing"
+          character={processingCharacter}
           alt={t("characters.processingAlt")}
           size={CHARACTER_SIZES.sidebar}
           glow
@@ -66,7 +95,11 @@ export function SidebarProgressTracker() {
         {STEP_KEYS.map((step) => (
           <span
             key={step}
-            className="font-label text-[8px] leading-tight text-muted"
+            className={`font-label text-[8px] leading-tight ${
+              sidebarStep === step
+                ? "text-[var(--glow-teal)]"
+                : "text-muted"
+            }`}
           >
             {t(`progress.${step}`)}
           </span>

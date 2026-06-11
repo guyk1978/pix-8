@@ -1,13 +1,14 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { SliderControl } from "@/components/ui/SliderControl";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   DEFAULT_GRAYSCALE_SETTINGS,
@@ -19,6 +20,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { CHARACTER_SIZES } from "@/lib/characters";
 
 type GrayscalePresetKey = "neutral" | "dramatic" | "soft";
 
@@ -30,6 +32,7 @@ const PRESETS: { key: GrayscalePresetKey; settings: GrayscaleSettings }[] = [
 
 export function GrayscaleConverter() {
   const { t } = useLanguage();
+  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -111,7 +114,7 @@ export function GrayscaleConverter() {
   return (
     <ToolWorkspace>
         {!source ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="grayscale-converter-upload"
             onFileChange={handleFileChange}
             isDragging={isDraggingFile}
@@ -127,7 +130,7 @@ export function GrayscaleConverter() {
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="space-y-3">
+          <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
             <span className="font-label text-muted">{t("common.preview")}</span>
             <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
               {source ? (
@@ -146,9 +149,23 @@ export function GrayscaleConverter() {
                 {source.width} × {source.height}px · {source.file.name}
               </p>
             )}
+
+            <div
+              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="robot"
+                alt={t("characters.robotAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
+            </div>
           </div>
 
-          <div className="space-y-4 border border-border bg-background p-4">
+          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
             <div className="space-y-2">
               <span className="font-label text-muted">{t("common.presets")}</span>
               <div className="grid grid-cols-3 gap-1.5">
@@ -198,6 +215,20 @@ export function GrayscaleConverter() {
             >
               {t("toolUi.grayscale.resetAdjustments")}
             </button>
+
+            <div
+              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="widthAlt"
+                alt={t("characters.widthAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
+            </div>
           </div>
         </div>
 

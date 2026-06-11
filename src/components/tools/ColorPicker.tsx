@@ -1,18 +1,20 @@
 "use client";
 
-import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import {
   sampleColorFromCanvas,
   type SampledColor,
 } from "@/lib/colorUtils";
+import { CHARACTER_SIZES } from "@/lib/characters";
 
 const MAGNIFIER_SIZE = 11;
 const MAGNIFIER_ZOOM = 12;
@@ -108,6 +110,7 @@ function drawMagnifier(
 
 export function ColorPicker() {
   const { t, language } = useLanguage();
+  const characterSize = CHARACTER_SIZES.field + 8;
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -261,9 +264,16 @@ export function ColorPicker() {
     : undefined;
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace
+      workflowState={{
+        hasSource: !!source,
+        hasConfigured: true,
+        isProcessing: false,
+        isReady: !!source,
+      }}
+    >
         {!source ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="color-picker-upload"
             onFileChange={handleFileChange}
             isDragging={isDragging}
@@ -285,36 +295,52 @@ export function ColorPicker() {
               onFileChange={handleFileChange}
             />
 
-            <div
-              ref={viewerRef}
-              className="relative overflow-hidden rounded-sm border border-border bg-background"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                ref={imageRef}
-                src={source.url}
-                alt={t("alt.colorSamplingSource")}
-                className="mx-auto block max-h-[28rem] w-full cursor-crosshair object-contain"
-                onMouseMove={handlePointerMove}
-                onMouseLeave={handlePointerLeave}
-                onClick={handlePick}
-              />
+            <div className="relative overflow-visible pb-20 sm:pb-24">
+              <div
+                ref={viewerRef}
+                className="relative overflow-hidden rounded-sm border border-border bg-background"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  ref={imageRef}
+                  src={source.url}
+                  alt={t("alt.colorSamplingSource")}
+                  className="mx-auto block max-h-[28rem] w-full cursor-crosshair object-contain"
+                  onMouseMove={handlePointerMove}
+                  onMouseLeave={handlePointerLeave}
+                  onClick={handlePick}
+                />
 
-              {pointer && (
-                <div
-                  className="pointer-events-none fixed z-50 rounded-sm border border-border bg-card p-1 shadow-lg"
-                  style={magnifierStyle}
-                >
-                  <p className="mb-1 px-1 font-mono text-[9px] text-muted">
-                    {pointer.x}, {pointer.y}
-                  </p>
-                  <canvas
-                    ref={magnifierRef}
-                    className="block"
-                    aria-hidden="true"
-                  />
-                </div>
-              )}
+                {pointer && (
+                  <div
+                    className="pointer-events-none fixed z-50 rounded-sm border border-border bg-card p-1 shadow-lg"
+                    style={magnifierStyle}
+                  >
+                    <p className="mb-1 px-1 font-mono text-[9px] text-muted">
+                      {pointer.x}, {pointer.y}
+                    </p>
+                    <canvas
+                      ref={magnifierRef}
+                      className="block"
+                      aria-hidden="true"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div
+                className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
+                dir="ltr"
+              >
+                <HelperCharacter
+                  character="robot"
+                  alt={t("characters.robotAlt")}
+                  size={characterSize}
+                  glow="soft"
+                  pixelated
+                  animate="float"
+                />
+              </div>
             </div>
 
             <p className="font-mono text-[10px] text-muted">
@@ -323,7 +349,7 @@ export function ColorPicker() {
           </div>
         )}
 
-        <section className="mt-6 border-t border-border pt-6">
+        <section className="relative mt-6 overflow-visible border-t border-border pt-6 pb-20 sm:pb-24">
           <div className="mb-4 flex items-center justify-between gap-2">
             <h2 className="font-label text-foreground">{t("toolUi.colorPicker.sampledColor")}</h2>
             {pointer && (
@@ -389,6 +415,20 @@ export function ColorPicker() {
               </div>
             </div>
           )}
+
+          <div
+            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
+            dir="ltr"
+          >
+            <HelperCharacter
+              character="widthAlt"
+              alt={t("characters.widthAlt")}
+              size={characterSize}
+              glow="soft"
+              pixelated
+              animate="float"
+            />
+          </div>
         </section>
 
         {error ? (

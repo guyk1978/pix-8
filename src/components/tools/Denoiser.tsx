@@ -1,14 +1,15 @@
 "use client";
 
-import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
+import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
-import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { SliderControl } from "@/components/ui/SliderControl";
 import {
   DEFAULT_DENOISE_SETTINGS,
@@ -21,6 +22,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { CHARACTER_SIZES } from "@/lib/characters";
 
 function loadImageElement(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -33,6 +35,7 @@ function loadImageElement(url: string): Promise<HTMLImageElement> {
 
 export function Denoiser() {
   const { t, language } = useLanguage();
+  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -190,7 +193,7 @@ export function Denoiser() {
   return (
     <ToolWorkspace>
         {!source ? (
-          <ImageUploadDropzone
+          <ToolStyledUploadZone
             inputId="denoiser-upload"
             onFileChange={handleFileChange}
             isDragging={isDraggingFile}
@@ -206,7 +209,7 @@ export function Denoiser() {
         )}
 
         <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="space-y-3">
+          <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
             <div className="flex items-center justify-between gap-2">
               <span className="font-label text-muted">
                 {t("toolUi.denoiser.beforeAfter")}
@@ -275,9 +278,23 @@ export function Denoiser() {
                     })}
               </p>
             )}
+
+            <div
+              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="robot"
+                alt={t("characters.robotAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
+            </div>
           </div>
 
-          <div className="space-y-4 border border-border bg-background p-4">
+          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
             <SliderControl
               id="denoise-strength"
               label={t("common.strength")}
@@ -299,6 +316,20 @@ export function Denoiser() {
             >
               {t("toolUi.denoiser.resetStrength")}
             </button>
+
+            <div
+              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
+              dir="ltr"
+            >
+              <HelperCharacter
+                character="widthAlt"
+                alt={t("characters.widthAlt")}
+                size={characterSize}
+                glow="soft"
+                pixelated
+                animate="float"
+              />
+            </div>
           </div>
         </div>
 
