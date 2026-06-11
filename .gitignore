@@ -25,7 +25,6 @@
 .DS_Store
 .cache/
 .wrangler/
-/functions/
 /local/
 *.pem
 
