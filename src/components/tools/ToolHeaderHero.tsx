@@ -1,5 +1,6 @@
 "use client";
 
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { WorkflowAnchor } from "@/components/tools/workflow/WorkflowStep";
@@ -44,6 +45,7 @@ export function ToolHeaderHero({ toolId, title, description }: ToolHeaderHeroPro
             <h1 className="text-xl font-medium tracking-tight text-foreground sm:text-2xl">
               {title}
             </h1>
+            <FavoriteButton toolSlug={toolId} />
             <span className="tool-speech-bubble hidden font-label text-[10px] text-[var(--glow-teal)] sm:inline">
               {title}
             </span>

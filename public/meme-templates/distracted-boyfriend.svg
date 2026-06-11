@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="533" viewBox="0 0 800 533" role="img" aria-label="Distracted Boyfriend meme template">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8ec5e8"/>
+      <stop offset="100%" stop-color="#d8e8f2"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="533" fill="url(#sky)"/>
+  <rect y="384" width="800" height="149" fill="#6f7f86"/>
+  <circle cx="176" cy="180" r="34" fill="#d9a27c"/>
+  <rect x="140" y="208" width="72" height="150" fill="#c0392b"/>
+  <circle cx="400" cy="180" r="34" fill="#d9a27c"/>
+  <rect x="364" y="208" width="72" height="150" fill="#3d4f5f"/>
+  <rect x="382" y="160" width="36" height="18" fill="#1f2326"/>
+  <circle cx="624" cy="180" r="34" fill="#d9a27c"/>
+  <rect x="588" y="208" width="72" height="150" fill="#2980b9"/>
+  <path d="M420 160 Q560 120 604 180" fill="none" stroke="#1f2326" stroke-width="3"/>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-label="Two Buttons meme template">
+  <rect width="600" height="600" fill="#eef1f4"/>
+  <rect x="48" y="108" width="204" height="168" rx="18" fill="#3498db" stroke="#1f2326" stroke-width="3"/>
+  <text x="150" y="210" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#fff">BUTTON A</text>
+  <rect x="348" y="108" width="204" height="168" rx="18" fill="#e74c3c" stroke="#1f2326" stroke-width="3"/>
+  <text x="450" y="210" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#fff">BUTTON B</text>
+  <circle cx="300" cy="392" r="36" fill="#d9a27c"/>
+  <rect x="250" y="432" width="100" height="120" fill="#f39c12"/>
+  <g stroke="#1f2326" stroke-width="3">
+    <line x1="300" y1="340" x2="300" y2="320"/>
+    <line x1="326" y1="353" x2="342" y2="339"/>
+    <line x1="352" y1="392" x2="372" y2="392"/>
+    <line x1="326" y1="431" x2="342" y2="445"/>
+    <line x1="274" y1="431" x2="258" y2="445"/>
+    <line x1="248" y1="392" x2="228" y2="392"/>
+    <line x1="274" y1="353" x2="258" y2="339"/>
+  </g>
+</svg>

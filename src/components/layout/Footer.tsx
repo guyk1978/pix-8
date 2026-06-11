@@ -4,7 +4,12 @@ import Link from "next/link";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
 import { JOIN_MY_PDF_URL } from "@/lib/external-links";
+import { getToolCategoryHref } from "@/lib/toolCategoryPages";
+import { SIDEBAR_NAV_CATEGORIES } from "@/lib/sidebarNav";
 import { tools } from "@/lib/tools";
+
+const footerLinkClassName =
+  "font-mono text-xs text-muted transition-colors hover:text-foreground";
 
 export function Footer() {
   const { t } = useLanguage();
@@ -13,8 +18,8 @@ export function Footer() {
   return (
     <footer className="glass-panel mt-auto border-x-0 border-b-0">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <div className="grid gap-8 sm:grid-cols-[1fr_auto]">
-          <div className="space-y-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-3 sm:col-span-2 lg:col-span-1">
             <div className="flex items-baseline gap-1">
               <span className="font-mono text-sm font-medium text-foreground">
                 pix
@@ -28,20 +33,34 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-1">
-            <span className="font-label col-span-full text-muted">
-              {t("footer.tools")}
-            </span>
-            {tools.map((tool) => (
-              <Link
-                key={tool.id}
-                href={tool.href}
-                className="font-mono text-xs text-muted transition-colors hover:text-foreground"
-              >
-                {t(getToolTranslationKey(tool.id, "name"))}
-              </Link>
-            ))}
-          </div>
+          <nav aria-label={t("footer.categories")} className="space-y-2">
+            <span className="font-label text-muted">{t("footer.categories")}</span>
+            <ul className="space-y-2">
+              {SIDEBAR_NAV_CATEGORIES.map((category) => (
+                <li key={category.id}>
+                  <Link
+                    href={getToolCategoryHref(category.id)}
+                    className={footerLinkClassName}
+                  >
+                    {t(`nav.toolCategories.${category.id}`)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <nav aria-label={t("footer.tools")} className="space-y-2">
+            <span className="font-label text-muted">{t("footer.tools")}</span>
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-2">
+              {tools.map((tool) => (
+                <li key={tool.id}>
+                  <Link href={tool.href} className={footerLinkClassName}>
+                    {t(getToolTranslationKey(tool.id, "name"))}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
 
         <div className="mt-8 border-t border-border pt-6">

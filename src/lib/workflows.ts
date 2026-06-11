@@ -24,6 +24,10 @@ const WORKFLOW_MAP: Record<ToolId, ToolId[]> = {
   "lens-corrector": ["cropper", "resizer", "sharpener"],
   "grain-generator": ["grayscale-converter", "compressor", "border-generator"],
   "base64-encoder": ["favicon-generator", "css-palette-gen", "compressor"],
+  "image-filters": ["compressor", "border-generator", "watermark"],
+  "image-to-svg": ["compressor", "favicon-generator", "border-generator"],
+  "image-collage": ["compressor", "border-generator", "image-filters"],
+  "meme-generator": ["compressor", "cropper", "text-overlay"],
 };
 
 export function getWorkflowSuggestions(toolId: ToolId): WorkflowLink[] {

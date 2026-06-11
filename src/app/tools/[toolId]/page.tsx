@@ -12,11 +12,15 @@ import { CssPaletteGenerator } from "@/components/tools/CssPaletteGenerator";
 import { GrainGenerator } from "@/components/tools/GrainGenerator";
 import { LensCorrector } from "@/components/tools/LensCorrector";
 import { Denoiser } from "@/components/tools/Denoiser";
+import { ImageCollageMaker } from "@/components/tools/ImageCollageMaker";
+import { ImageFilters } from "@/components/tools/ImageFilters";
 import { ImageInverter } from "@/components/tools/ImageInverter";
+import { ImageToSvgConverter } from "@/components/tools/ImageToSvgConverter";
 import { LightAdjuster } from "@/components/tools/LightAdjuster";
 import { Sharpener } from "@/components/tools/Sharpener";
 import { GrayscaleConverter } from "@/components/tools/GrayscaleConverter";
 import { TextOverlay } from "@/components/tools/TextOverlay";
+import { MemeGenerator } from "@/components/tools/MemeGenerator";
 import { MetadataRemover } from "@/components/tools/MetadataRemover";
 import { PaletteExtractor } from "@/components/tools/PaletteExtractor";
 import { Resizer } from "@/components/tools/Resizer";
@@ -50,6 +54,10 @@ const TOOL_COMPONENTS: Partial<Record<ToolId, ComponentType>> = {
   "lens-corrector": LensCorrector,
   "grain-generator": GrainGenerator,
   "base64-encoder": Base64Encoder,
+  "image-filters": ImageFilters,
+  "image-to-svg": ImageToSvgConverter,
+  "image-collage": ImageCollageMaker,
+  "meme-generator": MemeGenerator,
 };
 
 interface ToolPageProps {

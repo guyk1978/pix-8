@@ -7,6 +7,7 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { SupportingArticleLink } from "@/components/tools/SupportingArticleLink";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   buildDownloadFilename,
@@ -15,14 +16,35 @@ import {
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 
-type AspectPreset = "free" | "1:1" | "16:9" | "4:3";
+type AspectPreset = "free" | "1:1" | "16:9" | "4:3" | "9:16" | "4:5";
+
+type SocialPresetId =
+  | "instagram-square"
+  | "story-reel"
+  | "landscape-cover"
+  | "instagram-portrait";
 
 const ASPECT_PRESETS: { id: AspectPreset; ratio: number | null }[] = [
   { id: "free", ratio: null },
   { id: "1:1", ratio: 1 },
   { id: "16:9", ratio: 16 / 9 },
   { id: "4:3", ratio: 4 / 3 },
+  { id: "9:16", ratio: 9 / 16 },
+  { id: "4:5", ratio: 4 / 5 },
 ];
+
+const SOCIAL_PRESETS: { id: SocialPresetId; aspect: AspectPreset }[] = [
+  { id: "instagram-square", aspect: "1:1" },
+  { id: "story-reel", aspect: "9:16" },
+  { id: "landscape-cover", aspect: "16:9" },
+  { id: "instagram-portrait", aspect: "4:5" },
+];
+
+const GENERIC_ASPECT_PRESETS: AspectPreset[] = ["free", "1:1", "16:9", "4:3"];
+
+function getAspectRatio(preset: AspectPreset): number | null {
+  return ASPECT_PRESETS.find((entry) => entry.id === preset)?.ratio ?? null;
+}
 
 const buttonClassName =
   "min-h-9 rounded-sm border border-border px-3 py-1.5 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
@@ -146,12 +168,25 @@ export function Cropper() {
 
   const [crop, setCrop] = useState<CropRegion | null>(null);
   const [aspectPreset, setAspectPreset] = useState<AspectPreset>("free");
+  const [socialPreset, setSocialPreset] = useState<SocialPresetId | null>(null);
   const [stripMetadata, setStripMetadata] = useState(true);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [displaySize, setDisplaySize] = useState({ width: 0, height: 0 });
 
-  const aspectRatio =
-    ASPECT_PRESETS.find((preset) => preset.id === aspectPreset)?.ratio ?? null;
+  const aspectRatio = getAspectRatio(aspectPreset);
+
+  const applyAspectPreset = useCallback(
+    (preset: AspectPreset, social: SocialPresetId | null = null) => {
+      setAspectPreset(preset);
+      setSocialPreset(social);
+
+      if (!source) return;
+
+      const ratio = getAspectRatio(preset);
+      setCrop(createInitialCrop(source.width, source.height, ratio));
+    },
+    [source],
+  );
 
   const updateDisplaySize = useCallback(() => {
     const image = imageRef.current;
@@ -166,10 +201,13 @@ export function Cropper() {
   useEffect(() => {
     if (!source) {
       setCrop(null);
+      setSocialPreset(null);
       return;
     }
 
-    setCrop(createInitialCrop(source.width, source.height, aspectRatio));
+    setSocialPreset(null);
+    setAspectPreset("free");
+    setCrop(createInitialCrop(source.width, source.height, null));
   }, [source]);
 
   useEffect(() => {
@@ -352,6 +390,7 @@ export function Cropper() {
             onFileChange={handleFileChange}
             isDragging={isDraggingFile}
             onDraggingChange={setIsDraggingFile}
+            formatHint={t("toolUi.cropper.uploadHint")}
           />
         ) : (
           <div className="space-y-4 rounded-sm border border-border bg-background p-2 sm:p-3">
@@ -431,27 +470,62 @@ export function Cropper() {
           widthAlt={t("characters.widthAlt")}
           fields={[
             {
+              label: t("toolUi.cropper.socialPresets"),
+              englishLabel: "Social",
+              htmlFor: "cropper-social-square",
+              accentClass: "text-[var(--glow-purple)]",
+              children: (
+                <div className="grid grid-cols-1 gap-1.5 px-1 py-2.5">
+                  {SOCIAL_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      id={
+                        preset.id === "instagram-square"
+                          ? "cropper-social-square"
+                          : undefined
+                      }
+                      type="button"
+                      disabled={!source}
+                      onClick={() => applyAspectPreset(preset.aspect, preset.id)}
+                      className={`${buttonClassName} flex min-h-10 flex-col items-start gap-0.5 px-3 py-2 text-start ${
+                        socialPreset === preset.id
+                          ? activeButtonClassName
+                          : "bg-background"
+                      }`}
+                    >
+                      <span className="font-label text-xs text-foreground">
+                        {t(`toolUi.cropper.social.${preset.id}.title`)}
+                      </span>
+                      <span className="font-mono text-[10px] text-muted">
+                        {t(`toolUi.cropper.social.${preset.id}.hint`)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              ),
+            },
+            {
               label: t("toolUi.cropper.aspectRatio"),
               englishLabel: "Aspect",
               htmlFor: "cropper-aspect-free",
               children: (
                 <div className="flex flex-wrap gap-2 px-1 py-2.5">
-                  {ASPECT_PRESETS.map((preset) => (
+                  {GENERIC_ASPECT_PRESETS.map((presetId) => (
                     <button
-                      key={preset.id}
-                      id={preset.id === "free" ? "cropper-aspect-free" : undefined}
+                      key={presetId}
+                      id={presetId === "free" ? "cropper-aspect-free" : undefined}
                       type="button"
                       disabled={!source}
-                      onClick={() => setAspectPreset(preset.id)}
+                      onClick={() => applyAspectPreset(presetId, null)}
                       className={`${buttonClassName} ${
-                        aspectPreset === preset.id
+                        aspectPreset === presetId && !socialPreset
                           ? activeButtonClassName
                           : "bg-background"
                       }`}
                     >
-                      {preset.id === "free"
+                      {presetId === "free"
                         ? t("toolUi.cropper.free")
-                        : preset.id}
+                        : presetId}
                     </button>
                   ))}
                 </div>
@@ -495,7 +569,17 @@ export function Cropper() {
           disabled={!canCrop}
           isProcessing={isProcessing}
         />
-      
+
+        <p className="mt-3 text-center font-mono text-[10px] text-muted">
+          {t("toolUi.cropper.footer")}
+        </p>
+
+        <SupportingArticleLink
+          slug="social-media-cropping-guide"
+          label={t("toolUi.cropper.guideLabel")}
+          title={t("toolUi.cropper.guideTitle")}
+        />
+
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
     </ToolWorkspace>
   );

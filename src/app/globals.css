@@ -106,6 +106,16 @@ body {
   display: none;
 }
 
+.sidebar-shell[data-collapsed="true"] .sidebar-category-tools {
+  display: none;
+}
+
+.sidebar-category-tools {
+  margin-inline-start: 0.5rem;
+  padding-inline-start: 0.5rem;
+  border-inline-start: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
 .sidebar-shell[data-collapsed="true"] .sidebar-section-chevron {
   width: 0;
   opacity: 0;

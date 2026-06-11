@@ -22,7 +22,11 @@ export type ToolId =
   | "css-palette-gen"
   | "lens-corrector"
   | "grain-generator"
-  | "base64-encoder";
+  | "base64-encoder"
+  | "image-filters"
+  | "image-to-svg"
+  | "image-collage"
+  | "meme-generator";
 
 export interface Tool {
   id: ToolId;
@@ -231,6 +235,46 @@ export const tools: Tool[] = [
     href: "/tools/base64-encoder",
     tag: "ENCODE",
     category: "optimization",
+    status: "ready",
+  },
+  {
+    id: "image-filters",
+    name: "Image Filters & Effects",
+    description:
+      "Apply grayscale, sepia, vintage, blur, and vignette effects with a before/after preview.",
+    href: "/tools/image-filters",
+    tag: "FILTERS",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "image-to-svg",
+    name: "Image to SVG Converter",
+    description:
+      "Trace PNG and JPEG images into scalable SVG vectors with adjustable detail and color modes.",
+    href: "/tools/image-to-svg",
+    tag: "VECTOR",
+    category: "advanced",
+    status: "ready",
+  },
+  {
+    id: "image-collage",
+    name: "Image Collage Maker",
+    description:
+      "Combine multiple photos into grid, row, or column layouts with adjustable spacing and background.",
+    href: "/tools/image-collage",
+    tag: "COLLAGE",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "meme-generator",
+    name: "Meme Generator",
+    description:
+      "Add classic top and bottom Impact text with outlines to any image. Real-time preview, client-side only.",
+    href: "/tools/meme-generator",
+    tag: "MEME",
+    category: "basic-editing",
     status: "ready",
   },
 ];

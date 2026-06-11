@@ -9,6 +9,8 @@ import {
   FlipVertical2,
   Focus,
   Frame,
+  Laugh,
+  LayoutGrid,
   Globe,
   Maximize,
   Maximize2,
@@ -16,6 +18,8 @@ import {
   Pipette,
   RotateCw,
   ScanLine,
+  SlidersHorizontal,
+  Spline,
   ShieldOff,
   Sparkles,
   Stamp,
@@ -49,6 +53,10 @@ const TOOL_ICONS: Record<ToolId, LucideIcon> = {
   "lens-corrector": Maximize,
   "grain-generator": Aperture,
   "base64-encoder": Binary,
+  "image-filters": SlidersHorizontal,
+  "image-to-svg": Spline,
+  "image-collage": LayoutGrid,
+  "meme-generator": Laugh,
 };
 
 interface ToolIconProps {

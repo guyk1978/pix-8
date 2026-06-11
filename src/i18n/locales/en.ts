@@ -4,6 +4,14 @@ export const en = {
     blog: "Blog",
     tools: "Tools",
     advanced: "Advanced",
+    toolCategoriesLabel: "Tool categories",
+    toolCategories: {
+      "editor-studio": "Editor Studio",
+      optimization: "Optimization",
+      "dev-tools": "Dev Tools",
+      enhancement: "Enhancement",
+    },
+    favorites: "Favorites",
     settings: "Settings",
     joinMyPdf: "Combine images into a PDF",
     zeroUploads: "Zero uploads · Zero tracking",
@@ -46,11 +54,141 @@ export const en = {
     noToolsHint: "Try a different search term.",
     utility: "utility",
     utilities: "utilities",
+    browseCategories: "Browse by category",
+  },
+  toolCategoryPages: {
+    eyebrow: "Tool category",
+    breadcrumbLabel: "Breadcrumb",
+    breadcrumbHome: "Home",
+    breadcrumbTools: "Tools",
+    toolsHeading: "Tools in this category",
+    toolCountOne: "1 tool",
+    toolCount: "{count} tools",
+    faqHeading: "Frequently asked questions",
+    privacyNote:
+      "Every tool in this category runs client-side — your images never leave your browser.",
+    otherCategories: "Explore other categories",
+    "editor-studio": {
+      title: "Editor Studio — Creative Image Editing Online",
+      description:
+        "Crop, frame, caption, and compose images for social feeds, memes, and branded content — without installing software or uploading files to a server.",
+      intro:
+        "Editor Studio groups Pix-8's core creative utilities: resize and crop for platform-ready frames, rotate and flip for orientation fixes, text and meme tools for shareable content, collages for multi-photo stories, watermarks for brand protection, and filters for instant mood changes. Every tool shares the same privacy promise — 100% browser-based processing.",
+      benefitsTitle: "Why use Editor Studio tools?",
+      benefit1:
+        "Compose once, publish everywhere — crop to Instagram ratios, add captions, and export in seconds.",
+      benefit2:
+        "Meme and collage workflows stay local, so drafts and personal photos never touch a cloud server.",
+      benefit3:
+        "Chain tools freely: crop in the Cropper, filter in Image Filters, then watermark before download.",
+      faq1Question: "Do I need an account for Editor Studio tools?",
+      faq1Answer:
+        "No. Open any tool, upload an image, and download the result immediately. Pix-8 is built for frictionless, anonymous use.",
+      faq2Question: "Can I combine multiple Editor Studio tools on one image?",
+      faq2Answer:
+        "Yes. Export from one tool and open the file in another — for example, crop first, then add text or a meme caption.",
+      faq3Question: "Are meme templates included?",
+      faq3Answer:
+        "The Meme Generator includes a built-in gallery with classic layouts like Distracted Boyfriend and Drake Hotline Bling, plus support for your own uploads.",
+      faq4Question: "Will social platforms re-compress my exports?",
+      faq4Answer:
+        "Platforms always re-encode uploads. Start with a well-cropped source and use the Compressor afterward if you need a smaller file size.",
+    },
+    optimization: {
+      title: "Image Optimization — Faster, Smaller, Safer Files",
+      description:
+        "Shrink file sizes, convert formats, strip sensitive metadata, and remove backgrounds — the essential pipeline for web performance and privacy.",
+      intro:
+        "Optimization tools prepare images for production. Compress JPEG and WebP files for faster page loads. Convert between PNG, JPEG, WebP, and AVIF without desktop software. Remove EXIF and GPS data before sharing. Cut out backgrounds for product shots and portraits using on-device AI. All steps run locally in your browser.",
+      benefitsTitle: "Why optimize before you publish?",
+      benefit1:
+        "Smaller files improve Core Web Vitals, email deliverability, and mobile upload success.",
+      benefit2:
+        "Metadata removal protects location data, camera serials, and client confidentiality.",
+      benefit3:
+        "Background removal and format conversion in one privacy-first suite — no SaaS lock-in.",
+      faq1Question: "Does compression reduce visible quality?",
+      faq1Answer:
+        "Lossy compression always trades bytes for detail. Pix-8 exposes quality sliders so you can preview the balance before export.",
+      faq2Question: "Which format should I choose for the web?",
+      faq2Answer:
+        "WebP and AVIF offer excellent compression for photos. PNG remains best for transparency. The Converter lets you compare outputs side by side.",
+      faq3Question: "Is the Background Remover really local?",
+      faq3Answer:
+        "Yes. Models run via WebAssembly and ONNX in your browser. Images are not uploaded for cloud inference.",
+      faq4Question: "When should I strip metadata?",
+      faq4Answer:
+        "Before publishing client work, social posts from your phone, or any image that may contain GPS or device identifiers.",
+    },
+    "dev-tools": {
+      title: "Developer Tools — Code-Ready Image Utilities",
+      description:
+        "Extract palettes, encode Base64, trace SVG vectors, sample pixel colors, and generate favicons — built for front-end developers and designers shipping production assets.",
+      intro:
+        "Dev Tools bridge design and implementation. Pull dominant colors from a hero image and export CSS variables. Convert assets to Base64 for inline HTML or email templates. Trace bitmaps to SVG for scalable icons. Pick exact HEX values from screenshots. Generate favicon.ico and PNG sizes for modern browsers. Every output is copy-paste ready.",
+      benefitsTitle: "Why developers choose Pix-8 Dev Tools",
+      benefit1:
+        "No CLI setup — inspect an image in the browser and copy code-ready output immediately.",
+      benefit2:
+        "Palette and CSS generators align design tokens with real screenshot colors, not guesswork.",
+      benefit3:
+        "Vector tracing and favicon export stay on-device, keeping unreleased UI mockups private.",
+      faq1Question: "Can I use Base64 output in production?",
+      faq1Answer:
+        "Yes for small icons and placeholders. Large Base64 blobs inflate HTML — prefer external files for big heroes.",
+      faq2Question: "How accurate is SVG tracing?",
+      faq2Answer:
+        "Tracing works best on logos, icons, and flat illustrations. Detailed photos produce large paths — simplify sources when possible.",
+      faq3Question: "Do CSS palette exports include Tailwind config?",
+      faq3Answer:
+        "The CSS Palette Generator exports CSS custom properties, JSON, and Tailwind-friendly token blocks.",
+      faq4Question: "What favicon sizes are generated?",
+      faq4Answer:
+        "The Favicon Generator produces common browser and PWA sizes from a single source image, downloadable as ICO or PNG.",
+    },
+    enhancement: {
+      title: "Image Enhancement — Polish, Correct & Stylize",
+      description:
+        "Recover detail, fix exposure, reduce noise, add film grain, invert colors, straighten lens distortion, and frame images — fine-tuning tools for photographers and creators.",
+      intro:
+        "Enhancement tools refine images after capture. Sharpen soft exports. Adjust brightness and contrast without leaving the browser. Denoise high-ISO shots. Add cinematic grain or clean borders for presentation. Convert to grayscale with tone control. Invert colors for creative effects. Correct barrel distortion from wide-angle lenses.",
+      benefitsTitle: "When to reach for Enhancement tools",
+      benefit1:
+        "Rescue slightly soft or noisy photos before posting — faster than reopening a RAW workflow.",
+      benefit2:
+        "Lens correction and light adjustment fix geometry and exposure without a Lightroom subscription.",
+      benefit3:
+        "Grain, borders, and grayscale stylize assets for print-inspired or minimalist brand aesthetics.",
+      faq1Question: "Will sharpening fix a blurry photo?",
+      faq1Answer:
+        "Sharpening enhances edges; it cannot recover true motion blur or missed focus. Use moderate values to avoid halos.",
+      faq2Question: "Is denoising destructive?",
+      faq2Answer:
+        "Denoising smooths grain but may soften fine detail. Preview at full zoom before exporting final assets.",
+      faq3Question: "Can I add borders for Instagram aspect ratios?",
+      faq3Answer:
+        "Yes. The Border Generator adds padding and frames when your source is too small to crop to wide ratios without stretching.",
+      faq4Question: "Does grayscale conversion support contrast tweaks?",
+      faq4Answer:
+        "The Grayscale Converter includes brightness and contrast sliders beyond a simple desaturate.",
+    },
+  },
+  favorites: {
+    eyebrow: "Saved tools",
+    title: "Favorites",
+    description:
+      "Quick access to the Pix-8 tools you star most often. Saved locally in your browser.",
+    empty: "No favorites yet",
+    emptyHint: "Tap the star on any tool card or tool page to save it here.",
+    browseTools: "Browse all tools",
+    addLabel: "Add to favorites",
+    removeLabel: "Remove from favorites",
   },
   footer: {
     description:
       "Privacy-first image utilities. All processing runs in your browser — files never leave your device.",
     tools: "Tools",
+    categories: "Categories",
     joinMyPdfTitle: "Done editing? Combine these images into a PDF",
     joinMyPdfLink: "Open JoinMyPDF →",
     copyright: "© {year} pix-8",
@@ -297,11 +435,35 @@ export const en = {
       calculating: "Calculating…",
     },
     cropper: {
+      uploadHint: "PNG · JPEG · WebP · social-ready crops",
       free: "Free",
+      socialPresets: "Social Media Presets",
       aspectRatio: "Aspect Ratio",
       cropSize: "Crop Size",
       cropStatus: "· Crop {width} × {height}px",
       cropPlaceholder: "Upload an image to crop",
+      footer: "Cropping runs locally — your image never leaves the browser.",
+      guideLabel: "Want platform-specific cropping tips and aspect ratio guides?",
+      guideTitle:
+        "The Complete Guide to Social Media Cropping – Master Your Content",
+      social: {
+        "instagram-square": {
+          title: "Square (1:1)",
+          hint: "Instagram feed · profile posts",
+        },
+        "story-reel": {
+          title: "Story / Reel (9:16)",
+          hint: "TikTok · Instagram Stories · Reels",
+        },
+        "landscape-cover": {
+          title: "Landscape (16:9)",
+          hint: "YouTube · Facebook cover · banners",
+        },
+        "instagram-portrait": {
+          title: "Portrait (4:5)",
+          hint: "Instagram portrait feed posts",
+        },
+      },
     },
     bgRemover: {
       formatsHint: "People, products, objects — PNG, JPG, WebP",
@@ -423,6 +585,134 @@ export const en = {
       soft: "Soft",
       resetAdjustments: "Reset adjustments",
       footer: "Conversion runs locally — your image never leaves the browser.",
+    },
+    meme: {
+      uploadHint: "PNG · JPEG · WebP",
+      previewHint: "Upload an image or pick a template to start adding meme text.",
+      chooseTemplate: "Choose a template",
+      templateActive: "Template selected",
+      templateHint:
+        "Click a classic layout to load it instantly, or upload your own image above.",
+      loadingTemplate: "Loading template…",
+      templateLoadFailed: "Failed to load meme template.",
+      topText: "Top Text",
+      bottomText: "Bottom Text",
+      topPlaceholder: "WHEN YOU FINALLY",
+      bottomPlaceholder: "FIND A FREE MEME TOOL",
+      styleHint:
+        "Classic meme style: Impact font, white text, black outline. Text is centered and auto-wrapped.",
+      downloadMeme: "Download Meme",
+      livePreview: "live preview",
+      footer: "Memes are rendered locally — your image never leaves the browser.",
+      guideLabel: "Want meme history, virality tips, and advanced Pix-8 workflows?",
+      guideTitle:
+        "The Complete Guide to the Pix-8 Meme Generator",
+      templates: {
+        "distracted-boyfriend": {
+          title: "Distracted Boyfriend",
+        },
+        "drake-hotline-bling": {
+          title: "Drake Hotline Bling",
+        },
+        "change-my-mind": {
+          title: "Change My Mind",
+        },
+        "two-buttons": {
+          title: "Two Buttons",
+        },
+      },
+    },
+    collage: {
+      uploadHint: "PNG · JPEG · WebP · select multiple images",
+      previewHint: "Upload two or more images to preview your collage.",
+      rendering: "Building collage…",
+      layout: "Layout",
+      gap: "Gap",
+      gapHint: "Spacing between images in the collage.",
+      background: "Background",
+      downloadCollage: "Download Collage",
+      renderFailed: "Collage rendering failed.",
+      footer: "Collages are built locally — your images never leave the browser.",
+      guideLabel: "Want layout tips, collage styles, and optimization guides?",
+      guideTitle:
+        "The Complete Guide to Creating Stunning Photo Collages Online",
+      layouts: {
+        vertical: {
+          title: "Vertical",
+          hint: "1 column · stacked rows",
+        },
+        horizontal: {
+          title: "Horizontal",
+          hint: "1 row · side by side",
+        },
+        "grid-2x1": {
+          title: "2 × 1 Grid",
+          hint: "2 columns · 1–2 images per row",
+        },
+        "grid-2x2": {
+          title: "2 × 2 Grid",
+          hint: "Up to 4 images",
+        },
+        "grid-3x3": {
+          title: "3 × 3 Grid",
+          hint: "Up to 9 images",
+        },
+      },
+    },
+    imageToSvg: {
+      uploadHint: "PNG · JPEG · vector trace · SVG export",
+      previewHint: "Upload an image to preview the traced SVG output.",
+      converting: "Converting…",
+      ready: "SVG ready",
+      complexity: "Trace complexity",
+      complexityHint:
+        "Higher values preserve more edges and detail. Large images are traced at up to 1024px for speed.",
+      colorMode: "Color mode",
+      colorModes: {
+        color: "Color",
+        grayscale: "Grayscale",
+        bw: "Black & White",
+      },
+      simplifyPaths: "Simplify paths",
+      simplifyPathsHint: "Reduce node count for smaller SVG files.",
+      downloadSvg: "Download SVG",
+      copySvg: "Copy SVG",
+      traceFailed: "SVG conversion failed.",
+      copyFailed: "Could not copy SVG.",
+      footer: "Vectorization runs locally — your image never leaves the browser.",
+      guideLabel: "Want a deeper dive into SVG and vectorization?",
+      guideTitle:
+        "The Complete Guide to Converting Images to SVG – The Future of Vector Design in the Browser",
+    },
+    imageFilters: {
+      uploadHint: "Grayscale · sepia · vintage · blur · vignette",
+      previewHint: "Upload an image to compare filter effects.",
+      applying: "Applying filter…",
+      filters: "Filters",
+      beforeAfter: "Before / After",
+      compareHint: "Drag divider to compare",
+      resetFilter: "Reset to original",
+      filterFailed: "Filter application failed.",
+      footer: "Filters run locally — your image never leaves the browser.",
+      guideLabel: "Want tips on choosing the right filter?",
+      guideTitle:
+        "How to Apply Stunning Photo Filters Online – Without Leaving Your Browser",
+      filterNames: {
+        none: "None",
+        grayscale: "Grayscale",
+        sepia: "Sepia",
+        vintage: "Vintage",
+        blur: "Blur",
+        vignette: "Vignette",
+      },
+      filterDescriptions: {
+        none: "Original image with no effect applied.",
+        grayscale: "Classic monochrome conversion using luminance weighting.",
+        sepia: "Warm brown-toned finish inspired by aged photographs.",
+        vintage: "Muted saturation, warm tones, and a soft faded look.",
+        blur: "Gaussian blur for depth-of-field and soft-focus effects.",
+        vignette: "Darkened edges that draw attention toward the center.",
+      },
     },
     imageInverter: {
       uploadHint: "Negative effect · color swap · masks",
@@ -644,6 +934,26 @@ export const en = {
     "base64-encoder": {
       name: "Base64 Encoder",
       description: "Convert images to Base64 data URLs for embedding in CSS or HTML.",
+    },
+    "image-filters": {
+      name: "Image Filters & Effects",
+      description:
+        "Apply creative filters with a live before/after comparison slider.",
+    },
+    "image-to-svg": {
+      name: "Image to SVG Converter",
+      description:
+        "Convert raster images into scalable SVG vectors with adjustable tracing options.",
+    },
+    "image-collage": {
+      name: "Image Collage Maker",
+      description:
+        "Arrange multiple photos into grids or strips with spacing and background controls.",
+    },
+    "meme-generator": {
+      name: "Meme Generator",
+      description:
+        "Add classic top and bottom meme captions with Impact-style text and outlines.",
     },
   },
 } as const;

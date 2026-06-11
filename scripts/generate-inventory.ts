@@ -82,18 +82,8 @@ function renderToolsSection(): string {
     .join("");
 }
 
-function renderBlogSection(): string {
-  const articles = getAllArticles();
-
-  if (articles.length === 0) {
-    return `
-      <section class="block">
-        <h2>Articles <span class="count">0</span></h2>
-        <p class="empty">No articles yet. Add markdown files to <code>src/content/articles/</code>.</p>
-      </section>`;
-  }
-
-  const rows = articles
+function renderArticleRows(articles: ReturnType<typeof getAllArticles>): string {
+  return articles
     .map(
       (article) => `
       <tr>
@@ -105,14 +95,30 @@ function renderBlogSection(): string {
       </tr>`,
     )
     .join("");
+}
+
+function renderBlogSection(
+  language: "en" | "he",
+  label: string,
+  copyLabel: string,
+): string {
+  const articles = getAllArticles(language);
+
+  if (articles.length === 0) {
+    return `
+      <section class="block">
+        <h2>${escapeHtml(label)} <span class="count">0</span></h2>
+        <p class="empty">No ${language.toUpperCase()} articles yet.</p>
+      </section>`;
+  }
 
   return `
     <section class="block">
       <h2>
-        <span class="h2-title">Articles <span class="count">${articles.length}</span></span>
+        <span class="h2-title">${escapeHtml(label)} <span class="count">${articles.length}</span></span>
         ${renderCopyButton(
           articles.map((article) => article.title),
-          "Copy article names",
+          copyLabel,
         )}
       </h2>
       <table>
@@ -125,13 +131,14 @@ function renderBlogSection(): string {
             <th>Excerpt</th>
           </tr>
         </thead>
-        <tbody>${rows}</tbody>
+        <tbody>${renderArticleRows(articles)}</tbody>
       </table>
     </section>`;
 }
 
 export function generateInventory(): string {
-  const articles = getAllArticles();
+  const articlesEn = getAllArticles("en");
+  const articlesHe = getAllArticles("he");
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -267,11 +274,13 @@ export function generateInventory(): string {
     <p class="notice">This file lives in <code>local/</code> (gitignored). It regenerates on <code>npm run dev</code> startup and whenever <code>src/lib/tools.ts</code> or <code>src/content/articles/</code> changes — reload this page in your browser to see updates. Tool links assume <code>npm run dev</code> on port 3000.</p>
     <div class="summary">
       <div class="stat"><p class="label">Tools</p><p class="value">${tools.length}</p></div>
-      <div class="stat"><p class="label">Articles</p><p class="value">${articles.length}</p></div>
+      <div class="stat"><p class="label">Articles (EN)</p><p class="value">${articlesEn.length}</p></div>
+      <div class="stat"><p class="label">Articles (HE)</p><p class="value">${articlesHe.length}</p></div>
       <div class="stat"><p class="label">Ready</p><p class="value">${tools.filter((t) => t.status === "ready").length}</p></div>
     </div>
     ${renderToolsSection()}
-    ${renderBlogSection()}
+    ${renderBlogSection("en", "Articles (English)", "Copy EN titles")}
+    ${renderBlogSection("he", "Articles (Hebrew)", "Copy HE titles")}
   </div>
   <script>
     document.querySelectorAll(".copy-btn").forEach((button) => {

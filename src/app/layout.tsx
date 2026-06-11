@@ -3,6 +3,7 @@ import { Inter, Roboto_Mono } from "next/font/google";
 import { CookieConsent } from "@/components/CookieConsent";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { AppShell } from "@/components/layout/AppShell";
+import { FavoritesProvider } from "@/components/favorites/FavoritesContext";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ShareMetaSync } from "@/components/ShareMetaSync";
@@ -70,12 +71,14 @@ export default function RootLayout({
       <body className="min-h-full bg-background text-foreground">
         <ThemeProvider>
           <LanguageProvider>
-            <ToastProvider>
-              <ShareMetaSync />
-              <AppShell>{children}</AppShell>
+            <FavoritesProvider>
+              <ToastProvider>
+                <ShareMetaSync />
+                <AppShell>{children}</AppShell>
               <CookieConsent />
               <GoogleAnalytics />
-            </ToastProvider>
+              </ToastProvider>
+            </FavoritesProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>

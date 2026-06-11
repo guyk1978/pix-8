@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-label="Drake Hotline Bling meme template">
+  <rect width="600" height="300" fill="#f0c27b"/>
+  <rect y="300" width="600" height="300" fill="#8fd3a8"/>
+  <line x1="0" y1="300" x2="600" y2="300" stroke="#1f2326" stroke-width="4"/>
+  <circle cx="228" cy="150" r="42" fill="#d9a27c"/>
+  <rect x="173" y="180" width="110" height="130" fill="#c0392b"/>
+  <rect x="268" y="160" width="90" height="24" fill="#d9a27c"/>
+  <rect x="346" y="142" width="24" height="90" fill="#d9a27c"/>
+  <circle cx="228" cy="450" r="42" fill="#d9a27c"/>
+  <rect x="173" y="480" width="110" height="130" fill="#27ae60"/>
+  <rect x="258" y="500" width="100" height="24" fill="#d9a27c"/>
+  <circle cx="368" cy="512" r="18" fill="#d9a27c"/>
+</svg>

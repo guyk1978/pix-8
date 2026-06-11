@@ -1,21 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { Star } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { SidebarProgressTracker } from "@/components/layout/SidebarProgressTracker";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
 import { JOIN_MY_PDF_URL } from "@/lib/external-links";
-import { tools, type ToolCategory, type ToolId } from "@/lib/tools";
+import { getToolCategoryHref } from "@/lib/toolCategoryPages";
+import {
+  findSidebarCategoryForPath,
+  getSidebarCategoryTools,
+  SIDEBAR_CATEGORY_IDS,
+  SIDEBAR_NAV_CATEGORIES,
+  type SidebarNavCategoryId,
+} from "@/lib/sidebarNav";
+import type { ToolId } from "@/lib/tools";
 
-const SIDEBAR_TOOLS_CATEGORIES: ToolCategory[] = [
-  "basic-editing",
-  "optimization",
-];
-const SIDEBAR_ADVANCED_CATEGORIES: ToolCategory[] = ["advanced"];
-
-function NavIcon({ children }: { children: React.ReactNode }) {
+function NavIcon({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex h-4 w-4 shrink-0 text-muted">{children}</span>
   );
@@ -34,23 +37,10 @@ function DashboardIcon() {
   );
 }
 
-function ToolsIcon() {
+function FavoritesIcon() {
   return (
     <NavIcon>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-      </svg>
-    </NavIcon>
-  );
-}
-
-function AdvancedIcon() {
-  return (
-    <NavIcon>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-        <circle cx="12" cy="12" r="3" />
-      </svg>
+      <Star strokeWidth={1.5} className="h-4 w-4" />
     </NavIcon>
   );
 }
@@ -76,6 +66,56 @@ function SettingsIcon() {
   );
 }
 
+function EditorStudioIcon() {
+  return (
+    <NavIcon>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+      </svg>
+    </NavIcon>
+  );
+}
+
+function OptimizationIcon() {
+  return (
+    <NavIcon>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+      </svg>
+    </NavIcon>
+  );
+}
+
+function DevToolsIcon() {
+  return (
+    <NavIcon>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M16 18 22 12l-6-6" />
+        <path d="M8 6 2 12l6 6" />
+      </svg>
+    </NavIcon>
+  );
+}
+
+function EnhancementIcon() {
+  return (
+    <NavIcon>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M12 3v2M12 19v2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M3 12h2M19 12h2M5.6 18.4l1.4-1.4M17 7l1.4-1.4" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    </NavIcon>
+  );
+}
+
+const CATEGORY_ICONS: Record<SidebarNavCategoryId, ReactNode> = {
+  "editor-studio": <EditorStudioIcon />,
+  optimization: <OptimizationIcon />,
+  "dev-tools": <DevToolsIcon />,
+  enhancement: <EnhancementIcon />,
+};
+
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
@@ -83,7 +123,7 @@ function ChevronIcon({ open }: { open: boolean }) {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
-      className={`sidebar-section-chevron h-3.5 w-3.5 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`}
+      className={`sidebar-section-chevron h-3 w-3 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`}
       aria-hidden
     >
       <path d="M6 9l6 6 6-6" />
@@ -129,7 +169,7 @@ function NavItem({
 }: {
   href: string;
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   active: boolean;
   collapsed: boolean;
   onNavigate?: () => void;
@@ -168,10 +208,10 @@ function NestedLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className={`sidebar-nested block rounded-sm border border-transparent py-2 ps-9 pe-3 font-mono text-xs transition-colors ${
+      className={`sidebar-nested block rounded-sm border border-transparent py-1.5 pe-3 ps-3 font-mono text-[11px] leading-snug transition-colors ${
         active
-          ? "border-border bg-surface text-foreground"
-          : "text-muted hover:border-border hover:bg-surface hover:text-foreground"
+          ? "border-border bg-surface text-foreground shadow-[inset_2px_0_0_var(--glow-teal)]"
+          : "text-muted hover:border-border hover:bg-surface/80 hover:text-foreground"
       }`}
     >
       {label}
@@ -179,45 +219,89 @@ function NestedLink({
   );
 }
 
-function ExpandableSection({
+function CategorySection({
+  categoryId,
   label,
   icon,
   open,
+  active,
   collapsed,
   onToggle,
   onExpandSidebar,
+  onNavigate,
   children,
 }: {
+  categoryId: SidebarNavCategoryId;
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   open: boolean;
+  active: boolean;
   collapsed: boolean;
   onToggle: () => void;
   onExpandSidebar: () => void;
-  children: React.ReactNode;
+  onNavigate?: () => void;
+  children: ReactNode;
 }) {
+  const categoryHref = getToolCategoryHref(categoryId);
+
+  if (collapsed) {
+    return (
+      <div className="sidebar-category-group">
+        <Link
+          href={categoryHref}
+          onClick={onNavigate}
+          title={label}
+          className={`sidebar-category-header flex w-full items-center justify-center rounded-sm border border-border/50 bg-surface/30 px-2 py-2 font-label text-muted backdrop-blur-sm transition-colors hover:border-border hover:bg-surface/60 hover:text-foreground ${
+            active ? "border-border bg-surface text-foreground" : ""
+          }`}
+        >
+          {icon}
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <button
-        type="button"
-        title={collapsed ? label : undefined}
-        onClick={() => {
-          if (collapsed) {
-            onExpandSidebar();
-            return;
-          }
-          onToggle();
-        }}
-        className={`flex w-full items-center rounded-sm border border-transparent font-label text-muted transition-colors hover:border-border hover:bg-surface hover:text-foreground ${
-          collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2.5"
+    <div className="sidebar-category-group">
+      <div
+        className={`sidebar-category-header flex w-full items-center rounded-sm border border-border/50 bg-surface/30 font-label text-muted backdrop-blur-sm transition-colors hover:border-border hover:bg-surface/60 ${
+          active ? "border-border bg-surface text-foreground" : ""
         }`}
       >
-        {icon}
-        <span className="sidebar-nav-label flex-1 text-start">{label}</span>
-        <ChevronIcon open={open} />
-      </button>
-      {open && <div className="mt-1 space-y-0.5">{children}</div>}
+        <Link
+          href={categoryHref}
+          onClick={onNavigate}
+          className="flex min-w-0 flex-1 items-center gap-2 px-2.5 py-2 text-muted transition-colors hover:text-foreground"
+        >
+          {icon}
+          <span className="sidebar-nav-label truncate text-start text-[11px] tracking-wide">
+            {label}
+          </span>
+        </Link>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-label={label}
+          className="flex h-full shrink-0 items-center px-2 py-2 text-muted transition-colors hover:text-foreground"
+        >
+          <ChevronIcon open={open} />
+        </button>
+      </div>
+      {open ? (
+        <div className="sidebar-category-tools mt-1 space-y-0.5">{children}</div>
+      ) : null}
     </div>
+  );
+}
+
+function createInitialCategoryState(): Record<SidebarNavCategoryId, boolean> {
+  return SIDEBAR_CATEGORY_IDS.reduce(
+    (state, categoryId) => {
+      state[categoryId] = true;
+      return state;
+    },
+    {} as Record<SidebarNavCategoryId, boolean>,
   );
 }
 
@@ -229,18 +313,25 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const { t, dir } = useLanguage();
-  const [toolsOpen, setToolsOpen] = useState(true);
-  const [advancedOpen, setAdvancedOpen] = useState(true);
+  const [categoryOpen, setCategoryOpen] = useState(createInitialCategoryState);
   const isRtl = dir === "rtl";
 
-  const getToolName = (toolId: ToolId) => t(getToolTranslationKey(toolId, "name"));
+  const getToolName = (toolId: ToolId) =>
+    t(getToolTranslationKey(toolId, "name"));
 
-  const toolsNav = tools.filter((tool) =>
-    SIDEBAR_TOOLS_CATEGORIES.includes(tool.category),
+  const activeCategoryId = useMemo(
+    () => findSidebarCategoryForPath(pathname),
+    [pathname],
   );
-  const advancedNav = tools.filter((tool) =>
-    SIDEBAR_ADVANCED_CATEGORIES.includes(tool.category),
-  );
+
+  useEffect(() => {
+    if (!activeCategoryId) return;
+
+    setCategoryOpen((current) => ({
+      ...current,
+      [activeCategoryId]: true,
+    }));
+  }, [activeCategoryId]);
 
   const sidebarContent = (
     <>
@@ -300,51 +391,58 @@ export function Sidebar({
           onNavigate={onMobileClose}
         />
 
-        <div className={collapsed ? "" : "mt-2"}>
-          <ExpandableSection
-            label={t("nav.tools")}
-            icon={<ToolsIcon />}
-            open={toolsOpen}
-            collapsed={collapsed}
-            onToggle={() => setToolsOpen((current) => !current)}
-            onExpandSidebar={() => {
-              onToggleCollapse();
-              setToolsOpen(true);
-            }}
-          >
-            {toolsNav.map((tool) => (
-              <NestedLink
-                key={tool.id}
-                href={tool.href}
-                label={getToolName(tool.id)}
-                active={pathname === tool.href}
-                onNavigate={onMobileClose}
-              />
-            ))}
-          </ExpandableSection>
-        </div>
-
-        <ExpandableSection
-          label={t("nav.advanced")}
-          icon={<AdvancedIcon />}
-          open={advancedOpen}
+        <NavItem
+          href="/favorites"
+          label={t("nav.favorites")}
+          icon={<FavoritesIcon />}
+          active={pathname === "/favorites"}
           collapsed={collapsed}
-          onToggle={() => setAdvancedOpen((current) => !current)}
-          onExpandSidebar={() => {
-            onToggleCollapse();
-            setAdvancedOpen(true);
-          }}
-        >
-          {advancedNav.map((tool) => (
-            <NestedLink
-              key={tool.id}
-              href={tool.href}
-              label={getToolName(tool.id)}
-              active={pathname === tool.href}
+          onNavigate={onMobileClose}
+        />
+
+        <div className={collapsed ? "mt-1 space-y-1" : "mt-3 space-y-2"}>
+          {!collapsed ? (
+            <p className="px-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+              {t("nav.toolCategoriesLabel")}
+            </p>
+          ) : null}
+
+          {SIDEBAR_NAV_CATEGORIES.map((category) => (
+            <CategorySection
+              key={category.id}
+              categoryId={category.id}
+              label={t(`nav.toolCategories.${category.id}`)}
+              icon={CATEGORY_ICONS[category.id]}
+              open={categoryOpen[category.id]}
+              active={activeCategoryId === category.id}
+              collapsed={collapsed}
               onNavigate={onMobileClose}
-            />
+              onToggle={() =>
+                setCategoryOpen((current) => ({
+                  ...current,
+                  [category.id]: !current[category.id],
+                }))
+              }
+              onExpandSidebar={() => {
+                onToggleCollapse();
+                setCategoryOpen((current) => ({
+                  ...current,
+                  [category.id]: true,
+                }));
+              }}
+            >
+              {getSidebarCategoryTools(category).map((tool) => (
+                <NestedLink
+                  key={tool.id}
+                  href={tool.href}
+                  label={getToolName(tool.id)}
+                  active={pathname === tool.href}
+                  onNavigate={onMobileClose}
+                />
+              ))}
+            </CategorySection>
           ))}
-        </ExpandableSection>
+        </div>
       </nav>
 
       <div className={`border-t border-border ${collapsed ? "p-2" : "p-3"}`}>

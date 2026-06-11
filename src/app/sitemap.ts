@@ -2,6 +2,7 @@ import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import type { MetadataRoute } from "next";
 import { getAllArticles } from "@/lib/blog";
+import { SIDEBAR_CATEGORY_IDS } from "@/lib/sidebarNav";
 import { tools } from "@/lib/tools";
 
 export const dynamic = "force-static";
@@ -41,7 +42,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: SITE_URL,
       lastModified: now,
     },
+    {
+      url: `${SITE_URL}/blog`,
+      lastModified: now,
+    },
+    {
+      url: `${SITE_URL}/settings`,
+      lastModified: now,
+    },
+    {
+      url: `${SITE_URL}/favorites`,
+      lastModified: now,
+    },
   ];
+
+  for (const categoryId of SIDEBAR_CATEGORY_IDS) {
+    entries.push({
+      url: `${SITE_URL}/tools/category/${categoryId}`,
+      lastModified: now,
+    });
+  }
 
   for (const slug of getAllToolSlugs()) {
     entries.push({

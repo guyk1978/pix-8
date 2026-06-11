@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { Star } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -43,6 +45,17 @@ export function Header({ onMenuToggle }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        <Link
+          href="/favorites"
+          className="flex h-9 items-center gap-1.5 rounded-sm border border-border px-2.5 text-muted transition-colors hover:border-muted hover:bg-surface hover:text-foreground sm:px-3"
+          title={t("nav.favorites")}
+        >
+          <Star className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+          <span className="hidden font-label text-xs md:inline">
+            {t("nav.favorites")}
+          </span>
+        </Link>
+
         <LanguageSwitcher />
         <ShareButton />
         <ThemeToggle />
