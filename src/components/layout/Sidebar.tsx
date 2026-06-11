@@ -83,7 +83,7 @@ function ChevronIcon({ open }: { open: boolean }) {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
-      className={`h-3.5 w-3.5 text-muted transition-transform ${open ? "rotate-180" : ""}`}
+      className={`sidebar-section-chevron h-3.5 w-3.5 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`}
       aria-hidden
     >
       <path d="M6 9l6 6 6-6" />
@@ -91,9 +91,32 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
+function SidebarToggleIcon({ collapsed, rtl }: { collapsed: boolean; rtl: boolean }) {
+  const pointsInward = collapsed ? !rtl : rtl;
+
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      className="h-4 w-4"
+      aria-hidden
+    >
+      {pointsInward ? (
+        <path d="M9 6l6 6-6 6M4 6v12" />
+      ) : (
+        <path d="M15 6l-6 6 6 6M20 6v12" />
+      )}
+    </svg>
+  );
+}
+
 interface SidebarProps {
   mobileOpen: boolean;
   onMobileClose: () => void;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
 function NavItem({
@@ -101,26 +124,31 @@ function NavItem({
   label,
   icon,
   active,
+  collapsed,
   onNavigate,
 }: {
   href: string;
   label: string;
   icon: React.ReactNode;
   active: boolean;
+  collapsed: boolean;
   onNavigate?: () => void;
 }) {
   return (
     <Link
       href={href}
       onClick={onNavigate}
-      className={`flex items-center gap-3 rounded-sm border px-3 py-2.5 font-label transition-colors ${
+      title={collapsed ? label : undefined}
+      className={`flex items-center rounded-sm border font-label transition-colors ${
+        collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2.5"
+      } ${
         active
           ? "border-border bg-surface text-foreground"
           : "border-transparent text-muted hover:border-border hover:bg-surface hover:text-foreground"
       }`}
     >
       {icon}
-      <span>{label}</span>
+      <span className="sidebar-nav-label">{label}</span>
     </Link>
   );
 }
@@ -140,7 +168,7 @@ function NestedLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className={`block rounded-sm border border-transparent py-2 ps-9 pe-3 font-mono text-xs transition-colors ${
+      className={`sidebar-nested block rounded-sm border border-transparent py-2 ps-9 pe-3 font-mono text-xs transition-colors ${
         active
           ? "border-border bg-surface text-foreground"
           : "text-muted hover:border-border hover:bg-surface hover:text-foreground"
@@ -155,24 +183,37 @@ function ExpandableSection({
   label,
   icon,
   open,
+  collapsed,
   onToggle,
+  onExpandSidebar,
   children,
 }: {
   label: string;
   icon: React.ReactNode;
   open: boolean;
+  collapsed: boolean;
   onToggle: () => void;
+  onExpandSidebar: () => void;
   children: React.ReactNode;
 }) {
   return (
     <div>
       <button
         type="button"
-        onClick={onToggle}
-        className="flex w-full items-center gap-3 rounded-sm border border-transparent px-3 py-2.5 font-label text-muted transition-colors hover:border-border hover:bg-surface hover:text-foreground"
+        title={collapsed ? label : undefined}
+        onClick={() => {
+          if (collapsed) {
+            onExpandSidebar();
+            return;
+          }
+          onToggle();
+        }}
+        className={`flex w-full items-center rounded-sm border border-transparent font-label text-muted transition-colors hover:border-border hover:bg-surface hover:text-foreground ${
+          collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2.5"
+        }`}
       >
         {icon}
-        <span className="flex-1 text-start">{label}</span>
+        <span className="sidebar-nav-label flex-1 text-start">{label}</span>
         <ChevronIcon open={open} />
       </button>
       {open && <div className="mt-1 space-y-0.5">{children}</div>}
@@ -180,11 +221,17 @@ function ExpandableSection({
   );
 }
 
-export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
+export function Sidebar({
+  mobileOpen,
+  onMobileClose,
+  collapsed,
+  onToggleCollapse,
+}: SidebarProps) {
   const pathname = usePathname();
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
   const [toolsOpen, setToolsOpen] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(true);
+  const isRtl = dir === "rtl";
 
   const getToolName = (toolId: ToolId) => t(getToolTranslationKey(toolId, "name"));
 
@@ -197,27 +244,50 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
 
   const sidebarContent = (
     <>
-      <div className="flex h-14 items-center border-b border-border px-4">
-        <Link
-          href="/"
-          onClick={onMobileClose}
-          className="flex items-baseline gap-1 transition-opacity hover:opacity-80"
+      <div
+        className={`relative flex h-14 shrink-0 items-center border-b border-border ${
+          collapsed ? "justify-center px-1" : "justify-between px-3"
+        }`}
+      >
+        {!collapsed ? (
+          <Link
+            href="/"
+            onClick={onMobileClose}
+            className="flex min-w-0 items-baseline gap-1 transition-opacity hover:opacity-80"
+          >
+            <span className="font-mono text-base font-medium text-foreground">
+              pix
+            </span>
+            <span className="font-mono text-base font-medium text-muted">-8</span>
+          </Link>
+        ) : null}
+
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-border text-muted transition-colors hover:border-muted hover:text-foreground lg:inline-flex"
+          aria-label={
+            collapsed ? t("nav.expandSidebar") : t("nav.collapseSidebar")
+          }
+          title={collapsed ? t("nav.expandSidebar") : t("nav.collapseSidebar")}
         >
-          <span className="font-mono text-base font-medium text-foreground">
-            pix
-          </span>
-          <span className="font-mono text-base font-medium text-muted">-8</span>
-        </Link>
+          <SidebarToggleIcon collapsed={collapsed} rtl={isRtl} />
+        </button>
       </div>
 
-      <SidebarProgressTracker />
+      <SidebarProgressTracker collapsed={collapsed} />
 
-      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+      <nav
+        className={`flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto ${
+          collapsed ? "p-2" : "p-3"
+        }`}
+      >
         <NavItem
           href="/"
           label={t("nav.dashboard")}
           icon={<DashboardIcon />}
           active={pathname === "/"}
+          collapsed={collapsed}
           onNavigate={onMobileClose}
         />
 
@@ -226,15 +296,21 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           label={t("nav.blog")}
           icon={<BlogIcon />}
           active={pathname === "/blog" || pathname.startsWith("/articles/")}
+          collapsed={collapsed}
           onNavigate={onMobileClose}
         />
 
-        <div className="mt-2">
+        <div className={collapsed ? "" : "mt-2"}>
           <ExpandableSection
             label={t("nav.tools")}
             icon={<ToolsIcon />}
             open={toolsOpen}
+            collapsed={collapsed}
             onToggle={() => setToolsOpen((current) => !current)}
+            onExpandSidebar={() => {
+              onToggleCollapse();
+              setToolsOpen(true);
+            }}
           >
             {toolsNav.map((tool) => (
               <NestedLink
@@ -252,7 +328,12 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           label={t("nav.advanced")}
           icon={<AdvancedIcon />}
           open={advancedOpen}
+          collapsed={collapsed}
           onToggle={() => setAdvancedOpen((current) => !current)}
+          onExpandSidebar={() => {
+            onToggleCollapse();
+            setAdvancedOpen(true);
+          }}
         >
           {advancedNav.map((tool) => (
             <NestedLink
@@ -266,12 +347,12 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         </ExpandableSection>
       </nav>
 
-      <div className="border-t border-border p-3">
+      <div className={`border-t border-border ${collapsed ? "p-2" : "p-3"}`}>
         <a
           href={JOIN_MY_PDF_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mb-2 block rounded-sm border border-border bg-card px-3 py-2.5 transition-colors hover:border-muted hover:bg-surface"
+          className="sidebar-footer-detail mb-2 block rounded-sm border border-border bg-card px-3 py-2.5 transition-colors hover:border-muted hover:bg-surface"
         >
           <span className="block font-label text-xs text-foreground">
             {t("nav.joinMyPdf")}
@@ -286,9 +367,10 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           label={t("nav.settings")}
           icon={<SettingsIcon />}
           active={pathname === "/settings"}
+          collapsed={collapsed}
           onNavigate={onMobileClose}
         />
-        <p className="px-3 pt-3 font-mono text-[10px] text-muted">
+        <p className="sidebar-footer-detail px-3 pt-3 font-mono text-[10px] text-muted">
           {t("nav.zeroUploads")}
         </p>
       </div>
@@ -307,7 +389,10 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
       )}
 
       <aside
-        className={`fixed inset-y-0 start-0 z-50 flex w-60 shrink-0 flex-col border-e border-border bg-sidebar transition-transform lg:static lg:translate-x-0 ${
+        data-collapsed={collapsed ? "true" : "false"}
+        className={`sidebar-shell fixed inset-y-0 start-0 z-50 flex w-60 shrink-0 flex-col overflow-hidden border-e border-border bg-sidebar transition-transform lg:static lg:translate-x-0 ${
+          collapsed ? "lg:w-[60px]" : "lg:w-60"
+        } ${
           mobileOpen
             ? "translate-x-0"
             : "max-lg:-translate-x-full max-lg:rtl:translate-x-full"

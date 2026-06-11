@@ -9,6 +9,8 @@ export const he: TranslationDictionary = {
     settings: "הגדרות",
     joinMyPdf: "איחוד תמונות ל-PDF",
     zeroUploads: "ללא העלאות · ללא מעקב",
+    collapseSidebar: "כיווץ תפריט צד",
+    expandSidebar: "הרחבת תפריט צד",
   },
   header: {
     platform: "פלטפורמה",

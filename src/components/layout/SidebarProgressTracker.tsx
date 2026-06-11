@@ -17,7 +17,13 @@ const ACTIVE_RING: Record<(typeof STEP_KEYS)[number], string> = {
   download: "60 154",
 };
 
-export function SidebarProgressTracker() {
+interface SidebarProgressTrackerProps {
+  collapsed?: boolean;
+}
+
+export function SidebarProgressTracker({
+  collapsed = false,
+}: SidebarProgressTrackerProps) {
   const { t } = useLanguage();
   const activeStep = useSyncExternalStore(
     subscribeWorkflowStep,
@@ -37,6 +43,21 @@ export function SidebarProgressTracker() {
   const ringDash = ACTIVE_RING[sidebarStep];
   const processingCharacter =
     sidebarStep === "process" ? "processingAlt" : "processing";
+
+  if (collapsed) {
+    return (
+      <div className="mb-3 flex justify-center px-1">
+        <HelperCharacter
+          character={processingCharacter}
+          alt={t("characters.processingAlt")}
+          size={36}
+          glow
+          className="relative z-[1]"
+          animate="float"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-3 mb-4 flex flex-col items-center gap-3 rounded-md border border-border bg-card p-4">

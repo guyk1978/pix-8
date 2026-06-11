@@ -7,6 +7,8 @@ export const en = {
     settings: "Settings",
     joinMyPdf: "Combine images into a PDF",
     zeroUploads: "Zero uploads · Zero tracking",
+    collapseSidebar: "Collapse sidebar",
+    expandSidebar: "Expand sidebar",
   },
   header: {
     platform: "Platform",
