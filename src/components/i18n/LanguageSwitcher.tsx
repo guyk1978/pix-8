@@ -3,41 +3,25 @@
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import type { Language } from "@/lib/language";
 
-const options: { code: Language; label: string }[] = [
-  { code: "en", label: "EN" },
-  { code: "he", label: "HE" },
-];
+const TARGET_LABELS: Record<Language, string> = {
+  en: "EN",
+  he: "HE",
+};
 
 export function LanguageSwitcher() {
   const { language, setLanguage, t } = useLanguage();
+  const targetLanguage: Language = language === "en" ? "he" : "en";
+  const targetLabel = TARGET_LABELS[targetLanguage];
 
   return (
-    <div
-      role="group"
-      aria-label={t("language.label")}
-      className="glow-panel flex h-9 items-center rounded-sm border border-border bg-background p-0.5"
+    <button
+      type="button"
+      onClick={() => setLanguage(targetLanguage)}
+      className="flex h-9 w-9 items-center justify-center rounded-sm border border-border bg-background font-mono text-[10px] font-medium tracking-wider text-muted transition-colors hover:border-muted hover:text-foreground"
+      aria-label={t(`language.${targetLanguage}`)}
+      title={t(`language.${targetLanguage}`)}
     >
-      {options.map((option) => {
-        const active = language === option.code;
-
-        return (
-          <button
-            key={option.code}
-            type="button"
-            onClick={() => setLanguage(option.code)}
-            aria-pressed={active}
-            aria-label={t(`language.${option.code}`)}
-            title={t(`language.${option.code}`)}
-            className={`min-w-9 rounded-sm px-2 font-label text-[10px] tracking-wider transition-colors ${
-              active
-                ? "bg-accent-muted text-accent shadow-[0_0_12px_color-mix(in_srgb,var(--glow-teal)_35%,transparent)]"
-                : "text-muted hover:text-foreground"
-            }`}
-          >
-            {option.label}
-          </button>
-        );
-      })}
-    </div>
+      {targetLabel}
+    </button>
   );
 }
