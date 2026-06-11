@@ -5,7 +5,9 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { AppShell } from "@/components/layout/AppShell";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { ShareMetaSync } from "@/components/ShareMetaSync";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import { DEFAULT_SHARE_IMAGE } from "@/lib/shareImages";
 import "./globals.css";
 
 const inter = Inter({
@@ -40,7 +42,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/img-share-en.png",
+        url: DEFAULT_SHARE_IMAGE,
         width: 1200,
         height: 630,
         alt: "pix-8 — client-side image utilities",
@@ -51,7 +53,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "pix-8 | Client-side image utilities",
     description: "Process images locally. Nothing leaves your browser.",
-    images: ["/img-share-en.png"],
+    images: [DEFAULT_SHARE_IMAGE],
   },
 };
 
@@ -69,6 +71,7 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <ToastProvider>
+              <ShareMetaSync />
               <AppShell>{children}</AppShell>
               <CookieConsent />
               <GoogleAnalytics />
