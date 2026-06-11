@@ -1,0 +1,25 @@
+{
+  "name": "pix-8 — Privacy-first image tools",
+  "short_name": "pix-8",
+  "description": "Client-side image utilities that run entirely on your device.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0d0f14",
+  "theme_color": "#0d0f14",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/characters/helper-base.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/characters/helper-base.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -21,6 +21,8 @@ export const he: TranslationDictionary = {
     closeNav: "סגירת תפריט",
     github: "קוד המקור ב-GitHub",
     githubTitle: "מאגר GitHub",
+    installAsApplication: "התקנה כאפליקציה",
+    openAsApplication: "פתיחה כאפליקציה",
   },
   language: {
     label: "שפה",

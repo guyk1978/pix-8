@@ -3,6 +3,7 @@
 import { ShareButton } from "@/components/ShareButton";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { PwaInstallButton } from "@/components/layout/PwaInstallButton";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const GITHUB_REPO_URL = "https://github.com/guyk1978/pix-8";
@@ -45,6 +46,8 @@ export function Header({ onMenuToggle }: HeaderProps) {
         <LanguageSwitcher />
         <ShareButton />
         <ThemeToggle />
+
+        <PwaInstallButton />
 
         <span
           className="hidden items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 sm:flex"

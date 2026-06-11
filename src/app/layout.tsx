@@ -28,6 +28,12 @@ export const metadata: Metadata = {
     template: "%s · pix-8",
   },
   description: siteDescription,
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "pix-8",
+    statusBarStyle: "black-translucent",
+  },
   openGraph: {
     title: "pix-8 | Client-side image utilities",
     description: "Process images locally. Nothing leaves your browser.",

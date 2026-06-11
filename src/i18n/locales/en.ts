@@ -20,6 +20,8 @@ export const en = {
     closeNav: "Close navigation",
     github: "View source code on GitHub",
     githubTitle: "GitHub repository",
+    installAsApplication: "Install as Application",
+    openAsApplication: "Open as Application",
   },
   language: {
     label: "Language",
