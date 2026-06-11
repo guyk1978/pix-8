@@ -312,6 +312,10 @@ export const he: TranslationDictionary = {
       removeBackground: "הסרת רקע",
       processingLocal: "עיבוד מקומי בדפדפן שלך",
       backgroundColor: "רקע {color}",
+      preparingModel: "מכין מודל…",
+      modelUnavailable:
+        "לא ניתן לטעון את מודל הסגמנטציה המקומי. התמונה לא עוזבת את הדפדפן — נסו שוב כשהחיבור זמין.",
+      retryModel: "נסה לטעון שוב",
     },
     base64: {
       output: "פלט Base64",

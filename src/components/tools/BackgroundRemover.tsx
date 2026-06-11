@@ -18,8 +18,13 @@ import {
 import {
   blobToImage,
   canvasToPngBlob,
+  getBackgroundRemovalEngineError,
+  hasBackgroundRemovalEngineFailed,
+  isBackgroundRemovalEngineAvailable,
   removeImageBackground,
   renderResultToCanvas,
+  resetBackgroundRemovalEngine,
+  warmBackgroundRemovalEngine,
   type BackgroundMode,
   type RemovalProgress,
 } from "@/lib/backgroundRemoval";
@@ -70,8 +75,22 @@ export function BackgroundRemover() {
   );
   const [hasProcessed, setHasProcessed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [engineReady, setEngineReady] = useState(false);
+  const [engineLoading, setEngineLoading] = useState(false);
+  const [engineFailed, setEngineFailed] = useState(false);
+  const [engineError, setEngineError] = useState<string | null>(null);
 
   const isBusy = processingPhase !== "idle";
+  const isPreparingEngine =
+    !mounted || engineLoading || (!engineReady && !engineFailed);
+  const canProcess =
+    mounted &&
+    !!source &&
+    !isBusy &&
+    !engineLoading &&
+    engineReady &&
+    !engineFailed;
 
   const paintPreview = useCallback(
     (mode: BackgroundMode, color: string) => {
@@ -100,6 +119,44 @@ export function BackgroundRemover() {
     setRemovalProgress(null);
   }, []);
 
+  const preloadEngine = useCallback(async () => {
+    if (!isBackgroundRemovalEngineAvailable()) {
+      setEngineFailed(true);
+      setEngineReady(false);
+      setEngineError(null);
+      return;
+    }
+
+    resetBackgroundRemovalEngine();
+    setEngineFailed(false);
+    setEngineError(null);
+    setEngineLoading(true);
+
+    try {
+      await warmBackgroundRemovalEngine((progress) => {
+        if (progress.phase === "loading-model") {
+          setRemovalProgress(progress);
+        }
+      });
+      setEngineReady(true);
+    } catch (cause) {
+      setEngineFailed(true);
+      setEngineReady(false);
+      setEngineError(
+        getBackgroundRemovalEngineError() ??
+          (cause instanceof Error ? cause.message : null),
+      );
+    } finally {
+      setEngineLoading(false);
+      setRemovalProgress(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
+    void preloadEngine();
+  }, [preloadEngine]);
+
   const handleFileChange = useCallback(
     (file: File | null) => {
       resetProcessing();
@@ -117,13 +174,17 @@ export function BackgroundRemover() {
   }, []);
 
   const handleProcess = useCallback(async () => {
-    if (!source) return;
+    if (!source || engineFailed) return;
 
     setError(null);
-    setProcessingPhase("loading-model");
-    setRemovalProgress({ phase: "loading-model" });
+    setProcessingPhase("processing");
+    setRemovalProgress({ phase: "processing" });
 
     try {
+      if (!engineReady) {
+        await preloadEngine();
+      }
+
       const resultBlob = await removeImageBackground(source.file, (progress) => {
         setRemovalProgress(progress);
         setProcessingPhase(progress.phase);
@@ -133,12 +194,16 @@ export function BackgroundRemover() {
       resultImageRef.current = resultImage;
       setHasProcessed(true);
     } catch (cause) {
+      if (hasBackgroundRemovalEngineFailed()) {
+        setEngineFailed(true);
+        setEngineReady(false);
+      }
       setError(resolveErrorMessage(language, cause, "errors.backgroundRemovalFailed"));
     } finally {
       setProcessingPhase("idle");
       setRemovalProgress(null);
     }
-  }, [source, setError, language]);
+  }, [source, engineFailed, engineReady, preloadEngine, setError, language]);
 
   const handleDownloadImage = useCallback(async () => {
     if (!source || !resultImageRef.current) return;
@@ -352,25 +417,28 @@ export function BackgroundRemover() {
           style={backgroundMode === "solid" ? { backgroundColor } : undefined}
         >
           {isBusy && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur-sm">
+            <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex items-center gap-3 rounded-sm border border-border bg-background/90 px-3 py-2 shadow-sm backdrop-blur-sm sm:inset-x-auto sm:bottom-4 sm:right-4">
               <ProcessingIndicator
                 active
-                size="md"
+                size="sm"
                 progress={
                   modelProgress ?? (processingPhase === "processing" ? 75 : 25)
                 }
               />
-              <p className="font-label text-accent">{processingLabel}</p>
-              {modelProgress !== undefined ? (
-                <p className="font-mono text-[10px] text-muted">
-                  {t("toolUi.bgRemover.downloadingModel", {
-                    percent: modelProgress,
-                  })}
-                </p>
-              ) : null}
-              <p className="font-mono text-[10px] text-muted">
-                {t("toolUi.bgRemover.processingLocal")}
-              </p>
+              <div className="min-w-0">
+                <p className="font-label text-accent">{processingLabel}</p>
+                {modelProgress !== undefined ? (
+                  <p className="font-mono text-[10px] text-muted">
+                    {t("toolUi.bgRemover.downloadingModel", {
+                      percent: modelProgress,
+                    })}
+                  </p>
+                ) : (
+                  <p className="font-mono text-[10px] text-muted">
+                    {t("toolUi.bgRemover.processingLocal")}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
@@ -417,16 +485,39 @@ export function BackgroundRemover() {
         />
       </div>
 
+      {mounted && engineFailed ? (
+        <div className="mt-4 rounded-sm border border-border bg-card p-4">
+          <p className="text-sm text-muted">{t("toolUi.bgRemover.modelUnavailable")}</p>
+          {engineError ? (
+            <p className="mt-2 font-mono text-[10px] leading-relaxed text-muted">
+              {engineError}
+            </p>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => void preloadEngine()}
+            disabled={isBusy}
+            className="mt-3 min-h-10 rounded-sm border border-border bg-background px-4 py-2 font-label text-foreground transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {t("toolUi.bgRemover.retryModel")}
+          </button>
+        </div>
+      ) : null}
+
       {error ? <HelperErrorAlert message={error} className="mt-4" /> : null}
 
       <div className="mt-5 space-y-2">
         <button
           type="button"
-          disabled={!source || isBusy}
+          disabled={!canProcess}
           onClick={() => void handleProcess()}
           className="min-h-11 w-full rounded-sm border border-border bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {isBusy ? t("common.processing") : t("toolUi.bgRemover.removeBackground")}
+          {isBusy
+            ? t("common.processing")
+            : isPreparingEngine
+              ? t("toolUi.bgRemover.preparingModel")
+              : t("toolUi.bgRemover.removeBackground")}
         </button>
 
         <ToolOutputActions

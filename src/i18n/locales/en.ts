@@ -311,6 +311,10 @@ export const en = {
       removeBackground: "Remove Background",
       processingLocal: "Processing locally in your browser",
       backgroundColor: "Background {color}",
+      preparingModel: "Preparing model…",
+      modelUnavailable:
+        "The on-device segmentation model could not be loaded. Your image never leaves the browser — retry when you are back online.",
+      retryModel: "Retry model load",
     },
     base64: {
       output: "Base64 Output",

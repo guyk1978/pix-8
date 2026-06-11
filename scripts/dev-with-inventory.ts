@@ -2,6 +2,7 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { watch } from "node:fs";
 import { join } from "node:path";
 import { generateInventory } from "./generate-inventory";
+import { setupMlAssets } from "./setup-ml-assets-lib";
 
 const WATCH_PATHS = [
   join("src", "lib", "tools.ts"),
@@ -57,9 +58,17 @@ function shutdown(signal: NodeJS.Signals) {
   process.exit(0);
 }
 
-refreshInventory("startup");
-startWatcher();
-startNextDev();
+void setupMlAssets()
+  .then(() => {
+    console.log("[ml-assets] ready");
+    refreshInventory("startup");
+    startWatcher();
+    startNextDev();
+  })
+  .catch((error) => {
+    console.error("[ml-assets] setup failed:", error);
+    process.exit(1);
+  });
 
 process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));

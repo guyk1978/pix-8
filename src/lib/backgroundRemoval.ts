@@ -1,46 +1,20 @@
-import type { Config } from "@imgly/background-removal";
+export type {
+  BackgroundMode,
+  BackgroundRemovalOptions,
+  RemovalPhase,
+  RemovalProgress,
+} from "@/lib/backgroundRemoval/types";
 
-export type BackgroundMode = "transparent" | "solid";
-
-export type RemovalPhase = "loading-model" | "processing";
-
-export interface RemovalProgress {
-  phase: RemovalPhase;
-  key?: string;
-  current?: number;
-  total?: number;
-}
-
-export interface BackgroundRemovalOptions {
-  backgroundMode: BackgroundMode;
-  backgroundColor?: string;
-  canvas?: HTMLCanvasElement | null;
-}
-
-function buildRemovalConfig(
-  onProgress?: (progress: RemovalProgress) => void,
-): Config {
-  return {
-    model: "isnet_fp16",
-    output: {
-      format: "image/png",
-    },
-    progress: (key, current, total) => {
-      onProgress?.({ phase: "loading-model", key, current, total });
-    },
-  };
-}
-
-export async function removeImageBackground(
-  source: string | Blob,
-  onProgress?: (progress: RemovalProgress) => void,
-): Promise<Blob> {
-  const { removeBackground } = await import("@imgly/background-removal");
-
-  onProgress?.({ phase: "processing" });
-
-  return removeBackground(source, buildRemovalConfig(onProgress));
-}
+export {
+  disposeBackgroundRemovalEngine,
+  getBackgroundRemovalEngineError,
+  hasBackgroundRemovalEngineFailed,
+  isBackgroundRemovalEngineAvailable,
+  isBackgroundRemovalModelReady,
+  removeImageBackgroundInWorker as removeImageBackground,
+  resetBackgroundRemovalEngine,
+  warmBackgroundRemovalEngine,
+} from "@/lib/backgroundRemoval/engine";
 
 function loadImageElement(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -62,7 +36,7 @@ export async function blobToImage(blob: Blob): Promise<HTMLImageElement> {
 
 export function renderResultToCanvas(
   image: HTMLImageElement,
-  options: BackgroundRemovalOptions,
+  options: import("@/lib/backgroundRemoval/types").BackgroundRemovalOptions,
 ): HTMLCanvasElement {
   const width = image.naturalWidth;
   const height = image.naturalHeight;
