@@ -17,9 +17,11 @@ const sizeClassName = {
 } as const;
 
 const iconSizeClassName = {
-  sm: "h-3.5 w-3.5",
-  md: "h-4 w-4",
+  sm: "h-5 w-5",
+  md: "h-7 w-7",
 } as const;
+
+const FAVORITE_COLOR = "#F5C518";
 
 export function FavoriteButton({
   toolSlug,
@@ -33,6 +35,7 @@ export function FavoriteButton({
   return (
     <button
       type="button"
+      data-favorite={active ? "true" : "false"}
       aria-pressed={active}
       aria-label={
         active ? t("favorites.removeLabel") : t("favorites.addLabel")
@@ -43,16 +46,18 @@ export function FavoriteButton({
         event.stopPropagation();
         toggleFavorite(toolSlug);
       }}
-      className={`inline-flex shrink-0 items-center justify-center rounded-sm border border-border bg-background text-muted transition-colors hover:border-muted hover:bg-surface hover:text-foreground ${
-        active
-          ? "border-[color-mix(in_srgb,var(--glow-teal)_35%,var(--border))] bg-accent-muted text-[var(--glow-teal)]"
-          : ""
-      } ${sizeClassName[size]} ${className}`}
+      className={`inline-flex shrink-0 items-center justify-center overflow-visible rounded-sm bg-transparent text-muted transition-colors hover:text-foreground ${sizeClassName[size]} ${className}`}
     >
       <Star
         className={iconSizeClassName[size]}
-        strokeWidth={1.5}
-        fill={active ? "currentColor" : "none"}
+        strokeWidth={active ? 1.25 : 1.5}
+        fill={active ? FAVORITE_COLOR : "none"}
+        stroke={active ? FAVORITE_COLOR : "currentColor"}
+        style={
+          active
+            ? { fill: FAVORITE_COLOR, stroke: FAVORITE_COLOR, color: FAVORITE_COLOR }
+            : undefined
+        }
         aria-hidden
       />
     </button>

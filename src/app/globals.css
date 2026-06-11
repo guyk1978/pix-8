@@ -110,6 +110,13 @@ body {
   display: none;
 }
 
+button[data-favorite="true"] svg,
+button[data-favorite="true"] svg path {
+  fill: #f5c518 !important;
+  stroke: #f5c518 !important;
+  color: #f5c518;
+}
+
 .sidebar-category-tools {
   margin-inline-start: 0.5rem;
   padding-inline-start: 0.5rem;
