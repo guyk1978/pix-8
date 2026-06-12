@@ -96,7 +96,13 @@
   --font-mono: var(--font-ui);
 }
 
+html {
+  overflow-x: clip;
+}
+
 body {
+  overflow-x: clip;
+  max-width: 100%;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-ui);
@@ -135,6 +141,7 @@ p {
 .app-main {
   width: 100%;
   max-width: 100%;
+  overflow-x: clip;
   text-align: start;
 }
 
@@ -152,6 +159,10 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.brand-logo--glow {
+  overflow: hidden;
 }
 
 .brand-logo-wordmark {
@@ -253,8 +264,10 @@ p {
   position: relative;
   display: flex;
   width: 100%;
+  max-width: 100%;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   padding: 3rem 1.5rem 3.5rem;
 }
 
@@ -295,6 +308,8 @@ p {
 
 .brand-logo-hero-section {
   width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   background:
     radial-gradient(
@@ -308,6 +323,8 @@ p {
 /* ── App header: airy tab navigation ── */
 
 .app-header {
+  max-width: 100%;
+  overflow-x: clip;
   text-align: start;
 }
 
@@ -1335,6 +1352,7 @@ button[data-favorite="true"] svg path {
 }
 
 @utility glow-panel {
+  max-width: 100%;
   border: 2px solid transparent;
   background:
     linear-gradient(var(--card), var(--card)) padding-box,

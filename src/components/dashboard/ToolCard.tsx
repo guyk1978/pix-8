@@ -16,7 +16,7 @@ export function ToolCard({ tool, index }: ToolCardProps) {
   const { t } = useLanguage();
 
   return (
-    <div className="group relative rounded-lg bg-card shadow-[var(--shadow-elevated)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-card-hover hover:shadow-[var(--shadow-hover)]">
+    <div className="group relative min-w-0 rounded-lg bg-card shadow-[var(--shadow-elevated)] transition-[background-color,box-shadow] duration-200 hover:bg-card-hover hover:shadow-[var(--shadow-hover)]">
       <div className="absolute top-3 z-10 end-3">
         <FavoriteButton toolSlug={tool.id} size="sm" />
       </div>

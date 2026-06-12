@@ -12,7 +12,7 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   return (
     <ToolSidebarProvider>
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen min-w-0 flex-col overflow-x-clip bg-background">
         <Header />
         <ToolWorkspaceLayout>{children}</ToolWorkspaceLayout>
       </div>
