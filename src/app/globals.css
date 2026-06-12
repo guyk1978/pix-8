@@ -1331,7 +1331,15 @@ button[data-favorite="true"] svg path {
 
 .cookie-consent-overlay {
   border: none;
-  box-shadow: inset 0 0 80px color-mix(in srgb, var(--background) 25%, transparent);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.cookie-consent-card {
+  background: var(--surface);
+  border: none;
+  box-shadow: var(--shadow-float);
+  backdrop-filter: var(--glass-backdrop);
 }
 
 .dark .glass-panel {

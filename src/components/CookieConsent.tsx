@@ -51,7 +51,7 @@ export function CookieConsent() {
   return (
     <>
       <div
-        className="cookie-consent-overlay fixed inset-0 z-[9999] bg-neutral-950/90 backdrop-blur-[8px] pointer-events-auto"
+        className="cookie-consent-overlay fixed inset-0 z-[9999] bg-transparent pointer-events-auto"
         aria-hidden="false"
       />
 
@@ -62,7 +62,7 @@ export function CookieConsent() {
           aria-labelledby="cookie-denied-title"
           aria-describedby="cookie-denied-description"
         >
-          <div className="glass-panel pointer-events-auto mx-auto w-full max-w-md space-y-5 rounded-sm p-6 text-center sm:p-8">
+          <div className="cookie-consent-card pointer-events-auto mx-auto w-full max-w-md space-y-5 rounded-sm p-6 text-center sm:p-8">
             <p
               id="cookie-denied-title"
               className="font-label text-lg text-foreground"
@@ -91,7 +91,7 @@ export function CookieConsent() {
           aria-labelledby="cookie-consent-title"
           aria-describedby="cookie-consent-description"
         >
-          <div className="glass-panel pointer-events-auto mx-auto flex max-w-3xl flex-col gap-4 rounded-sm p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="cookie-consent-card pointer-events-auto mx-auto flex max-w-3xl flex-col gap-4 rounded-sm p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="min-w-0 space-y-2">
               <p id="cookie-consent-title" className="font-label text-foreground">
                 {t("cookie.title")}
