@@ -1,8 +1,7 @@
 "use client";
 
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
+import { Check } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { CHARACTER_SIZES } from "@/lib/characters";
 
 interface HelperSuccessHintProps {
   message?: string;
@@ -14,17 +13,16 @@ export function HelperSuccessHint({ message, className = "" }: HelperSuccessHint
 
   return (
     <div
-      className={`flex items-center gap-4 rounded-sm border border-[color-mix(in_srgb,var(--glow-teal)_35%,var(--border))] bg-[color-mix(in_srgb,var(--glow-teal)_6%,var(--card))] px-4 py-3 ${className}`}
+      className={`flex items-center gap-3 rounded-lg px-4 py-3 shadow-[var(--shadow-elevated)] ${className}`}
       role="status"
+      style={{
+        background: "color-mix(in srgb, var(--glow-teal) 6%, var(--card))",
+      }}
     >
-      <HelperCharacter
-        character="download"
-        alt={t("characters.downloadAlt")}
-        size={CHARACTER_SIZES.download}
-        glow
-        animate="wave"
-      />
-      <p className="font-label text-[11px] leading-relaxed text-[var(--glow-teal)]">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--glow-teal)_14%,transparent)] text-[var(--glow-teal)]">
+        <Check className="h-4 w-4" strokeWidth={2} aria-hidden />
+      </span>
+      <p className="text-sm font-medium leading-relaxed text-[var(--glow-teal)]">
         {message ?? t("characters.readyToDownload")}
       </p>
     </div>

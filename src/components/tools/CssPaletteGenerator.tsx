@@ -1,6 +1,5 @@
 "use client";
 
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -20,7 +19,8 @@ import {
   type PaletteSwatch,
 } from "@/lib/cssPaletteFormat";
 import { extractDominantColors } from "@/lib/paletteExtraction";
-import { CHARACTER_SIZES } from "@/lib/characters";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 
 function loadImageElement(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -33,7 +33,6 @@ function loadImageElement(url: string): Promise<HTMLImageElement> {
 
 export function CssPaletteGenerator() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -143,34 +142,19 @@ export function CssPaletteGenerator() {
               onFileChange={handleFileChange}
             />
 
-            <div className="relative overflow-visible pb-20 sm:pb-24">
-              <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={source.url}
-                  alt={t("alt.sourcePreview")}
-                  className="max-h-40 max-w-full object-contain"
-                />
-              </div>
-
-              <div
-                className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-                dir="ltr"
-              >
-                <HelperCharacter
-                  character="robot"
-                  alt={t("characters.robotAlt")}
-                  size={characterSize}
-                  glow="soft"
-                  pixelated
-                  animate="float"
-                />
-              </div>
-            </div>
+            <ToolWorkspacePreview>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={source.url}
+                alt={t("alt.sourcePreview")}
+                className="max-h-40 max-w-full object-contain"
+              />
+            </ToolWorkspacePreview>
           </div>
         )}
 
-        <section className="relative mt-6 space-y-4 overflow-visible pb-20 sm:pb-24">
+        <WorkflowSettings>
+          <div className="space-y-4">
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-label text-foreground">{t("toolUi.cssPalette.extractedPalette")}</h2>
             {source && (
@@ -208,7 +192,7 @@ export function CssPaletteGenerator() {
                   key={color.role}
                   type="button"
                   onClick={() => void handleCopy(color.hex, color.hex)}
-                  className="flex items-center gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:border-muted"
+                  className="flex items-center gap-3 rounded-sm border border-border bg-background p-3 text-start transition-colors hover:border-muted"
                 >
                   <span
                     className="h-12 w-12 shrink-0 rounded-sm border border-border"
@@ -231,55 +215,42 @@ export function CssPaletteGenerator() {
             </div>
           )}
 
-          <div
-            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="widthAlt"
-              alt={t("characters.widthAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
-          </div>
-        </section>
+          {palette.length > 0 && (
+            <div className="space-y-3 border-t border-border pt-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="font-label text-foreground">{t("toolUi.cssPalette.codeExport")}</h2>
+                <select
+                  value={codeFormat}
+                  onChange={(event) =>
+                    setCodeFormat(event.target.value as CodeFormat)
+                  }
+                  className="min-h-9 rounded-sm border border-border bg-background px-3 font-mono text-[10px] text-foreground outline-none focus:border-muted"
+                >
+                  {CODE_FORMAT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(`toolUi.cssPalette.formats.${option.value}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-        {palette.length > 0 && (
-          <section className="mt-6 space-y-3 border-t border-border pt-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="font-label text-foreground">{t("toolUi.cssPalette.codeExport")}</h2>
-              <select
-                value={codeFormat}
-                onChange={(event) =>
-                  setCodeFormat(event.target.value as CodeFormat)
-                }
-                className="min-h-9 rounded-sm border border-border bg-background px-3 font-mono text-[10px] text-foreground outline-none focus:border-muted"
+              <pre className="overflow-x-auto rounded-sm border border-border bg-background p-4 font-mono text-[11px] leading-relaxed text-muted">
+                {codeSnippet}
+              </pre>
+
+              <button
+                type="button"
+                onClick={() => void handleCopy(codeSnippet, "snippet")}
+                className="min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20"
               >
-                {CODE_FORMAT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {t(`toolUi.cssPalette.formats.${option.value}`)}
-                  </option>
-                ))}
-              </select>
+                {copiedKey === "snippet"
+                  ? t("toolUi.cssPalette.snippetCopied")
+                  : t("toolUi.cssPalette.copySnippet")}
+              </button>
             </div>
-
-            <pre className="overflow-x-auto rounded-sm border border-border bg-background p-4 font-mono text-[11px] leading-relaxed text-muted">
-              {codeSnippet}
-            </pre>
-
-            <button
-              type="button"
-              onClick={() => void handleCopy(codeSnippet, "snippet")}
-              className="min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20"
-            >
-              {copiedKey === "snippet"
-                ? t("toolUi.cssPalette.snippetCopied")
-                : t("toolUi.cssPalette.copySnippet")}
-            </button>
-          </section>
-        )}
+          )}
+          </div>
+        </WorkflowSettings>
 
         {source && (
           <p className="mt-4 text-center font-mono text-[10px] text-muted">

@@ -75,9 +75,9 @@ export function SliderControl({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 text-start">
       <div className="flex items-center justify-between gap-2">
-        <label htmlFor={sliderId} className="font-label text-muted">
+        <label htmlFor={sliderId} className="tool-control-label font-label text-start">
           {label}
         </label>
         <div className="flex items-center gap-1">
@@ -105,7 +105,8 @@ export function SliderControl({
               }
             }}
             aria-label={`${label} value`}
-            className="w-14 rounded-sm border border-border bg-background px-1.5 py-0.5 text-right font-mono text-[10px] tabular-nums text-foreground outline-none transition-colors focus:border-muted disabled:cursor-not-allowed disabled:opacity-50"
+            className="tool-slider-value w-14 px-1.5 py-0.5 text-end text-[11px] tabular-nums outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            dir="ltr"
           />
           {suffix ? (
             <span className="font-mono text-[10px] text-muted">{suffix}</span>
@@ -128,7 +129,7 @@ export function SliderControl({
       />
 
       {description ? (
-        <p className="font-mono text-[10px] leading-relaxed text-muted">
+        <p className="text-start font-mono text-[10px] leading-relaxed text-muted">
           {description}
         </p>
       ) : null}

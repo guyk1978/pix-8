@@ -66,6 +66,8 @@ export default function RootLayout({
 }>) {
   return (
     <html
+      lang="en"
+      dir="ltr"
       className={`${inter.variable} ${robotoMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >

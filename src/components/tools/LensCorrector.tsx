@@ -1,15 +1,16 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 import { SliderControl } from "@/components/ui/SliderControl";
 import {
   DEFAULT_LENS_CORRECTION_SETTINGS,
@@ -26,11 +27,8 @@ import {
   applyNumberPayload,
   useImageToolProject,
 } from "@/hooks/useToolProject";
-import { CHARACTER_SIZES } from "@/lib/characters";
-
 export function LensCorrector() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -160,7 +158,7 @@ export function LensCorrector() {
   const canDownload = !!source && !busy && !isUpdatingPreview;
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace hasActiveImage={!!source}>
         {!source ? (
           <ToolStyledUploadZone
             inputId="lens-corrector-upload"
@@ -177,130 +175,90 @@ export function LensCorrector() {
           />
         )}
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-label text-muted">{t("common.preview")}</span>
-              <span className="font-mono text-[10px] text-muted">
-                {correctionLabel(correction)}
-              </span>
-            </div>
-            <div className="relative flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
-              {source ? (
-                <>
-                  <canvas
-                    ref={previewCanvasRef}
-                    className="max-h-[min(50vh,420px)] max-w-full object-contain"
-                  />
-                  {showGrid && (
-                    <div
-                      className="pointer-events-none absolute inset-3 opacity-60"
-                      style={{
-                        backgroundImage: `
-                          linear-gradient(to right, rgba(232,232,232,0.35) 1px, transparent 1px),
-                          linear-gradient(to bottom, rgba(232,232,232,0.35) 1px, transparent 1px)
-                        `,
-                        backgroundSize: "24px 24px",
-                      }}
-                      aria-hidden="true"
-                    />
-                  )}
-                </>
-              ) : (
-                <p className="px-4 text-center text-sm text-muted">
-                  {t("toolUi.lensCorrector.previewHint")}
-                </p>
-              )}
-            </div>
-            {source && (
-              <p className="text-center font-mono text-[10px] text-muted">
+        {source ? (
+          <ToolWorkspacePreview
+            hint={correctionLabel(correction)}
+            caption={
+              <>
                 {source.width} × {source.height}px ·{" "}
                 {isCorrecting || isUpdatingPreview
                   ? t("toolUi.lensCorrector.correcting")
                   : t("toolUi.lensCorrector.dragToStraighten")}
-              </p>
-            )}
-
-            <div
-              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="robot"
-                alt={t("characters.robotAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
+              </>
+            }
+          >
+            <div className="relative flex min-h-56 w-full items-center justify-center sm:min-h-72">
+              <canvas
+                ref={previewCanvasRef}
+                className="max-h-[min(50vh,420px)] max-w-full object-contain"
               />
+              {showGrid && (
+                <div
+                  className="pointer-events-none absolute inset-3 opacity-60"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(to right, rgba(232,232,232,0.35) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(232,232,232,0.35) 1px, transparent 1px)
+                    `,
+                    backgroundSize: "24px 24px",
+                  }}
+                  aria-hidden="true"
+                />
+              )}
             </div>
-          </div>
+          </ToolWorkspacePreview>
+        ) : null}
 
-          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
-            <SliderControl
-              id="lens-correction"
-              label={t("toolUi.lensCorrector.lensCorrection")}
-              value={correction}
-              min={-100}
-              max={100}
-              step={1}
-              suffix=""
-              disabled={!source}
-              onChange={setCorrection}
-            />
-            <div className="flex justify-between font-mono text-[9px] text-muted">
-              <span>{t("toolUi.lensCorrector.barrelLabel")}</span>
-              <span>0</span>
-              <span>{t("toolUi.lensCorrector.pincushionLabel")}</span>
-            </div>
-
-            <label className="flex min-h-11 cursor-pointer items-center gap-3">
-              <input
-                type="checkbox"
+        <WorkflowSettings>
+          <div className="space-y-4">
+              <SliderControl
+                id="lens-correction"
+                label={t("toolUi.lensCorrector.lensCorrection")}
+                value={correction}
+                min={-100}
+                max={100}
+                step={1}
+                suffix=""
                 disabled={!source}
-                checked={showGrid}
-                onChange={(event) => setShowGrid(event.target.checked)}
-                className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
+                onChange={setCorrection}
               />
-              <span className="font-label text-muted">
-                {t("toolUi.lensCorrector.gridOverlay")}
-              </span>
-            </label>
+              <div className="flex justify-between font-mono text-[9px] text-muted">
+                <span>{t("toolUi.lensCorrector.barrelLabel")}</span>
+                <span>0</span>
+                <span>{t("toolUi.lensCorrector.pincushionLabel")}</span>
+              </div>
 
-            <button
-              type="button"
-              disabled={!source}
-              onClick={() =>
-                setCorrection(DEFAULT_LENS_CORRECTION_SETTINGS.correction)
-              }
-              className="min-h-9 w-full rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
-            >
-              {t("toolUi.lensCorrector.resetCorrection")}
-            </button>
+              <label className="flex min-h-11 cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  disabled={!source}
+                  checked={showGrid}
+                  onChange={(event) => setShowGrid(event.target.checked)}
+                  className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
+                />
+                <span className="font-label text-muted">
+                  {t("toolUi.lensCorrector.gridOverlay")}
+                </span>
+              </label>
 
-            <div
-              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="widthAlt"
-                alt={t("characters.widthAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
-              />
-            </div>
+              <button
+                type="button"
+                disabled={!source}
+                onClick={() =>
+                  setCorrection(DEFAULT_LENS_CORRECTION_SETTINGS.correction)
+                }
+                className="min-h-9 w-full font-mono text-xs text-muted transition-colors hover:text-foreground disabled:opacity-50"
+              >
+                {t("toolUi.lensCorrector.resetCorrection")}
+              </button>
           </div>
-        </div>
+        </WorkflowSettings>
 
-        <div className="mt-5 border-t border-border pt-5">
-          <StripMetadataToggle
-            checked={stripMetadata}
-            disabled={!source}
-            onChange={setStripMetadata}
-          />
-        </div>
+        <StripMetadataToggle
+          checked={stripMetadata}
+          disabled={!source}
+          onChange={setStripMetadata}
+        />
 
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />

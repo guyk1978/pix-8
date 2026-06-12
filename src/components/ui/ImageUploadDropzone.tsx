@@ -1,10 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { WorkflowStep } from "@/components/tools/workflow/WorkflowStep";
-import { CHARACTER_SIZES } from "@/lib/characters";
 
 interface ImageUploadDropzoneProps {
   inputId: string;
@@ -35,7 +34,7 @@ export function ImageUploadDropzone({
   children,
   className = "",
 }: ImageUploadDropzoneProps) {
-  const { t, dir } = useLanguage();
+  const { t } = useLanguage();
 
   const resolvedAriaLabel =
     ariaLabel ??
@@ -43,9 +42,6 @@ export function ImageUploadDropzone({
   const resolvedTitle = title ?? t("upload.title");
   const resolvedHint = hint ?? t("upload.dropHint");
   const resolvedFormatHint = formatHint ?? t("upload.formatsHint");
-  const characterSize = isDragging
-    ? CHARACTER_SIZES.uploadActive
-    : CHARACTER_SIZES.upload;
 
   return (
     <WorkflowStep step="upload">
@@ -93,27 +89,15 @@ export function ImageUploadDropzone({
 
         {children ? (
           <div className="relative z-10 flex w-full flex-col items-center gap-4">
-            <HelperCharacter
-              character="uploadSmile"
-              alt={t("characters.uploadAlt")}
-              size={Math.round(characterSize * 0.88)}
-              glow="upload"
-              className={`mb-1 ${dir === "rtl" ? "-scale-x-100" : ""}`}
-              animate="float"
-            />
+            <BrandLogo size="lg" showGlow className={isDragging ? "scale-105 transition-transform" : ""} />
             {children}
           </div>
         ) : (
           <div className="pointer-events-none relative z-10 flex w-full flex-col items-center gap-4 text-center">
-            <HelperCharacter
-              character="uploadSmile"
-              alt={t("characters.uploadAlt")}
-              size={characterSize}
-              glow="upload"
-              className={`transition-transform duration-300 ${
-                dir === "rtl" ? "-scale-x-100" : ""
-              } ${isDragging ? "scale-110" : ""}`}
-              animate={isDragging ? "wave" : "float"}
+            <BrandLogo
+              size="lg"
+              showGlow
+              className={`transition-transform duration-300 ${isDragging ? "scale-105" : ""}`}
             />
 
             <div>

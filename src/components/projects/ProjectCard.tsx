@@ -28,7 +28,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
     : project.toolId;
 
   return (
-    <article className="glow-panel flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-[var(--glass-shadow)]">
+    <article className="borderless-elevated flex flex-col gap-4 rounded-xl bg-card p-4 transition-shadow hover:shadow-[var(--shadow-hover)]">
       <div className="min-w-0 space-y-1">
         <h2 className="truncate font-label text-foreground">{project.name}</h2>
         <p className="font-mono text-[10px] text-muted">{toolName}</p>
@@ -42,7 +42,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       <div className="mt-auto flex flex-col gap-2 sm:flex-row">
         <Link
           href={`/tools/${project.toolId}?project=${project.id}`}
-          className="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-sm border border-[color-mix(in_srgb,var(--glow-teal)_40%,var(--border))] bg-accent-muted px-4 py-2 font-label text-sm text-accent transition-colors hover:bg-accent/20"
+          className="borderless-interactive inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-accent-muted px-4 py-2 font-label text-sm text-accent shadow-[var(--shadow-elevated)] transition-colors hover:bg-accent/20 hover:shadow-[var(--shadow-hover)]"
         >
           <FolderOpen className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
           {t("projects.openProject")}
@@ -50,7 +50,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <button
           type="button"
           onClick={() => void removeProject(project.id)}
-          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-sm border border-border bg-background px-4 py-2 font-label text-sm text-muted transition-colors hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-300 sm:w-auto"
+          className="borderless-interactive inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-background px-4 py-2 font-label text-sm text-muted shadow-[var(--shadow-elevated)] transition-colors hover:bg-red-500/10 hover:text-red-300 hover:shadow-[var(--shadow-hover)] sm:w-auto"
           aria-label={t("projects.deleteProject")}
         >
           <Trash2 className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />

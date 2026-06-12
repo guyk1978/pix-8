@@ -91,8 +91,8 @@ export function ImageFileInput({
   }
 
   return (
-    <div className="space-y-2">
-      <label htmlFor={inputId} className="font-label text-muted">
+    <div className="space-y-2 text-start">
+      <label htmlFor={inputId} className="block font-label text-start text-muted">
         {labelText}
       </label>
       {field}

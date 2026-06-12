@@ -182,8 +182,6 @@ export function RotateFlip() {
       )}
 
       <ToolFieldsStage
-        robotAlt={t("characters.robotAlt")}
-        widthAlt={t("characters.widthAlt")}
         fields={[
           {
             label: t("toolUi.rotateFlip.transform"),
@@ -250,13 +248,11 @@ export function RotateFlip() {
         ]}
       />
 
-      <div className="mt-2 flex justify-end border-t border-border pt-5 rtl:justify-start">
-        <StripMetadataToggle
-          checked={stripMetadata}
-          disabled={!source}
-          onChange={setStripMetadata}
-        />
-      </div>
+      <StripMetadataToggle
+        checked={stripMetadata}
+        disabled={!source}
+        onChange={setStripMetadata}
+      />
 
       {error ? (
         <HelperErrorAlert message={error} className="mt-4" />

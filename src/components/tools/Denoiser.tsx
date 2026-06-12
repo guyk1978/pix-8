@@ -1,6 +1,5 @@
 "use client";
 
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -8,8 +7,10 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 import { SliderControl } from "@/components/ui/SliderControl";
 import {
   DEFAULT_DENOISE_SETTINGS,
@@ -27,8 +28,6 @@ import {
   applyNumberPayload,
   useImageToolProject,
 } from "@/hooks/useToolProject";
-import { CHARACTER_SIZES } from "@/lib/characters";
-
 function loadImageElement(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -40,7 +39,6 @@ function loadImageElement(url: string): Promise<HTMLImageElement> {
 
 export function Denoiser() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -208,7 +206,7 @@ export function Denoiser() {
   const canDownload = !!source && !busy && !isUpdatingPreview;
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace hasActiveImage={!!source}>
         {!source ? (
           <ToolStyledUploadZone
             inputId="denoiser-upload"
@@ -225,93 +223,63 @@ export function Denoiser() {
           />
         )}
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-label text-muted">
-                {t("toolUi.denoiser.beforeAfter")}
-              </span>
-              <span className="font-mono text-[10px] text-muted">
-                {t("toolUi.denoiser.compareHint")}
-              </span>
-            </div>
-
-            <div
-              ref={comparisonRef}
-              className={`relative flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72 ${
-                source ? "cursor-col-resize touch-none" : ""
-              }`}
-              onPointerDown={source ? handleComparePointerDown : undefined}
-              onPointerMove={source ? handleComparePointerMove : undefined}
-              onPointerUp={source ? handleComparePointerUp : undefined}
-              onPointerCancel={source ? handleComparePointerUp : undefined}
-            >
-              {source ? (
-                <div className="relative inline-block max-w-full">
-                  <canvas
-                    ref={afterCanvasRef}
-                    className="block max-h-[min(50vh,420px)] max-w-full"
-                  />
-                  <div
-                    className="absolute inset-0 overflow-hidden"
-                    style={{ width: `${comparePosition}%` }}
-                  >
-                    <canvas
-                      ref={beforeCanvasRef}
-                      className="block max-h-[min(50vh,420px)] max-w-full"
-                    />
-                  </div>
-                  <div
-                    className="pointer-events-none absolute inset-y-0 z-10 w-px bg-foreground"
-                    style={{ left: `${comparePosition}%` }}
-                  />
-                  <div
-                    className="pointer-events-none absolute top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1"
-                    style={{ left: `${comparePosition}%` }}
-                  >
-                    <span className="rounded-sm border border-border bg-card px-2 py-1 font-mono text-[9px] text-muted">
-                      {t("common.before")}
-                    </span>
-                    <span className="h-8 w-4 rounded-sm border border-border bg-card" />
-                    <span className="rounded-sm border border-border bg-card px-2 py-1 font-mono text-[9px] text-muted">
-                      {t("common.after")}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <p className="px-4 text-center text-sm text-muted">
-                  {t("toolUi.denoiser.previewHint")}
-                </p>
-              )}
-            </div>
-
-            {source && (
-              <p className="text-center font-mono text-[10px] text-muted">
+        {source ? (
+          <ToolWorkspacePreview
+            hint={t("toolUi.denoiser.compareHint")}
+            caption={
+              <>
                 {source.width} × {source.height}px ·{" "}
                 {isDenoising || isUpdatingPreview
                   ? t("toolUi.denoiser.denoising")
-                  : t("toolUi.denoiser.strengthPercent", {
-                      percent: strength,
-                    })}
-              </p>
-            )}
-
+                  : t("toolUi.denoiser.strengthPercent", { percent: strength })}
+              </>
+            }
+          >
             <div
-              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-              dir="ltr"
+              ref={comparisonRef}
+              className="relative flex min-h-56 w-full items-center justify-center sm:min-h-72 cursor-col-resize touch-none"
+              onPointerDown={handleComparePointerDown}
+              onPointerMove={handleComparePointerMove}
+              onPointerUp={handleComparePointerUp}
+              onPointerCancel={handleComparePointerUp}
             >
-              <HelperCharacter
-                character="robot"
-                alt={t("characters.robotAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
-              />
+              <div className="relative inline-block max-w-full">
+                <canvas
+                  ref={afterCanvasRef}
+                  className="block max-h-[min(50vh,420px)] max-w-full"
+                />
+                <div
+                  className="absolute inset-0 overflow-hidden"
+                  style={{ width: `${comparePosition}%` }}
+                >
+                  <canvas
+                    ref={beforeCanvasRef}
+                    className="block max-h-[min(50vh,420px)] max-w-full"
+                  />
+                </div>
+                <div
+                  className="pointer-events-none absolute inset-y-0 z-10 w-px bg-foreground"
+                  style={{ left: `${comparePosition}%` }}
+                />
+                <div
+                  className="pointer-events-none absolute top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1"
+                  style={{ left: `${comparePosition}%` }}
+                >
+                  <span className="rounded-sm bg-card px-2 py-1 font-mono text-[9px] text-muted shadow-[var(--shadow-elevated)]">
+                    {t("common.before")}
+                  </span>
+                  <span className="h-8 w-4 rounded-sm bg-card shadow-[var(--shadow-elevated)]" />
+                  <span className="rounded-sm bg-card px-2 py-1 font-mono text-[9px] text-muted shadow-[var(--shadow-elevated)]">
+                    {t("common.after")}
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
+          </ToolWorkspacePreview>
+        ) : null}
 
-          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
+        <WorkflowSettings>
+          <div className="space-y-4">
             <SliderControl
               id="denoise-strength"
               label={t("common.strength")}
@@ -329,34 +297,18 @@ export function Denoiser() {
               type="button"
               disabled={!source}
               onClick={() => setStrength(DEFAULT_DENOISE_SETTINGS.strength)}
-              className="min-h-9 w-full rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
+              className="min-h-9 w-full font-mono text-xs text-muted transition-colors hover:text-foreground disabled:opacity-50"
             >
               {t("toolUi.denoiser.resetStrength")}
             </button>
-
-            <div
-              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="widthAlt"
-                alt={t("characters.widthAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
-              />
-            </div>
           </div>
-        </div>
+        </WorkflowSettings>
 
-        <div className="mt-5 border-t border-border pt-5">
-          <StripMetadataToggle
-            checked={stripMetadata}
-            disabled={!source}
-            onChange={setStripMetadata}
-          />
-        </div>
+        <StripMetadataToggle
+          checked={stripMetadata}
+          disabled={!source}
+          onChange={setStripMetadata}
+        />
 
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />

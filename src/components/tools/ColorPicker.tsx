@@ -1,8 +1,8 @@
 "use client";
 
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
@@ -16,7 +16,7 @@ import {
   sampleColorFromCanvas,
   type SampledColor,
 } from "@/lib/colorUtils";
-import { CHARACTER_SIZES } from "@/lib/characters";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 
 const MAGNIFIER_SIZE = 11;
 const MAGNIFIER_ZOOM = 12;
@@ -112,7 +112,6 @@ function drawMagnifier(
 
 export function ColorPicker() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -315,11 +314,8 @@ export function ColorPicker() {
               onFileChange={handleFileChange}
             />
 
-            <div className="relative overflow-visible pb-20 sm:pb-24">
-              <div
-                ref={viewerRef}
-                className="relative overflow-hidden rounded-sm border border-border bg-background"
-              >
+            <ToolWorkspacePreview hint={t("toolUi.colorPicker.hoverHint")}>
+              <div ref={viewerRef} className="relative w-full">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   ref={imageRef}
@@ -347,30 +343,13 @@ export function ColorPicker() {
                   </div>
                 )}
               </div>
-
-              <div
-                className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-                dir="ltr"
-              >
-                <HelperCharacter
-                  character="robot"
-                  alt={t("characters.robotAlt")}
-                  size={characterSize}
-                  glow="soft"
-                  pixelated
-                  animate="float"
-                />
-              </div>
-            </div>
-
-            <p className="font-mono text-[10px] text-muted">
-              {t("toolUi.colorPicker.hoverHint")}
-            </p>
+            </ToolWorkspacePreview>
           </div>
         )}
 
-        <section className="relative mt-6 overflow-visible border-t border-border pt-6 pb-20 sm:pb-24">
-          <div className="mb-4 flex items-center justify-between gap-2">
+        <WorkflowSettings>
+          <div className="space-y-4">
+          <div className="flex items-center justify-between gap-2">
             <h2 className="font-label text-foreground">{t("toolUi.colorPicker.sampledColor")}</h2>
             {pointer && (
               <span className="font-mono text-[10px] text-muted">
@@ -416,7 +395,7 @@ export function ColorPicker() {
                     key={format.key}
                     type="button"
                     onClick={() => void handleCopy(format.value, format.key)}
-                    className="flex min-h-11 flex-col items-start gap-1 rounded-sm border border-border bg-card px-3 py-2.5 text-left transition-colors hover:border-muted hover:bg-surface"
+                    className="flex min-h-11 flex-col items-start gap-1 rounded-sm border border-border bg-card px-3 py-2.5 text-start transition-colors hover:border-muted hover:bg-surface"
                   >
                     <span className="font-label text-muted">{format.label}</span>
                     <span
@@ -436,20 +415,8 @@ export function ColorPicker() {
             </div>
           )}
 
-          <div
-            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="widthAlt"
-              alt={t("characters.widthAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
           </div>
-        </section>
+        </WorkflowSettings>
 
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />

@@ -146,6 +146,9 @@ export function generateInventory(): string {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>pix-8 — Local Inventory</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -271,7 +274,7 @@ export function generateInventory(): string {
     <p class="label">Local only</p>
     <h1>pix-8 Inventory</h1>
     <p class="sub">Generated ${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC — not deployed</p>
-    <p class="notice">This file lives in <code>local/</code> (gitignored). It regenerates on <code>npm run dev</code> startup and whenever <code>src/lib/tools.ts</code> or <code>src/content/articles/</code> changes — reload this page in your browser to see updates. Tool links assume <code>npm run dev</code> on port 3000.</p>
+    <p class="notice">This file lives in <code>local/</code> (gitignored, not deployed). Regenerate with <code>npm run inventory</code> — also runs on <code>npm install</code>, <code>npm run build</code>, and <code>npm run dev</code> (watches <code>tools.ts</code>, <code>blog.ts</code>, and <code>articles/</code>). Hard-refresh this page after regenerating. Tool links assume <code>npm run dev</code> on port 3000.</p>
     <div class="summary">
       <div class="stat"><p class="label">Tools</p><p class="value">${tools.length}</p></div>
       <div class="stat"><p class="label">Articles (EN)</p><p class="value">${articlesEn.length}</p></div>

@@ -1,12 +1,12 @@
 "use client";
 
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -17,7 +17,7 @@ import {
   extractDominantColors,
   type PaletteColor,
 } from "@/lib/paletteExtraction";
-import { CHARACTER_SIZES } from "@/lib/characters";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 
 function loadImageElement(
   url: string,
@@ -33,7 +33,6 @@ function loadImageElement(
 
 export function PaletteExtractor() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -133,35 +132,20 @@ export function PaletteExtractor() {
               onFileChange={handleFileChange}
             />
 
-            <div className="relative overflow-visible pb-20 sm:pb-24">
-              <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={source.url}
-                  alt={t("alt.sourcePreview")}
-                  className="max-h-48 max-w-full object-contain"
-                />
-              </div>
-
-              <div
-                className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-                dir="ltr"
-              >
-                <HelperCharacter
-                  character="robot"
-                  alt={t("characters.robotAlt")}
-                  size={characterSize}
-                  glow="soft"
-                  pixelated
-                  animate="float"
-                />
-              </div>
-            </div>
+            <ToolWorkspacePreview>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={source.url}
+                alt={t("alt.sourcePreview")}
+                className="max-h-48 max-w-full object-contain"
+              />
+            </ToolWorkspacePreview>
           </div>
         )}
 
-        <section className="relative mt-6 overflow-visible pb-20 sm:pb-24">
-          <div className="mb-4 flex items-center justify-between">
+        <WorkflowSettings>
+          <div className="space-y-4">
+          <div className="flex items-center justify-between">
             <h2 className="font-label text-foreground">
               {t("toolUi.paletteExtractor.extractedPalette")}
             </h2>
@@ -227,39 +211,25 @@ export function PaletteExtractor() {
             </div>
           )}
 
-          <div
-            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="widthAlt"
-              alt={t("characters.widthAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
           </div>
-        </section>
+        </WorkflowSettings>
 
         {source && (
-          <p className="mt-4 text-center font-mono text-xs text-muted">
+          <p className="text-center font-mono text-xs text-muted">
             {source.width} × {source.height}px · {source.file.name}
           </p>
         )}
 
-        <div className="mt-5 border-t border-border pt-5">
-          <StripMetadataToggle
-            checked={stripMetadata}
-            disabled={!source}
-            onChange={setStripMetadata}
-          />
-          {stripMetadata && source && (
-            <p className="mt-2 font-mono text-[10px] text-muted">
-              {t("privacy.privacyModeActive")}
-            </p>
-          )}
-        </div>
+        <StripMetadataToggle
+          checked={stripMetadata}
+          disabled={!source}
+          onChange={setStripMetadata}
+        />
+        {stripMetadata && source && (
+          <p className="font-mono text-[10px] text-muted">
+            {t("privacy.privacyModeActive")}
+          </p>
+        )}
 
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />

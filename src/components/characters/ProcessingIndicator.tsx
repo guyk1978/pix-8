@@ -1,8 +1,7 @@
 "use client";
 
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { CHARACTER_SIZES } from "@/lib/characters";
 
 interface ProcessingIndicatorProps {
   progress?: number;
@@ -17,6 +16,12 @@ const ringMap = {
   lg: 172,
 };
 
+const logoSizeMap = {
+  sm: "sm" as const,
+  md: "sm" as const,
+  lg: "md" as const,
+};
+
 export function ProcessingIndicator({
   progress,
   active = false,
@@ -24,7 +29,6 @@ export function ProcessingIndicator({
   className = "",
 }: ProcessingIndicatorProps) {
   const { t } = useLanguage();
-  const characterSize = CHARACTER_SIZES.processing[size];
   const ringSize = ringMap[size];
   const resolvedProgress = progress ?? (active ? 65 : 35);
   const circumference = 2 * Math.PI * 34;
@@ -76,14 +80,7 @@ export function ProcessingIndicator({
         </defs>
       </svg>
 
-      <HelperCharacter
-        character="processing"
-        alt=""
-        size={characterSize}
-        glow
-        animate={active ? "float" : "none"}
-        className="relative z-[1]"
-      />
+      <BrandLogo size={logoSizeMap[size]} className="relative z-[1]" />
     </div>
   );
 }

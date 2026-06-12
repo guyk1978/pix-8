@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
 import { JOIN_MY_PDF_URL } from "@/lib/external-links";
-import { getToolCategoryHref } from "@/lib/toolCategoryPages";
+import {
+  getCategoryRoute,
+  getToolRoute,
+} from "@/lib/navigationConfig";
 import { SIDEBAR_NAV_CATEGORIES } from "@/lib/sidebarNav";
 import { tools } from "@/lib/tools";
 
@@ -39,7 +42,8 @@ export function Footer() {
               {SIDEBAR_NAV_CATEGORIES.map((category) => (
                 <li key={category.id}>
                   <Link
-                    href={getToolCategoryHref(category.id)}
+                    href={getCategoryRoute(category.id)}
+                    prefetch
                     className={footerLinkClassName}
                   >
                     {t(`nav.toolCategories.${category.id}`)}
@@ -54,7 +58,11 @@ export function Footer() {
             <ul className="grid grid-cols-2 gap-x-6 gap-y-2">
               {tools.map((tool) => (
                 <li key={tool.id}>
-                  <Link href={tool.href} className={footerLinkClassName}>
+                  <Link
+                    href={getToolRoute(tool.id)}
+                    prefetch
+                    className={footerLinkClassName}
+                  >
                     {t(getToolTranslationKey(tool.id, "name"))}
                   </Link>
                 </li>

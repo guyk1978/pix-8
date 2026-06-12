@@ -8,6 +8,8 @@ import { SliderControl } from "@/components/ui/SliderControl";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   buildDownloadFilename,
@@ -35,14 +37,12 @@ const ALIGN_OPTIONS: { value: TextAlign; labelKey: "left" | "center" | "right" }
   { value: "right", labelKey: "right" },
 ];
 
-const buttonClassName =
-  "min-h-9 rounded-sm border border-border px-3 py-1.5 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
+const buttonClassName = "tool-chip-button disabled:cursor-not-allowed disabled:opacity-40";
 
-const activeButtonClassName =
-  "border-accent/40 bg-accent-muted text-accent";
+const activeButtonClassName = "tool-chip-button-active";
 
 export function TextOverlay() {
-  const { t, dir } = useLanguage();
+  const { t } = useLanguage();
   const {
     canvasRef,
     source,
@@ -221,17 +221,6 @@ export function TextOverlay() {
     ? `${settings.x}, ${settings.y}`
     : t("toolUi.textOverlay.positionPlaceholder");
 
-  const characterOffsets =
-    dir === "rtl"
-      ? {
-          robot: { bottom: "1rem" },
-          widthAlt: { bottom: "16.5rem" },
-        }
-      : {
-          robot: { bottom: "16rem" },
-          widthAlt: { bottom: "-2rem" },
-        };
-
   return (
     <ToolWorkspace
       workflowState={{
@@ -250,17 +239,23 @@ export function TextOverlay() {
           formatHint={t("toolUi.textOverlay.uploadHint")}
         />
       ) : (
-        <div className="space-y-3 rounded-sm border border-border bg-background p-2 sm:p-3">
-          <div className="flex items-center justify-between gap-2 px-1">
-            <span className="font-label text-muted">{t("common.preview")}</span>
-            <span className="font-mono text-[10px] text-muted">
-              {t("toolUi.textOverlay.dragToPosition")}
-            </span>
-          </div>
-          <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-card p-3 sm:min-h-72">
+        <>
+          <ImageFileInput
+            id="text-overlay-replace"
+            fileName={source.file.name}
+            onFileChange={handleFileChange}
+          />
+          <ToolWorkspacePreview
+            hint={t("toolUi.textOverlay.dragToPosition")}
+            caption={
+              <>
+                {source.width} × {source.height}px · {settings.x}, {settings.y}
+              </>
+            }
+          >
             <canvas
               ref={previewCanvasRef}
-              className={`character-pixelated max-h-[min(50vh,420px)] max-w-full touch-none object-contain ${
+              className={`max-h-[min(50vh,420px)] max-w-full touch-none object-contain ${
                 isDragging ? "cursor-grabbing" : "cursor-grab"
               }`}
               onPointerDown={handlePointerDown}
@@ -268,17 +263,11 @@ export function TextOverlay() {
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
             />
-          </div>
-          <p className="text-center font-mono text-xs text-muted">
-            {source.width} × {source.height}px · {settings.x}, {settings.y}
-          </p>
-        </div>
+          </ToolWorkspacePreview>
+        </>
       )}
 
       <ToolFieldsStage
-        robotAlt={t("characters.robotAlt")}
-        widthAlt={t("characters.widthAlt")}
-        characterOffsets={characterOffsets}
         fields={[
           {
             label: t("toolUi.textOverlay.text"),
@@ -291,22 +280,36 @@ export function TextOverlay() {
                 disabled={!source}
                 value={settings.text}
                 onChange={(event) => patchSettings({ text: event.target.value })}
-                className="tool-input block min-h-24 resize-y border-transparent bg-transparent py-2.5"
+                className="tool-input block min-h-24 resize-y py-2.5"
                 placeholder={t("toolUi.textOverlay.placeholder")}
               />
+            ),
+          },
+          {
+            label: t("toolUi.textOverlay.position"),
+            englishLabel: "Position",
+            htmlFor: "text-overlay-position",
+            children: (
+              <output
+                id="text-overlay-position"
+                className={`tool-input block border-transparent bg-transparent font-mono text-xs ${
+                  source ? "text-muted" : "text-muted/60"
+                }`}
+              >
+                {positionDisplay}
+              </output>
             ),
           },
           {
             label: t("toolUi.textOverlay.style"),
             englishLabel: "Style",
             htmlFor: "text-overlay-font",
-            accentClass: "text-[var(--glow-purple)]",
             children: (
-              <div className="space-y-3 px-1 py-2.5">
-                <div className="space-y-1.5">
+              <div className="flex flex-col gap-5">
+                <div className="tool-control-group">
                   <label
                     htmlFor="text-overlay-font"
-                    className="font-label text-[10px] text-muted"
+                    className="tool-control-label"
                   >
                     {t("toolUi.textOverlay.font")}
                   </label>
@@ -317,7 +320,7 @@ export function TextOverlay() {
                     onChange={(event) =>
                       patchSettings({ fontFamily: event.target.value })
                     }
-                    className="tool-input block border-transparent bg-transparent"
+                    className="tool-input block"
                   >
                     {fontOptions.map((font) => (
                       <option key={font.value} value={font.value}>
@@ -339,10 +342,10 @@ export function TextOverlay() {
                   onChange={(fontSizePercent) => patchSettings({ fontSizePercent })}
                 />
 
-                <div className="space-y-1.5">
+                <div className="tool-control-group">
                   <label
                     htmlFor="text-overlay-color"
-                    className="font-label text-[10px] text-muted"
+                    className="tool-control-label"
                   >
                     {t("common.color")}
                   </label>
@@ -355,17 +358,17 @@ export function TextOverlay() {
                       onChange={(event) =>
                         patchSettings({ color: event.target.value })
                       }
-                      className="h-10 w-12 shrink-0 cursor-pointer rounded-sm border border-border bg-background p-1 disabled:opacity-50"
+                      className="h-10 w-12 shrink-0 cursor-pointer rounded-md p-1 disabled:opacity-50"
                     />
                     <span className="font-mono text-xs text-muted">{settings.color}</span>
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <span className="font-label text-[10px] text-muted">
+                <div className="tool-control-group">
+                  <span className="tool-control-label">
                     {t("toolUi.textOverlay.alignment")}
                   </span>
-                  <div className="grid grid-cols-3 gap-1.5">
+                  <div className="flex flex-col gap-2">
                     {alignOptions.map((option) => (
                       <button
                         key={option.value}
@@ -373,9 +376,7 @@ export function TextOverlay() {
                         disabled={!source}
                         onClick={() => patchSettings({ align: option.value })}
                         className={`${buttonClassName} ${
-                          settings.align === option.value
-                            ? activeButtonClassName
-                            : "bg-background"
+                          settings.align === option.value ? activeButtonClassName : ""
                         }`}
                       >
                         {option.label}
@@ -392,9 +393,9 @@ export function TextOverlay() {
                     onChange={(event) =>
                       patchSettings({ shadow: event.target.checked })
                     }
-                    className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
+                    className="h-4 w-4 shrink-0 accent-accent disabled:opacity-50"
                   />
-                  <span className="font-label text-[10px] text-muted">
+                  <span className="tool-control-label normal-case">
                     {t("toolUi.textOverlay.textShadow")}
                   </span>
                 </label>
@@ -407,9 +408,9 @@ export function TextOverlay() {
                     onChange={(event) =>
                       patchSettings({ backgroundBox: event.target.checked })
                     }
-                    className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent disabled:opacity-50"
+                    className="h-4 w-4 shrink-0 accent-accent disabled:opacity-50"
                   />
-                  <span className="font-label text-[10px] text-muted">
+                  <span className="tool-control-label normal-case">
                     {t("toolUi.textOverlay.backgroundBox")}
                   </span>
                 </label>
@@ -435,19 +436,11 @@ export function TextOverlay() {
         ]}
       />
 
-      <div className="mt-2 flex items-end justify-between gap-4 border-t border-border pt-5">
-        <output
-          id="text-overlay-position"
-          className={`font-mono text-[10px] ${source ? "text-muted" : "text-muted/60"}`}
-        >
-          {t("toolUi.textOverlay.position")}: {positionDisplay}
-        </output>
-        <StripMetadataToggle
-          checked={stripMetadata}
-          disabled={!source}
-          onChange={setStripMetadata}
-        />
-      </div>
+      <StripMetadataToggle
+        checked={stripMetadata}
+        disabled={!source}
+        onChange={setStripMetadata}
+      />
 
       {error ? (
         <HelperErrorAlert message={error} className="mt-4" />

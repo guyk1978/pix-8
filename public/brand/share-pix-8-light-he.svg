@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4f4f4" />
+      <stop offset="100%" stop-color="#ffffff" />
+    </linearGradient>
+    <radialGradient id="heroGlow" cx="50%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="rgba(13, 148, 136, 0.14)" />
+      <stop offset="100%" stop-color="transparent" />
+    </radialGradient>
+    <linearGradient id="pixelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d9488" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="eightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a1a" />
+      <stop offset="100%" stop-color="#0d9488" />
+    </linearGradient>
+    <filter id="pixelGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#heroGlow)" />
+
+  <rect x="220" y="118" width="760" height="394" rx="28" fill="rgba(255, 255, 255, 0.82)" stroke="rgba(26, 26, 26, 0.08)" stroke-width="1.5" />
+
+  <text x="600" y="300" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="132" font-weight="700" letter-spacing="-4">
+    <tspan fill="#1a1a1a">P</tspan>
+    <tspan fill="#1a1a1a">i</tspan>
+    <tspan fill="#6b7280">-</tspan>
+    <tspan fill="url(#eightGrad)">8</tspan>
+  </text>
+
+  <rect x="548" y="198" width="28" height="28" rx="6" fill="url(#pixelGrad)" transform="rotate(12 562 212)" filter="url(#pixelGlow)" />
+
+  <text x="780" y="390" direction="rtl" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="500">
+    <tspan fill="#1a1a1a">עיבוד תמונות מקומי.</tspan>
+    <tspan dx="-12" fill="#6b7280">שום דבר לא עוזב את הדפדפן.</tspan>
+  </text>
+
+  <text x="600" y="470" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="500" fill="#6b7280" letter-spacing="0.12em">
+    CLIENT-SIDE IMAGE UTILITIES
+  </text>
+</svg>

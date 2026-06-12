@@ -1,7 +1,6 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -9,7 +8,9 @@ import { SliderControl } from "@/components/ui/SliderControl";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import {
   getBorderedCanvasSize,
   renderBorderedCanvas,
@@ -21,8 +22,6 @@ import {
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
-import { CHARACTER_SIZES } from "@/lib/characters";
-
 const PRESETS: { key: "gallery" | "minimal" | "soft"; settings: BorderSettings }[] = [
   {
     key: "gallery",
@@ -46,7 +45,6 @@ const DEFAULT_SETTINGS: BorderSettings = {
 
 export function BorderGenerator() {
   const { t } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -138,7 +136,7 @@ export function BorderGenerator() {
   const canDownload = !!source && !isProcessing;
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace hasActiveImage={!!source}>
         {!source ? (
           <ToolStyledUploadZone
             inputId="border-generator-upload"
@@ -155,127 +153,94 @@ export function BorderGenerator() {
           />
         )}
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
-            <span className="font-label text-muted">{t("common.preview")}</span>
-            <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
-              {source ? (
-                <canvas
-                  ref={previewCanvasRef}
-                  className="max-h-[min(50vh,420px)] max-w-full object-contain"
-                />
-              ) : (
-                <p className="px-4 text-center text-sm text-muted">
-                  {t("toolUi.border.previewHint")}
-                </p>
-              )}
-            </div>
-            {source && outputSize && (
-              <p className="text-center font-mono text-[10px] text-muted">
-                {source.width} × {source.height}px → {outputSize.width} ×{" "}
-                {outputSize.height}px
-              </p>
-            )}
+        {source ? (
+          <ToolWorkspacePreview
+            caption={
+              outputSize ? (
+                <>
+                  {source.width} × {source.height}px → {outputSize.width} ×{" "}
+                  {outputSize.height}px
+                </>
+              ) : undefined
+            }
+          >
+            <canvas
+              ref={previewCanvasRef}
+              className="max-h-[min(50vh,420px)] max-w-full object-contain"
+            />
+          </ToolWorkspacePreview>
+        ) : null}
 
-            <div
-              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="robot"
-                alt={t("characters.robotAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
+        <WorkflowSettings>
+          <div className="space-y-4">
+              <div className="space-y-2">
+                <span className="font-label text-muted">{t("common.presets")}</span>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {PRESETS.map((preset) => (
+                    <button
+                      key={preset.key}
+                      type="button"
+                      disabled={!source}
+                      onClick={() => setSettings(preset.settings)}
+                      className="min-h-9 rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
+                    >
+                      {t(`toolUi.border.${preset.key}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <SliderControl
+                id="border-width"
+                label={t("common.width")}
+                value={settings.width}
+                min={0}
+                max={120}
+                step={1}
+                suffix="px"
+                disabled={!source}
+                onChange={(width) => patchSettings({ width })}
               />
-            </div>
-          </div>
 
-          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
-            <div className="space-y-2">
-              <span className="font-label text-muted">{t("common.presets")}</span>
-              <div className="grid grid-cols-3 gap-1.5">
-                {PRESETS.map((preset) => (
-                  <button
-                    key={preset.key}
-                    type="button"
+              <div className="space-y-2">
+                <label htmlFor="border-color" className="font-label text-muted">
+                  {t("common.color")}
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    id="border-color"
+                    type="color"
                     disabled={!source}
-                    onClick={() => setSettings(preset.settings)}
-                    className="min-h-9 rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
-                  >
-                    {t(`toolUi.border.${preset.key}`)}
-                  </button>
-                ))}
+                    value={settings.color}
+                    onChange={(event) =>
+                      patchSettings({ color: event.target.value })
+                    }
+                    className="h-11 w-14 shrink-0 cursor-pointer rounded-sm border border-border bg-background p-1 disabled:opacity-50"
+                  />
+                  <span className="font-mono text-xs text-muted">{settings.color}</span>
+                </div>
               </div>
-            </div>
 
-            <SliderControl
-              id="border-width"
-              label={t("common.width")}
-              value={settings.width}
-              min={0}
-              max={120}
-              step={1}
-              suffix="px"
-              disabled={!source}
-              onChange={(width) => patchSettings({ width })}
-            />
-
-            <div className="space-y-2">
-              <label htmlFor="border-color" className="font-label text-muted">
-                {t("common.color")}
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  id="border-color"
-                  type="color"
-                  disabled={!source}
-                  value={settings.color}
-                  onChange={(event) =>
-                    patchSettings({ color: event.target.value })
-                  }
-                  className="h-11 w-14 shrink-0 cursor-pointer rounded-sm border border-border bg-background p-1 disabled:opacity-50"
-                />
-                <span className="font-mono text-xs text-muted">{settings.color}</span>
-              </div>
-            </div>
-
-            <SliderControl
-              id="border-radius"
-              label={t("toolUi.border.cornerRadius")}
-              value={settings.cornerRadius}
-              min={0}
-              max={64}
-              step={1}
-              suffix="px"
-              disabled={!source}
-              onChange={(cornerRadius) => patchSettings({ cornerRadius })}
-            />
-
-            <div
-              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="widthAlt"
-                alt={t("characters.widthAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
+              <SliderControl
+                id="border-radius"
+                label={t("toolUi.border.cornerRadius")}
+                value={settings.cornerRadius}
+                min={0}
+                max={64}
+                step={1}
+                suffix="px"
+                disabled={!source}
+                onChange={(cornerRadius) => patchSettings({ cornerRadius })}
               />
-            </div>
-          </div>
-        </div>
 
-        <div className="mt-5 border-t border-border pt-5">
-          <StripMetadataToggle
-            checked={stripMetadata}
-            disabled={!source}
-            onChange={setStripMetadata}
-          />
-        </div>
+          </div>
+        </WorkflowSettings>
+
+        <StripMetadataToggle
+          checked={stripMetadata}
+          disabled={!source}
+          onChange={setStripMetadata}
+        />
 
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />

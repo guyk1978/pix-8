@@ -14,6 +14,8 @@ import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
 import {
   applyBooleanPayload,
@@ -223,26 +225,36 @@ export function Converter() {
       <ProcessingModeToggle mode={mode} onChange={handleModeChange} />
 
       {mode === "single" ? (
-        <ToolStyledUploadZone
-          inputId="converter-upload"
-          onFileChange={handleFileChange}
-          isDragging={isDragging}
-          onDraggingChange={setIsDragging}
-        >
-          {source ? (
-            <div className="pointer-events-none flex w-full flex-col items-center gap-3">
+        !source ? (
+          <ToolStyledUploadZone
+            inputId="converter-upload"
+            onFileChange={handleFileChange}
+            isDragging={isDragging}
+            onDraggingChange={setIsDragging}
+          />
+        ) : (
+          <>
+            <ImageFileInput
+              id="converter-replace"
+              fileName={source.file.name}
+              onFileChange={handleFileChange}
+            />
+            <ToolWorkspacePreview
+              caption={
+                <>
+                  {source.width} × {source.height}px · {source.file.name}
+                </>
+              }
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={source.url}
                 alt={t("alt.preview")}
-                className="character-pixelated max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
+                className="character-pixelated max-h-[min(50vh,420px)] max-w-full object-contain"
               />
-              <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
-                {source.width} × {source.height}px · {source.file.name}
-              </p>
-            </div>
-          ) : undefined}
-        </ToolStyledUploadZone>
+            </ToolWorkspacePreview>
+          </>
+        )
       ) : (
         <div className="space-y-4">
           <ToolStyledUploadZone
@@ -266,8 +278,6 @@ export function Converter() {
       )}
 
       <ToolFieldsStage
-        robotAlt={t("characters.robotAlt")}
-        widthAlt={t("characters.widthAlt")}
         fields={[
           {
             label: t("toolUi.converter.targetFormat"),
@@ -308,13 +318,11 @@ export function Converter() {
         ]}
       />
 
-      <div className="mt-2 flex justify-end border-t border-border pt-5 rtl:justify-start">
-        <StripMetadataToggle
-          checked={stripMetadata}
-          disabled={fieldsDisabled}
-          onChange={setStripMetadata}
-        />
-      </div>
+      <StripMetadataToggle
+        checked={stripMetadata}
+        disabled={fieldsDisabled}
+        onChange={setStripMetadata}
+      />
 
       {displayError ? (
         <HelperErrorAlert message={displayError} className="mt-4" />

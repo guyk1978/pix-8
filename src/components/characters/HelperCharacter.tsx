@@ -53,6 +53,7 @@ export function HelperCharacter({
 
   return (
     <div
+      data-helper-mascot=""
       className={`character-volumetric relative inline-flex shrink-0 items-center justify-center overflow-visible ${aura} ${flipped ? "-scale-x-100" : ""}`}
       style={{ width: size, minHeight: size }}
     >

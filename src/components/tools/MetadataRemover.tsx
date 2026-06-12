@@ -9,6 +9,8 @@ import { resolveErrorMessage } from "@/i18n";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import {
   buildDownloadFilename,
   resolveFormat,
@@ -252,31 +254,39 @@ export function MetadataRemover() {
         isReady: canDownload,
       }}
     >
-      <ToolStyledUploadZone
-        inputId="metadata-remover-upload"
-        onFileChange={handleFileChange}
-        isDragging={isDragging}
-        onDraggingChange={setIsDragging}
-        formatHint={t("toolUi.metadataRemover.uploadHint")}
-      >
-        {source ? (
-          <div className="pointer-events-none flex w-full flex-col items-center gap-3">
+      {!source ? (
+        <ToolStyledUploadZone
+          inputId="metadata-remover-upload"
+          onFileChange={handleFileChange}
+          isDragging={isDragging}
+          onDraggingChange={setIsDragging}
+          formatHint={t("toolUi.metadataRemover.uploadHint")}
+        />
+      ) : (
+        <>
+          <ImageFileInput
+            id="metadata-remover-replace"
+            fileName={source.file.name}
+            onFileChange={handleFileChange}
+          />
+          <ToolWorkspacePreview
+            caption={
+              <>
+                {source.width} × {source.height}px · {formatFileSize(source.file.size)}
+              </>
+            }
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={source.url}
               alt={t("alt.preview")}
-              className="character-pixelated max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
+              className="character-pixelated max-h-[min(50vh,420px)] max-w-full object-contain"
             />
-            <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
-              {source.width} × {source.height}px · {formatFileSize(source.file.size)}
-            </p>
-          </div>
-        ) : undefined}
-      </ToolStyledUploadZone>
+          </ToolWorkspacePreview>
+        </>
+      )}
 
       <ToolFieldsStage
-        robotAlt={t("characters.robotAlt")}
-        widthAlt={t("characters.widthAlt")}
         fields={[
           {
             label: t("toolUi.metadataRemover.detectedMetadata"),
@@ -300,7 +310,7 @@ export function MetadataRemover() {
                     {metadataFields.map((field) => (
                       <div
                         key={field.label}
-                        className="grid gap-1 border-b border-border pb-2 last:border-0 last:pb-0 sm:grid-cols-[6.5rem_1fr]"
+                        className="flex flex-col gap-0.5 pb-3 last:pb-0"
                       >
                         <dt className="font-label text-muted">{field.label}</dt>
                         <dd className="font-mono text-xs text-foreground">

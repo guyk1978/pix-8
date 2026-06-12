@@ -1,9 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { CHARACTER_SIZES } from "@/lib/characters";
 import {
   getPublishedWorkflowStep,
   subscribeWorkflowStep,
@@ -41,20 +40,11 @@ export function SidebarProgressTracker({
           : "upload";
 
   const ringDash = ACTIVE_RING[sidebarStep];
-  const processingCharacter =
-    sidebarStep === "process" ? "processingAlt" : "processing";
 
   if (collapsed) {
     return (
       <div className="mb-3 flex justify-center px-1">
-        <HelperCharacter
-          character={processingCharacter}
-          alt={t("characters.processingAlt")}
-          size={36}
-          glow
-          className="relative z-[1]"
-          animate="float"
-        />
+        <BrandLogo size="sm" />
       </div>
     );
   }
@@ -102,14 +92,7 @@ export function SidebarProgressTracker({
           </defs>
         </svg>
 
-        <HelperCharacter
-          character={processingCharacter}
-          alt={t("characters.processingAlt")}
-          size={CHARACTER_SIZES.sidebar}
-          glow
-          className="relative z-[1]"
-          animate="float"
-        />
+        <BrandLogo size="sm" className="relative z-[1]" />
       </div>
 
       <div className="flex flex-col items-center gap-0.5 text-center">

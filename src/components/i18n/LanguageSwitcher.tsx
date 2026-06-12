@@ -8,7 +8,11 @@ const TARGET_LABELS: Record<Language, string> = {
   he: "HE",
 };
 
-export function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  className?: string;
+}
+
+export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
   const { language, setLanguage, t } = useLanguage();
   const targetLanguage: Language = language === "en" ? "he" : "en";
   const targetLabel = TARGET_LABELS[targetLanguage];
@@ -17,7 +21,10 @@ export function LanguageSwitcher() {
     <button
       type="button"
       onClick={() => setLanguage(targetLanguage)}
-      className="flex h-9 w-9 items-center justify-center rounded-sm border border-border bg-background font-mono text-[10px] font-medium tracking-wider text-muted transition-colors hover:border-muted hover:text-foreground"
+      className={
+        className ||
+        "flex h-9 w-9 items-center justify-center rounded-sm border border-border bg-background font-mono text-[10px] font-medium tracking-wider text-muted transition-colors hover:border-muted hover:text-foreground"
+      }
       aria-label={t(`language.${targetLanguage}`)}
       title={t(`language.${targetLanguage}`)}
     >

@@ -1,11 +1,11 @@
 const SHARE_HEADER_IMAGES = {
   dark: {
-    en: "/share-heder-pix-8-dark-en.png",
-    he: "/share-heder-pix-8-dark-he.png",
+    en: "/share-pix-8-dark-en.png",
+    he: "/share-pix-8-dark-he.png",
   },
   light: {
-    en: "/share-heder-pix-8-light-en.png",
-    he: "/share-heder-pix-8-light-he.png",
+    en: "/share-pix-8-light-en.png",
+    he: "/share-pix-8-light-he.png",
   },
 } as const;
 

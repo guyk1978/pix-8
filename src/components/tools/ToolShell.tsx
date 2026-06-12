@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { Suspense, type ReactNode } from "react";
+import { Suspense, useEffect, type ReactNode } from "react";
 import { RelatedArticles } from "@/components/articles/RelatedArticles";
+import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { ToolProjectProvider } from "@/components/projects/ToolProjectContext";
 import { ToolHeaderHero } from "@/components/tools/ToolHeaderHero";
 import { WorkflowPanel } from "@/components/tools/workflow/WorkflowPanel";
@@ -28,48 +28,46 @@ export function ToolShell({
   relatedArticlesHe = [],
 }: ToolShellProps) {
   const { t } = useLanguage();
+  const setToolMeta = useOptionalToolSidebar()?.setToolMeta;
   const toolName = t(getToolTranslationKey(tool.id, "name"));
   const toolDescription = t(getToolTranslationKey(tool.id, "description"));
+
+  useEffect(() => {
+    setToolMeta?.({
+      toolId: tool.id,
+      toolName,
+      toolTag: tool.tag,
+    });
+
+    return () => setToolMeta?.(null);
+  }, [tool.id, tool.tag, toolName, setToolMeta]);
 
   return (
     <WorkflowProvider toolId={tool.id}>
       <Suspense fallback={null}>
         <ToolProjectProvider toolId={tool.id}>
-      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-        <div className="mb-6 flex items-center gap-3">
-          <Link
-            href="/"
-            className="font-label text-muted transition-colors hover:text-foreground"
-          >
-            {t("toolShell.backToDashboard")}
-          </Link>
-          <span className="text-border">/</span>
-          <span className="font-label text-muted">{tool.tag}</span>
-          <span className="text-border">/</span>
-          <span className="font-label text-[var(--glow-teal)]">{toolName}</span>
-        </div>
+          <div className="tool-page mx-auto w-full max-w-7xl px-4 py-6 text-start sm:px-8 sm:py-8">
+            <div className="tool-workspace-shell">
+              <WorkflowPanel>
+                <ToolHeaderHero
+                  toolId={tool.id}
+                  title={toolName}
+                  description={toolDescription}
+                />
 
-        <div className="glow-panel overflow-visible rounded-lg bg-card p-4 sm:p-6 lg:p-8">
-          <WorkflowPanel>
-            <ToolHeaderHero
-              toolId={tool.id}
-              title={toolName}
-              description={toolDescription}
-            />
+                <div className="relative z-10">
+                  {children}
 
-            <div className="relative z-10">
-              {children}
-
-              <WorkflowSuggestions suggestions={getWorkflowSuggestions(tool.id)} />
+                  <WorkflowSuggestions suggestions={getWorkflowSuggestions(tool.id)} />
+                </div>
+              </WorkflowPanel>
             </div>
-          </WorkflowPanel>
-        </div>
 
-        <RelatedArticles
-          articlesEn={relatedArticlesEn}
-          articlesHe={relatedArticlesHe}
-        />
-      </div>
+            <RelatedArticles
+              articlesEn={relatedArticlesEn}
+              articlesHe={relatedArticlesHe}
+            />
+          </div>
         </ToolProjectProvider>
       </Suspense>
     </WorkflowProvider>

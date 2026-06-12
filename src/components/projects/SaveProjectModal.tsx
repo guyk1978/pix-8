@@ -51,13 +51,10 @@ export function SaveProjectModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${inputId}-title`}
-        className="glow-panel w-full max-w-md rounded-lg border border-border bg-card p-5 shadow-[var(--glass-shadow)]"
+        className="borderless-float w-full max-w-md rounded-xl bg-card p-5"
         onClick={(event) => event.stopPropagation()}
       >
-        <h2
-          id={`${inputId}-title`}
-          className="font-label text-foreground"
-        >
+        <h2 id={`${inputId}-title`} className="font-label text-foreground">
           {t("projects.saveModalTitle")}
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -79,7 +76,7 @@ export function SaveProjectModal({
             }
           }}
           placeholder={t("projects.projectNamePlaceholder")}
-          className="tool-input mt-2 block w-full border-border bg-background py-2.5"
+          className="tool-input mt-2 block w-full border-0 bg-background py-2.5 shadow-[var(--shadow-elevated)]"
           autoFocus
         />
 
@@ -88,7 +85,7 @@ export function SaveProjectModal({
             type="button"
             disabled={!name.trim() || isSaving}
             onClick={() => void onSave(name.trim())}
-            className="min-h-10 flex-1 rounded-sm border border-[color-mix(in_srgb,var(--glow-teal)_40%,var(--border))] bg-accent-muted px-4 py-2 font-label text-accent transition-colors hover:bg-accent/20 disabled:cursor-not-allowed disabled:opacity-40"
+            className="borderless-interactive min-h-10 flex-1 rounded-lg bg-accent-muted px-4 py-2 font-label text-accent shadow-[var(--shadow-elevated)] transition-colors hover:bg-accent/20 hover:shadow-[var(--shadow-hover)] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {isSaving ? t("common.processing") : t("projects.saveProject")}
           </button>
@@ -96,7 +93,7 @@ export function SaveProjectModal({
             type="button"
             disabled={isSaving}
             onClick={onClose}
-            className="min-h-10 flex-1 rounded-sm border border-border bg-background px-4 py-2 font-label text-foreground transition-colors hover:border-muted hover:bg-surface disabled:opacity-40"
+            className="borderless-interactive min-h-10 flex-1 rounded-lg bg-background px-4 py-2 font-label text-foreground shadow-[var(--shadow-elevated)] transition-colors hover:bg-surface hover:shadow-[var(--shadow-hover)] disabled:opacity-40"
           >
             {t("common.cancel")}
           </button>

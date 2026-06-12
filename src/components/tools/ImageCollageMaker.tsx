@@ -1,6 +1,5 @@
 "use client";
 
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { BulkFileQueue } from "@/components/tools/BulkFileQueue";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
@@ -9,7 +8,9 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { SupportingArticleLink } from "@/components/tools/SupportingArticleLink";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 import { SliderControl } from "@/components/ui/SliderControl";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
 import {
@@ -30,7 +31,6 @@ import {
   loadImageElement,
   type CollageSettings,
 } from "@/lib/collageRender";
-import { CHARACTER_SIZES } from "@/lib/characters";
 
 const activeLayoutClassName =
   "border-accent/40 bg-accent-muted text-accent";
@@ -40,7 +40,6 @@ const buttonClassName =
 
 export function ImageCollageMaker() {
   const { t } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     error,
@@ -199,7 +198,7 @@ export function ImageCollageMaker() {
   const displayError = error ?? bulk.error;
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace hasActiveImage={hasImages}>
       <ToolStyledUploadZone
         inputId="image-collage-upload"
         onFileChange={() => {}}
@@ -220,153 +219,118 @@ export function ImageCollageMaker() {
         </div>
       ) : null}
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]">
-        <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
-          <div className="space-y-2">
-            <span className="font-label text-muted">
-              {t("toolUi.collage.layout")}
-            </span>
-            <div className="grid grid-cols-1 gap-1.5">
-              {COLLAGE_LAYOUT_IDS.map((layoutId) => (
-                <button
-                  key={layoutId}
-                  type="button"
-                  disabled={!hasImages || busy}
-                  onClick={() =>
-                    setSettings((current) => ({ ...current, layout: layoutId }))
-                  }
-                  className={`${buttonClassName} text-start ${
-                    settings.layout === layoutId ? activeLayoutClassName : ""
-                  }`}
-                >
-                  <span className="block font-label text-xs text-foreground">
-                    {t(`toolUi.collage.layouts.${layoutId}.title`)}
-                  </span>
-                  <span className="block font-mono text-[10px] text-muted">
-                    {t(`toolUi.collage.layouts.${layoutId}.hint`)}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <SliderControl
-            id="collage-gap"
-            label={t("toolUi.collage.gap")}
-            value={settings.gap}
-            min={0}
-            max={48}
-            step={1}
-            suffix="px"
-            disabled={!hasImages}
-            onChange={(gap) => setSettings((current) => ({ ...current, gap }))}
-            description={t("toolUi.collage.gapHint")}
-          />
-
-          <div className="space-y-2">
-            <label htmlFor="collage-background" className="font-label text-muted">
-              {t("toolUi.collage.background")}
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                id="collage-background"
-                type="color"
-                disabled={!hasImages}
-                value={settings.backgroundColor}
-                onChange={(event) =>
-                  setSettings((current) => ({
-                    ...current,
-                    backgroundColor: event.target.value,
-                  }))
-                }
-                className="h-11 w-14 shrink-0 cursor-pointer rounded-sm border border-border bg-background p-1 disabled:opacity-50"
-              />
-              <span className="font-mono text-xs text-muted">
-                {settings.backgroundColor}
-              </span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            disabled={!hasImages}
-            onClick={() => setSettings(DEFAULT_COLLAGE_SETTINGS)}
-            className={`${buttonClassName} w-full`}
-          >
-            {t("common.reset")}
-          </button>
-
-          <div
-            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="widthAlt"
-              alt={t("characters.widthAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
-          </div>
-        </div>
-
-        <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
-          <span className="font-label text-muted">{t("common.preview")}</span>
-          <div className="relative flex min-h-56 items-center justify-center overflow-auto rounded-sm border border-border bg-background p-3 sm:min-h-72">
-            {hasImages ? (
+      {hasImages ? (
+        <ToolWorkspacePreview
+          caption={
+            outputSize ? (
               <>
-                <canvas
-                  ref={previewCanvasRef}
-                  className={`max-h-[min(60vh,520px)] max-w-full object-contain transition-opacity ${
-                    isRendering || isUpdatingPreview ? "opacity-30" : "opacity-100"
-                  }`}
-                />
-                {isRendering || isUpdatingPreview ? (
-                  <p className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted">
-                    {t("toolUi.collage.rendering")}
-                  </p>
-                ) : null}
+                {outputSize.width} × {outputSize.height}px ·{" "}
+                {bulk.items.length === 1
+                  ? t("bulk.imagesQueuedOne")
+                  : t("bulk.imagesQueued", { count: bulk.items.length })}
               </>
-            ) : (
-              <p className="px-4 text-center text-sm text-muted">
-                {t("toolUi.collage.previewHint")}
-              </p>
-            )}
-          </div>
-
-          {hasImages && outputSize && (
-            <p className="text-center font-mono text-[10px] text-muted">
-              {outputSize.width} × {outputSize.height}px ·{" "}
-              {bulk.items.length === 1
-                ? t("bulk.imagesQueuedOne")
-                : t("bulk.imagesQueued", { count: bulk.items.length })}
-            </p>
-          )}
-
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="robot"
-              alt={t("characters.robotAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
+            ) : undefined
+          }
+        >
+          <div className="relative flex min-h-56 w-full items-center justify-center sm:min-h-72">
+            <canvas
+              ref={previewCanvasRef}
+              className={`max-h-[min(60vh,520px)] max-w-full object-contain transition-opacity ${
+                isRendering || isUpdatingPreview ? "opacity-30" : "opacity-100"
+              }`}
             />
+            {isRendering || isUpdatingPreview ? (
+              <p className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted">
+                {t("toolUi.collage.rendering")}
+              </p>
+            ) : null}
           </div>
-        </div>
-      </div>
+        </ToolWorkspacePreview>
+      ) : null}
 
-      <div className="mt-5 border-t border-border pt-5">
-        <StripMetadataToggle
-          checked={stripMetadata}
-          disabled={!hasImages}
-          onChange={setStripMetadata}
-        />
-      </div>
+      <WorkflowSettings>
+        <div className="space-y-4">
+            <div className="space-y-2">
+              <span className="font-label text-muted">
+                {t("toolUi.collage.layout")}
+              </span>
+              <div className="grid grid-cols-1 gap-1.5">
+                {COLLAGE_LAYOUT_IDS.map((layoutId) => (
+                  <button
+                    key={layoutId}
+                    type="button"
+                    disabled={!hasImages || busy}
+                    onClick={() =>
+                      setSettings((current) => ({ ...current, layout: layoutId }))
+                    }
+                    className={`${buttonClassName} text-start ${
+                      settings.layout === layoutId ? activeLayoutClassName : ""
+                    }`}
+                  >
+                    <span className="block font-label text-xs text-foreground">
+                      {t(`toolUi.collage.layouts.${layoutId}.title`)}
+                    </span>
+                    <span className="block font-mono text-[10px] text-muted">
+                      {t(`toolUi.collage.layouts.${layoutId}.hint`)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <SliderControl
+              id="collage-gap"
+              label={t("toolUi.collage.gap")}
+              value={settings.gap}
+              min={0}
+              max={48}
+              step={1}
+              suffix="px"
+              disabled={!hasImages}
+              onChange={(gap) => setSettings((current) => ({ ...current, gap }))}
+              description={t("toolUi.collage.gapHint")}
+            />
+
+            <div className="space-y-2">
+              <label htmlFor="collage-background" className="font-label text-muted">
+                {t("toolUi.collage.background")}
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="collage-background"
+                  type="color"
+                  disabled={!hasImages}
+                  value={settings.backgroundColor}
+                  onChange={(event) =>
+                    setSettings((current) => ({
+                      ...current,
+                      backgroundColor: event.target.value,
+                    }))
+                  }
+                  className="h-11 w-14 shrink-0 cursor-pointer rounded-sm border border-border bg-background p-1 disabled:opacity-50"
+                />
+                <span className="font-mono text-xs text-muted">
+                  {settings.backgroundColor}
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              disabled={!hasImages}
+              onClick={() => setSettings(DEFAULT_COLLAGE_SETTINGS)}
+              className={`${buttonClassName} w-full`}
+            >
+              {t("common.reset")}
+            </button>
+        </div>
+      </WorkflowSettings>
+
+      <StripMetadataToggle
+        checked={stripMetadata}
+        disabled={!hasImages}
+        onChange={setStripMetadata}
+      />
 
       {displayError ? (
         <HelperErrorAlert message={displayError} className="mt-4" />

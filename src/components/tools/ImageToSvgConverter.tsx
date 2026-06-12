@@ -1,6 +1,5 @@
 "use client";
 
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { useCallback, useEffect, useState } from "react";
@@ -8,8 +7,10 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { SupportingArticleLink } from "@/components/tools/SupportingArticleLink";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 import { SliderControl } from "@/components/ui/SliderControl";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
@@ -22,7 +23,6 @@ import {
   type SvgColorMode,
   type SvgTraceSettings,
 } from "@/lib/svgTraceRender";
-import { CHARACTER_SIZES } from "@/lib/characters";
 
 const COLOR_MODES: SvgColorMode[] = ["color", "grayscale", "bw"];
 
@@ -40,7 +40,6 @@ function loadImageElement(url: string): Promise<HTMLImageElement> {
 
 export function ImageToSvgConverter() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const { source, error, isProcessing, loadFile, setError } = useImageProcessor();
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
@@ -153,7 +152,7 @@ export function ImageToSvgConverter() {
   const canDownload = !!source && !!svgOutput && !busy && !isUpdatingPreview;
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace hasActiveImage={!!source}>
       {!source ? (
         <ToolStyledUploadZone
           inputId="image-to-svg-upload"
@@ -170,138 +169,107 @@ export function ImageToSvgConverter() {
         />
       )}
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]">
-        <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
-          <SliderControl
-            id="svg-trace-complexity"
-            label={t("toolUi.imageToSvg.complexity")}
-            value={settings.complexity}
-            min={0}
-            max={100}
-            step={1}
-            suffix="%"
-            disabled={!source || busy}
-            onChange={(complexity) =>
-              setSettings((current) => ({ ...current, complexity }))
-            }
-            description={t("toolUi.imageToSvg.complexityHint")}
-          />
-
-          <div className="space-y-2">
-            <span className="font-label text-muted">
-              {t("toolUi.imageToSvg.colorMode")}
-            </span>
-            <div className="grid grid-cols-1 gap-1.5">
-              {COLOR_MODES.map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  disabled={!source || busy}
-                  onClick={() =>
-                    setSettings((current) => ({ ...current, colorMode: mode }))
-                  }
-                  className={`min-h-9 rounded-sm border border-border bg-card px-2 py-2 font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50 ${
-                    settings.colorMode === mode ? activeModeClassName : ""
-                  }`}
-                >
-                  {t(`toolUi.imageToSvg.colorModes.${mode}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <label className="flex cursor-pointer items-start gap-3 rounded-sm border border-border bg-card px-3 py-2.5">
-            <input
-              type="checkbox"
-              className="mt-0.5 accent-[var(--glow-teal)]"
-              checked={settings.simplifyPaths}
-              disabled={!source || busy}
-              onChange={(event) =>
-                setSettings((current) => ({
-                  ...current,
-                  simplifyPaths: event.target.checked,
-                }))
-              }
-            />
-            <span className="space-y-1">
-              <span className="block font-label text-xs text-foreground">
-                {t("toolUi.imageToSvg.simplifyPaths")}
-              </span>
-              <span className="block font-mono text-[10px] leading-relaxed text-muted">
-                {t("toolUi.imageToSvg.simplifyPathsHint")}
-              </span>
-            </span>
-          </label>
-
-          <button
-            type="button"
-            disabled={!source}
-            onClick={() => setSettings(DEFAULT_SVG_TRACE_SETTINGS)}
-            className="min-h-9 w-full rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
-          >
-            {t("common.reset")}
-          </button>
-
-          <div
-            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="widthAlt"
-              alt={t("characters.widthAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
-          </div>
-        </div>
-
-        <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
-          <span className="font-label text-muted">{t("common.preview")}</span>
-          <div className="flex min-h-56 items-center justify-center overflow-auto rounded-sm border border-border bg-background p-3 sm:min-h-72">
-            {source && svgOutput && !isTracing && !isUpdatingPreview ? (
-              <div
-                className="svg-preview max-h-[min(50vh,420px)] max-w-full [&_svg]:h-auto [&_svg]:max-h-[min(50vh,420px)] [&_svg]:w-full"
-                dangerouslySetInnerHTML={{ __html: svgOutput }}
-              />
-            ) : source && (isTracing || isUpdatingPreview) ? (
-              <p className="px-4 text-center text-sm text-muted">
-                {t("toolUi.imageToSvg.converting")}
-              </p>
-            ) : (
-              <p className="px-4 text-center text-sm text-muted">
-                {t("toolUi.imageToSvg.previewHint")}
-              </p>
-            )}
-          </div>
-
-          {source && (
-            <p className="text-center font-mono text-[10px] text-muted">
+      {source ? (
+        <ToolWorkspacePreview
+          caption={
+            <>
               {source.width} × {source.height}px ·{" "}
               {isTracing || isUpdatingPreview
                 ? t("toolUi.imageToSvg.converting")
                 : svgOutput
                   ? t("toolUi.imageToSvg.ready")
                   : source.file.name}
+            </>
+          }
+        >
+          {svgOutput && !isTracing && !isUpdatingPreview ? (
+            <div
+              className="svg-preview max-h-[min(50vh,420px)] max-w-full [&_svg]:h-auto [&_svg]:max-h-[min(50vh,420px)] [&_svg]:w-full"
+              dangerouslySetInnerHTML={{ __html: svgOutput }}
+            />
+          ) : (
+            <p className="px-4 text-center text-sm text-muted">
+              {isTracing || isUpdatingPreview
+                ? t("toolUi.imageToSvg.converting")
+                : t("toolUi.imageToSvg.previewHint")}
             </p>
           )}
+        </ToolWorkspacePreview>
+      ) : null}
 
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="robot"
-              alt={t("characters.robotAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
+      <WorkflowSettings>
+        <div className="space-y-4">
+            <SliderControl
+              id="svg-trace-complexity"
+              label={t("toolUi.imageToSvg.complexity")}
+              value={settings.complexity}
+              min={0}
+              max={100}
+              step={1}
+              suffix="%"
+              disabled={!source || busy}
+              onChange={(complexity) =>
+                setSettings((current) => ({ ...current, complexity }))
+              }
+              description={t("toolUi.imageToSvg.complexityHint")}
             />
-          </div>
+
+            <div className="space-y-2">
+              <span className="font-label text-muted">
+                {t("toolUi.imageToSvg.colorMode")}
+              </span>
+              <div className="grid grid-cols-1 gap-1.5">
+                {COLOR_MODES.map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    disabled={!source || busy}
+                    onClick={() =>
+                      setSettings((current) => ({ ...current, colorMode: mode }))
+                    }
+                    className={`min-h-9 rounded-sm border border-border bg-card px-2 py-2 font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50 ${
+                      settings.colorMode === mode ? activeModeClassName : ""
+                    }`}
+                  >
+                    {t(`toolUi.imageToSvg.colorModes.${mode}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <label className="flex cursor-pointer items-start gap-3 rounded-sm border border-border bg-card px-3 py-2.5">
+              <input
+                type="checkbox"
+                className="mt-0.5 accent-[var(--glow-teal)]"
+                checked={settings.simplifyPaths}
+                disabled={!source || busy}
+                onChange={(event) =>
+                  setSettings((current) => ({
+                    ...current,
+                    simplifyPaths: event.target.checked,
+                  }))
+                }
+              />
+              <span className="space-y-1">
+                <span className="block font-label text-xs text-foreground">
+                  {t("toolUi.imageToSvg.simplifyPaths")}
+                </span>
+                <span className="block font-mono text-[10px] leading-relaxed text-muted">
+                  {t("toolUi.imageToSvg.simplifyPathsHint")}
+                </span>
+              </span>
+            </label>
+
+            <button
+              type="button"
+              disabled={!source}
+              onClick={() => setSettings(DEFAULT_SVG_TRACE_SETTINGS)}
+              className="min-h-9 w-full font-mono text-xs text-muted transition-colors hover:text-foreground disabled:opacity-50"
+            >
+              {t("common.reset")}
+            </button>
         </div>
-      </div>
+      </WorkflowSettings>
 
       {error ? <HelperErrorAlert message={error} className="mt-4" /> : null}
 

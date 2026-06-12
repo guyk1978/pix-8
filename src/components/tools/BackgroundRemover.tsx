@@ -1,7 +1,6 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { ProcessingIndicator } from "@/components/characters/ProcessingIndicator";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -11,6 +10,7 @@ import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import {
   buildDownloadFilename,
   useImageProcessor,
@@ -33,7 +33,7 @@ import {
   type BackgroundMode,
   type RemovalProgress,
 } from "@/lib/backgroundRemoval";
-import { CHARACTER_SIZES } from "@/lib/characters";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 
 const toggleButtonClassName =
   "min-h-10 flex-1 rounded-sm border border-border bg-background px-3 py-2 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
@@ -56,7 +56,6 @@ function formatDownloadProgress(progress: RemovalProgress | null): number | unde
 
 export function BackgroundRemover() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -336,182 +335,130 @@ export function BackgroundRemover() {
         />
       )}
 
-      <div className="relative mt-5 overflow-visible pb-20 sm:pb-24">
-        <div className="space-y-2">
-          <span className="font-label text-muted">{t("toolUi.bgRemover.background")}</span>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              disabled={!source || isBusy}
-              onClick={() => handleModeChange("transparent")}
-              className={`${toggleButtonClassName} ${
-                backgroundMode === "transparent" ? activeToggleClassName : ""
-              }`}
-            >
-              {t("toolUi.bgRemover.transparent")}
-            </button>
-            <button
-              type="button"
-              disabled={!source || isBusy}
-              onClick={() => handleModeChange("solid")}
-              className={`${toggleButtonClassName} ${
-                backgroundMode === "solid" ? activeToggleClassName : ""
-              }`}
-            >
-              {t("toolUi.bgRemover.solidColor")}
-            </button>
-          </div>
-        </div>
-
-        {backgroundMode === "solid" && (
-          <div className="mt-4 flex items-center gap-3">
-            <label htmlFor="bg-remover-color" className="font-label text-muted">
-              {t("common.color")}
-            </label>
-            <input
-              id="bg-remover-color"
-              type="color"
-              value={backgroundColor}
-              disabled={!source || isBusy}
-              onInput={(event) => handleColorChange(event.currentTarget.value)}
-              onChange={(event) => handleColorChange(event.currentTarget.value)}
-              className="h-10 w-14 cursor-pointer rounded-sm border border-border bg-background disabled:cursor-not-allowed disabled:opacity-50"
-            />
-            <span className="font-mono text-xs text-muted">{backgroundColor}</span>
-          </div>
-        )}
-
-        <div
-          className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-          dir="ltr"
-        >
-          <HelperCharacter
-            character="widthAlt"
-            alt={t("characters.widthAlt")}
-            size={characterSize}
-            glow="soft"
-            pixelated
-            animate="float"
-          />
-        </div>
-      </div>
-
-      {hasProcessed ? (
-        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="relative space-y-2 overflow-visible pb-20 sm:pb-24">
-            <p className="font-label text-muted">{t("common.original")}</p>
-            <div className="flex min-h-48 items-center justify-center rounded-sm border border-border bg-background p-3 sm:min-h-56">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={source?.url}
-                alt={t("alt.originalPreview")}
-                className="max-h-[min(40vh,360px)] max-w-full object-contain"
-              />
-            </div>
-
-            <div
-              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="robot"
-                alt={t("characters.robotAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
-              />
-            </div>
-          </div>
-
+      <WorkflowSettings>
+        <div className="space-y-4">
           <div className="space-y-2">
-            <p className="font-label text-muted">{t("toolUi.bgRemover.result")}</p>
-            <div className={previewPanelClassName}>
+            <span className="font-label text-muted">{t("toolUi.bgRemover.background")}</span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={!source || isBusy}
+                onClick={() => handleModeChange("transparent")}
+                className={`${toggleButtonClassName} ${
+                  backgroundMode === "transparent" ? activeToggleClassName : ""
+                }`}
+              >
+                {t("toolUi.bgRemover.transparent")}
+              </button>
+              <button
+                type="button"
+                disabled={!source || isBusy}
+                onClick={() => handleModeChange("solid")}
+                className={`${toggleButtonClassName} ${
+                  backgroundMode === "solid" ? activeToggleClassName : ""
+                }`}
+              >
+                {t("toolUi.bgRemover.solidColor")}
+              </button>
+            </div>
+          </div>
+
+          {backgroundMode === "solid" && (
+            <div className="mt-4 flex items-center gap-3">
+              <label htmlFor="bg-remover-color" className="font-label text-muted">
+                {t("common.color")}
+              </label>
+              <input
+                id="bg-remover-color"
+                type="color"
+                value={backgroundColor}
+                disabled={!source || isBusy}
+                onInput={(event) => handleColorChange(event.currentTarget.value)}
+                onChange={(event) => handleColorChange(event.currentTarget.value)}
+                className="h-10 w-14 cursor-pointer rounded-sm border border-border bg-background disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <span className="font-mono text-xs text-muted">{backgroundColor}</span>
+            </div>
+          )}
+        </div>
+      </WorkflowSettings>
+
+      {source ? (
+        <ToolWorkspacePreview
+          hint={
+            hasProcessed ? t("toolUi.bgRemover.result") : t("common.original")
+          }
+          caption={
+            <>
+              {source.width} × {source.height}px · {source.file.name}
+              {hasProcessed && backgroundMode === "solid" && (
+                <> · {t("toolUi.bgRemover.backgroundColor", { color: backgroundColor })}</>
+              )}
+            </>
+          }
+        >
+          <div
+            className={
+              hasProcessed
+                ? previewPanelClassName
+                : `relative flex min-h-48 w-full items-center justify-center sm:min-h-56 ${
+                    backgroundMode === "transparent" ? "transparency-checkerboard" : ""
+                  }`
+            }
+            style={
+              !hasProcessed && backgroundMode === "solid"
+                ? { backgroundColor }
+                : undefined
+            }
+          >
+            {isBusy && (
+              <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex items-center gap-3 rounded-sm border border-border bg-background/90 px-3 py-2 shadow-sm backdrop-blur-sm sm:inset-x-auto sm:bottom-4 sm:right-4">
+                <ProcessingIndicator
+                  active
+                  size="sm"
+                  progress={
+                    modelProgress ?? (processingPhase === "processing" ? 75 : 25)
+                  }
+                />
+                <div className="min-w-0">
+                  <p className="font-label text-accent">{processingLabel}</p>
+                  {modelProgress !== undefined ? (
+                    <p className="font-mono text-[10px] text-muted">
+                      {t("toolUi.bgRemover.downloadingModel", {
+                        percent: modelProgress,
+                      })}
+                    </p>
+                  ) : (
+                    <p className="font-mono text-[10px] text-muted">
+                      {t("toolUi.bgRemover.processingLocal")}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {hasProcessed ? (
               <canvas
                 ref={previewCanvasRef}
-                className="max-h-[min(40vh,360px)] max-w-full"
+                className="max-h-[min(50vh,420px)] max-w-full"
               />
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="relative mt-5 overflow-visible pb-20 sm:pb-24">
-        <div
-          className={`relative flex min-h-48 items-center justify-center overflow-hidden rounded-sm border border-border p-3 sm:min-h-56 ${
-            backgroundMode === "transparent"
-              ? "transparency-checkerboard"
-              : ""
-          }`}
-          style={backgroundMode === "solid" ? { backgroundColor } : undefined}
-        >
-          {isBusy && (
-            <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex items-center gap-3 rounded-sm border border-border bg-background/90 px-3 py-2 shadow-sm backdrop-blur-sm sm:inset-x-auto sm:bottom-4 sm:right-4">
-              <ProcessingIndicator
-                active
-                size="sm"
-                progress={
-                  modelProgress ?? (processingPhase === "processing" ? 75 : 25)
-                }
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={source.url}
+                alt={t("alt.originalPreview")}
+                className="max-h-[min(50vh,420px)] max-w-full object-contain"
               />
-              <div className="min-w-0">
-                <p className="font-label text-accent">{processingLabel}</p>
-                {modelProgress !== undefined ? (
-                  <p className="font-mono text-[10px] text-muted">
-                    {t("toolUi.bgRemover.downloadingModel", {
-                      percent: modelProgress,
-                    })}
-                  </p>
-                ) : (
-                  <p className="font-mono text-[10px] text-muted">
-                    {t("toolUi.bgRemover.processingLocal")}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {source && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={source.url}
-              alt={t("alt.originalPreview")}
-              className="max-h-[min(50vh,420px)] max-w-full object-contain"
-            />
-          )}
-        </div>
-
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="robot"
-              alt={t("characters.robotAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
+            )}
           </div>
-        </div>
-      )}
+        </ToolWorkspacePreview>
+      ) : null}
 
-      {source && (
-        <p className="mt-3 text-center font-mono text-xs text-muted">
-          {source.width} × {source.height}px · {source.file.name}
-          {hasProcessed && backgroundMode === "solid" && (
-            <> · {t("toolUi.bgRemover.backgroundColor", { color: backgroundColor })}</>
-          )}
-        </p>
-      )}
-
-      <div className="mt-5 border-t border-border pt-5">
-        <StripMetadataToggle
-          checked={stripMetadata}
-          disabled={!source || isBusy}
-          onChange={setStripMetadata}
-        />
-      </div>
+      <StripMetadataToggle
+        checked={stripMetadata}
+        disabled={!source || isBusy}
+        onChange={setStripMetadata}
+      />
 
       {mounted && engineFailed ? (
         <div className="mt-4 rounded-sm border border-border bg-card p-4">

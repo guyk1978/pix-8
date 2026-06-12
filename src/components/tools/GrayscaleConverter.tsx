@@ -1,7 +1,6 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -9,7 +8,9 @@ import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { SliderControl } from "@/components/ui/SliderControl";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import {
   DEFAULT_GRAYSCALE_SETTINGS,
   renderGrayscaleCanvas,
@@ -21,8 +22,6 @@ import {
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
-import { CHARACTER_SIZES } from "@/lib/characters";
-
 type GrayscalePresetKey = "neutral" | "dramatic" | "soft";
 
 const PRESETS: { key: GrayscalePresetKey; settings: GrayscaleSettings }[] = [
@@ -33,7 +32,6 @@ const PRESETS: { key: GrayscalePresetKey; settings: GrayscaleSettings }[] = [
 
 export function GrayscaleConverter() {
   const { t } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -126,7 +124,7 @@ export function GrayscaleConverter() {
   const canDownload = !!source && !isProcessing;
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace hasActiveImage={!!source}>
         {!source ? (
           <ToolStyledUploadZone
             inputId="grayscale-converter-upload"
@@ -143,116 +141,80 @@ export function GrayscaleConverter() {
           />
         )}
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
-            <span className="font-label text-muted">{t("common.preview")}</span>
-            <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
-              {source ? (
-                <canvas
-                  ref={previewCanvasRef}
-                  className="max-h-[min(50vh,420px)] max-w-full object-contain"
-                />
-              ) : (
-                <p className="px-4 text-center text-sm text-muted">
-                  {t("toolUi.grayscale.previewHint")}
-                </p>
-              )}
-            </div>
-            {source && (
-              <p className="text-center font-mono text-[10px] text-muted">
+        {source ? (
+          <ToolWorkspacePreview
+            caption={
+              <>
                 {source.width} × {source.height}px · {source.file.name}
-              </p>
-            )}
+              </>
+            }
+          >
+            <canvas
+              ref={previewCanvasRef}
+              className="max-h-[min(50vh,420px)] max-w-full object-contain"
+            />
+          </ToolWorkspacePreview>
+        ) : null}
 
-            <div
-              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="robot"
-                alt={t("characters.robotAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
-              />
-            </div>
-          </div>
-
-          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
-            <div className="space-y-2">
-              <span className="font-label text-muted">{t("common.presets")}</span>
-              <div className="grid grid-cols-3 gap-1.5">
-                {PRESETS.map((preset) => (
-                  <button
-                    key={preset.key}
-                    type="button"
-                    disabled={!source}
-                    onClick={() => setSettings(preset.settings)}
-                    className="min-h-9 rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
-                  >
-                    {t(`toolUi.grayscale.${preset.key}`)}
-                  </button>
-                ))}
+        <WorkflowSettings>
+          <div className="space-y-4">
+              <div className="space-y-2">
+                <span className="font-label text-muted">{t("common.presets")}</span>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {PRESETS.map((preset) => (
+                    <button
+                      key={preset.key}
+                      type="button"
+                      disabled={!source}
+                      onClick={() => setSettings(preset.settings)}
+                      className="min-h-9 rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
+                    >
+                      {t(`toolUi.grayscale.${preset.key}`)}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <SliderControl
-              id="grayscale-contrast"
-              label={t("common.contrast")}
-              value={settings.contrast}
-              min={50}
-              max={150}
-              step={1}
-              suffix="%"
-              disabled={!source}
-              onChange={(contrast) => patchSettings({ contrast })}
-            />
-
-            <SliderControl
-              id="grayscale-brightness"
-              label={t("common.brightness")}
-              value={settings.brightness}
-              min={-50}
-              max={50}
-              step={1}
-              suffix=""
-              disabled={!source}
-              onChange={(brightness) => patchSettings({ brightness })}
-            />
-
-            <button
-              type="button"
-              disabled={!source}
-              onClick={() => setSettings(DEFAULT_GRAYSCALE_SETTINGS)}
-              className="min-h-9 w-full rounded-sm border border-border bg-card font-mono text-[10px] text-muted transition-colors hover:border-muted hover:text-foreground disabled:opacity-50"
-            >
-              {t("toolUi.grayscale.resetAdjustments")}
-            </button>
-
-            <div
-              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="widthAlt"
-                alt={t("characters.widthAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
+              <SliderControl
+                id="grayscale-contrast"
+                label={t("common.contrast")}
+                value={settings.contrast}
+                min={50}
+                max={150}
+                step={1}
+                suffix="%"
+                disabled={!source}
+                onChange={(contrast) => patchSettings({ contrast })}
               />
-            </div>
-          </div>
-        </div>
 
-        <div className="mt-5 border-t border-border pt-5">
-          <StripMetadataToggle
-            checked={stripMetadata}
-            disabled={!source}
-            onChange={setStripMetadata}
-          />
-        </div>
+              <SliderControl
+                id="grayscale-brightness"
+                label={t("common.brightness")}
+                value={settings.brightness}
+                min={-50}
+                max={50}
+                step={1}
+                suffix=""
+                disabled={!source}
+                onChange={(brightness) => patchSettings({ brightness })}
+              />
+
+              <button
+                type="button"
+                disabled={!source}
+                onClick={() => setSettings(DEFAULT_GRAYSCALE_SETTINGS)}
+                className="min-h-9 w-full font-mono text-xs text-muted transition-colors hover:text-foreground disabled:opacity-50"
+              >
+                {t("toolUi.grayscale.resetAdjustments")}
+              </button>
+          </div>
+        </WorkflowSettings>
+
+        <StripMetadataToggle
+          checked={stripMetadata}
+          disabled={!source}
+          onChange={setStripMetadata}
+        />
 
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />

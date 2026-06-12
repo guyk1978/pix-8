@@ -1,6 +1,5 @@
 "use client";
 
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { MemeTemplateGallery } from "@/components/tools/MemeTemplateGallery";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
@@ -12,6 +11,8 @@ import { SupportingArticleLink } from "@/components/tools/SupportingArticleLink"
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import {
   buildDownloadFilename,
   resolveFormat,
@@ -28,14 +29,12 @@ import {
   type MemeTemplateId,
 } from "@/lib/memeTemplates";
 import { renderMemeCanvas, type MemeSettings } from "@/lib/memeRender";
-import { CHARACTER_SIZES } from "@/lib/characters";
 
 const inputClassName =
   "tool-input block min-h-11 border-transparent bg-transparent py-2.5";
 
 export function MemeGenerator() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -178,7 +177,7 @@ export function MemeGenerator() {
     : source?.file.name;
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace hasActiveImage={!!source}>
       <div className="space-y-4">
         {!source ? (
           <ToolStyledUploadZone
@@ -204,132 +203,86 @@ export function MemeGenerator() {
         />
       </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]">
-        <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
-          <div className="space-y-2">
-            <label htmlFor="meme-top-text" className="font-label text-muted">
-              {t("toolUi.meme.topText")}
-            </label>
-            <input
-              id="meme-top-text"
-              type="text"
-              disabled={!source}
-              value={settings.topText}
-              onChange={(event) =>
-                setSettings((current) => ({
-                  ...current,
-                  topText: event.target.value,
-                }))
-              }
-              className={inputClassName}
-              placeholder={t("toolUi.meme.topPlaceholder")}
-              autoComplete="off"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="meme-bottom-text" className="font-label text-muted">
-              {t("toolUi.meme.bottomText")}
-            </label>
-            <input
-              id="meme-bottom-text"
-              type="text"
-              disabled={!source}
-              value={settings.bottomText}
-              onChange={(event) =>
-                setSettings((current) => ({
-                  ...current,
-                  bottomText: event.target.value,
-                }))
-              }
-              className={inputClassName}
-              placeholder={t("toolUi.meme.bottomPlaceholder")}
-              autoComplete="off"
-            />
-          </div>
-
-          <p className="font-mono text-[10px] leading-relaxed text-muted">
-            {t("toolUi.meme.styleHint")}
-          </p>
-
-          <button
-            type="button"
-            disabled={!canDownload}
-            onClick={() => void handleDownloadMeme()}
-            className="min-h-11 w-full rounded-sm border border-[color-mix(in_srgb,var(--glow-teal)_40%,var(--border))] bg-accent-muted px-4 py-3 font-label text-accent shadow-[0_0_14px_color-mix(in_srgb,var(--glow-teal)_18%,transparent)] transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {busy ? t("common.processing") : t("toolUi.meme.downloadMeme")}
-          </button>
-
-          <div
-            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="widthAlt"
-              alt={t("characters.widthAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
-          </div>
-        </div>
-
-        <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
-          <span className="font-label text-muted">{t("common.preview")}</span>
-          <div className="relative flex min-h-56 items-center justify-center overflow-auto rounded-sm border border-border bg-background p-3 sm:min-h-72">
-            {source ? (
-              <>
-                <canvas
-                  ref={previewCanvasRef}
-                  className={`max-h-[min(60vh,520px)] max-w-full object-contain transition-opacity ${
-                    isLoadingTemplate ? "opacity-30" : "opacity-100"
-                  }`}
-                />
-                {isLoadingTemplate ? (
-                  <p className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted">
-                    {t("toolUi.meme.loadingTemplate")}
-                  </p>
-                ) : null}
-              </>
-            ) : (
-              <p className="px-4 text-center text-sm text-muted">
-                {t("toolUi.meme.previewHint")}
-              </p>
-            )}
-          </div>
-
-          {source ? (
-            <p className="text-center font-mono text-[10px] text-muted">
+      {source ? (
+        <ToolWorkspacePreview
+          caption={
+            <>
               {source.width} × {source.height}px · {sourceLabel}
               {hasText ? ` · ${t("toolUi.meme.livePreview")}` : ""}
-            </p>
-          ) : null}
-
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="robot"
-              alt={t("characters.robotAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
+            </>
+          }
+        >
+          <div className="relative flex min-h-56 w-full items-center justify-center sm:min-h-72">
+            <canvas
+              ref={previewCanvasRef}
+              className={`max-h-[min(60vh,520px)] max-w-full object-contain transition-opacity ${
+                isLoadingTemplate ? "opacity-30" : "opacity-100"
+              }`}
             />
+            {isLoadingTemplate ? (
+              <p className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-muted">
+                {t("toolUi.meme.loadingTemplate")}
+              </p>
+            ) : null}
           </div>
-        </div>
-      </div>
+        </ToolWorkspacePreview>
+      ) : null}
 
-      <div className="mt-5 border-t border-border pt-5">
-        <StripMetadataToggle
-          checked={stripMetadata}
-          disabled={!source}
-          onChange={setStripMetadata}
-        />
-      </div>
+      <WorkflowSettings>
+        <div className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="meme-top-text" className="font-label text-muted">
+                {t("toolUi.meme.topText")}
+              </label>
+              <input
+                id="meme-top-text"
+                type="text"
+                disabled={!source}
+                value={settings.topText}
+                onChange={(event) =>
+                  setSettings((current) => ({
+                    ...current,
+                    topText: event.target.value,
+                  }))
+                }
+                className={inputClassName}
+                placeholder={t("toolUi.meme.topPlaceholder")}
+                autoComplete="off"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="meme-bottom-text" className="font-label text-muted">
+                {t("toolUi.meme.bottomText")}
+              </label>
+              <input
+                id="meme-bottom-text"
+                type="text"
+                disabled={!source}
+                value={settings.bottomText}
+                onChange={(event) =>
+                  setSettings((current) => ({
+                    ...current,
+                    bottomText: event.target.value,
+                  }))
+                }
+                className={inputClassName}
+                placeholder={t("toolUi.meme.bottomPlaceholder")}
+                autoComplete="off"
+              />
+            </div>
+
+            <p className="font-mono text-[10px] leading-relaxed text-muted">
+              {t("toolUi.meme.styleHint")}
+            </p>
+        </div>
+      </WorkflowSettings>
+
+      <StripMetadataToggle
+        checked={stripMetadata}
+        disabled={!source}
+        onChange={setStripMetadata}
+      />
 
       {error ? <HelperErrorAlert message={error} className="mt-4" /> : null}
 

@@ -20,7 +20,11 @@ function isStandaloneDisplay(): boolean {
   );
 }
 
-export function PwaInstallButton() {
+interface PwaInstallButtonProps {
+  className?: string;
+}
+
+export function PwaInstallButton({ className = "" }: PwaInstallButtonProps) {
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [deferredPrompt, setDeferredPrompt] =
@@ -107,7 +111,10 @@ export function PwaInstallButton() {
     <button
       type="button"
       onClick={() => void handleClick()}
-      className="flex h-9 w-9 items-center justify-center rounded-sm border border-border bg-background text-muted transition-colors hover:border-muted hover:text-foreground"
+      className={
+        className ||
+        "flex h-9 w-9 items-center justify-center rounded-sm border border-border bg-background text-muted transition-colors hover:border-muted hover:text-foreground"
+      }
       aria-label={tooltip}
       title={tooltip}
     >

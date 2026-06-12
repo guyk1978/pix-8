@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useLocalizedArticles } from "@/hooks/useLocalizedArticle";
 import type { Article } from "@/lib/blog";
-import { CHARACTER_SIZES } from "@/lib/characters";
 
 interface RelatedArticlesProps {
   articlesEn: Article[];
@@ -16,13 +14,13 @@ export function RelatedArticles({
   articlesEn,
   articlesHe,
 }: RelatedArticlesProps) {
-  const { t, dir } = useLanguage();
+  const { t } = useLanguage();
   const articles = useLocalizedArticles(articlesEn, articlesHe);
 
   if (articles.length === 0) return null;
 
   return (
-    <section className="relative mt-8 overflow-visible border-t border-border pt-8">
+    <section className="mt-8 border-t border-border pt-8">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-label text-foreground">
           {t("blog.relatedArticles")}
@@ -62,23 +60,6 @@ export function RelatedArticles({
           </li>
         ))}
       </ul>
-
-      <div
-        className={`related-articles-read-guide pointer-events-none absolute top-[7.5rem] z-10 hidden sm:block ${
-          dir === "rtl" ? "-left-2" : "-right-2"
-        }`}
-        aria-hidden
-      >
-        <HelperCharacter
-          character="read"
-          alt={t("characters.readAlt")}
-          size={CHARACTER_SIZES.read}
-          glow="soft"
-          pixelated
-          flipped={dir === "rtl"}
-          animate="float"
-        />
-      </div>
     </section>
   );
 }

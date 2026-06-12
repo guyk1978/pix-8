@@ -1,7 +1,6 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
@@ -10,6 +9,8 @@ import { resolveErrorMessage } from "@/i18n";
 import { SliderControl } from "@/components/ui/SliderControl";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 import {
   buildDownloadFilename,
   loadImageFromFile,
@@ -25,7 +26,6 @@ import {
   useToolProject,
 } from "@/hooks/useToolProject";
 import { MAIN_IMAGE_KEY, WATERMARK_IMAGE_KEY } from "@/lib/projects/types";
-import { CHARACTER_SIZES } from "@/lib/characters";
 
 const POSITIONS: { id: WatermarkPosition; label: string }[] = [
   { id: "top-left", label: "TL" },
@@ -46,7 +46,6 @@ const activePositionClassName = "border-accent/40 bg-accent-muted text-accent";
 
 export function Watermark() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -244,109 +243,79 @@ export function Watermark() {
           />
         </div>
 
-        <div className="relative mt-5 space-y-5 overflow-visible pb-20 sm:pb-24">
-          <SliderControl
-            id="watermark-opacity"
-            label={t("common.opacity")}
-            value={opacity}
-            min={0}
-            max={100}
-            step={1}
-            suffix="%"
-            disabled={!watermark}
-            onChange={setOpacity}
-          />
+        <WorkflowSettings>
+          <div className="space-y-4">
+            <SliderControl
+              id="watermark-opacity"
+              label={t("common.opacity")}
+              value={opacity}
+              min={0}
+              max={100}
+              step={1}
+              suffix="%"
+              disabled={!watermark}
+              onChange={setOpacity}
+            />
 
-          <SliderControl
-            id="watermark-size"
-            label={t("common.size")}
-            value={scale}
-            min={5}
-            max={50}
-            step={1}
-            suffix="%"
-            disabled={!watermark}
-            onChange={setScale}
-          />
+            <SliderControl
+              id="watermark-size"
+              label={t("common.size")}
+              value={scale}
+              min={5}
+              max={50}
+              step={1}
+              suffix="%"
+              disabled={!watermark}
+              onChange={setScale}
+            />
 
-          <div className="space-y-2">
-            <span className="font-label text-muted">{t("common.position")}</span>
-            <div className="grid grid-cols-3 gap-1.5">
-              {POSITIONS.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  disabled={!watermark}
-                  onClick={() => setPosition(item.id)}
-                  className={`${positionButtonClassName} ${
-                    position === item.id ? activePositionClassName : ""
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
+            <div className="space-y-2">
+              <span className="font-label text-muted">{t("common.position")}</span>
+              <div className="grid grid-cols-3 gap-1.5">
+                {POSITIONS.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    disabled={!watermark}
+                    onClick={() => setPosition(item.id)}
+                    className={`${positionButtonClassName} ${
+                      position === item.id ? activePositionClassName : ""
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
+        </WorkflowSettings>
 
-          <div
-            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-            dir="ltr"
+        {source ? (
+          <ToolWorkspacePreview
+            caption={
+              <>
+                {source.width} × {source.height}px · {source.file.name}
+              </>
+            }
           >
-            <HelperCharacter
-              character="widthAlt"
-              alt={t("characters.widthAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
-          </div>
-        </div>
+            {watermark ? (
+              <canvas
+                ref={previewCanvasRef}
+                className="max-h-[min(50vh,420px)] max-w-full object-contain"
+              />
+            ) : (
+              <p className="px-4 text-center text-sm text-muted">
+                {t("watermark.addWatermarkHint")}
+              </p>
+            )}
+          </ToolWorkspacePreview>
+        ) : null}
 
-        <div className="relative mt-5 overflow-visible pb-20 sm:pb-24">
-        <div className="flex min-h-48 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-56">
-          {source && watermark ? (
-            <canvas
-              ref={previewCanvasRef}
-              className="max-h-[min(50vh,420px)] max-w-full object-contain"
-            />
-          ) : (
-            <p className="px-4 text-center text-sm text-muted">
-              {source
-                ? t("watermark.addWatermarkHint")
-                : t("watermark.uploadMainHint")}
-            </p>
-          )}
-        </div>
-
-        {source && (
-          <p className="mt-3 text-center font-mono text-xs text-muted">
-            {source.width} × {source.height}px · {source.file.name}
-          </p>
-        )}
-
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="robot"
-              alt={t("characters.robotAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
-          </div>
-        </div>
-
-        <div className="mt-5 border-t border-border pt-5">
-          <StripMetadataToggle
-            checked={stripMetadata}
-            disabled={!source}
-            onChange={setStripMetadata}
-          />
-        </div>
+        <StripMetadataToggle
+          checked={stripMetadata}
+          disabled={!source}
+          onChange={setStripMetadata}
+        />
 
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />

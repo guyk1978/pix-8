@@ -1,7 +1,6 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -14,14 +13,14 @@ import {
   formatBase64Output,
   formatByteCount,
 } from "@/lib/base64Encode";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
 import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
-import { CHARACTER_SIZES } from "@/lib/characters";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 
 export function Base64Encoder() {
   const { t, language } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const { source, error, loadFile, setError } = useImageProcessor();
   const { showToast } = useToast();
 
@@ -98,7 +97,7 @@ export function Base64Encoder() {
   }, [output, includePrefix, showToast, setError, t]);
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace hasActiveImage={!!source}>
         {!source ? (
           <ToolStyledUploadZone
             inputId="base64-encoder-upload"
@@ -115,34 +114,19 @@ export function Base64Encoder() {
               onFileChange={handleFileChange}
             />
 
-            <div className="relative overflow-visible pb-20 sm:pb-24">
-              <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={source.url}
-                  alt={t("alt.sourcePreview")}
-                  className="max-h-40 max-w-full object-contain"
-                />
-              </div>
-
-              <div
-                className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-                dir="ltr"
-              >
-                <HelperCharacter
-                  character="robot"
-                  alt={t("characters.robotAlt")}
-                  size={characterSize}
-                  glow="soft"
-                  pixelated
-                  animate="float"
-                />
-              </div>
-            </div>
+            <ToolWorkspacePreview>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={source.url}
+                alt={t("alt.sourcePreview")}
+                className="max-h-40 max-w-full object-contain"
+              />
+            </ToolWorkspacePreview>
           </div>
         )}
 
-        <section className="relative mt-6 space-y-4 overflow-visible pb-20 sm:pb-24">
+        <WorkflowSettings>
+          <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-label text-foreground">{t("toolUi.base64.output")}</h2>
             {source && dataUrl && !isEncoding && (
@@ -207,20 +191,8 @@ export function Base64Encoder() {
             </>
           )}
 
-          <div
-            className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-            dir="ltr"
-          >
-            <HelperCharacter
-              character="widthAlt"
-              alt={t("characters.widthAlt")}
-              size={characterSize}
-              glow="soft"
-              pixelated
-              animate="float"
-            />
           </div>
-        </section>
+        </WorkflowSettings>
 
         <div className="mt-4">
           <ToolProjectSaveButton />

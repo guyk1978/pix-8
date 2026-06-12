@@ -6,6 +6,7 @@ import { setupMlAssets } from "./setup-ml-assets-lib";
 
 const WATCH_PATHS = [
   join("src", "lib", "tools.ts"),
+  join("src", "lib", "blog.ts"),
   join("src", "content", "articles"),
 ];
 

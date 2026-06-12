@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { ToolSidebarSlot } from "@/components/layout/ToolSidebarSlot";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import {
   useWorkflowOptional,
@@ -140,8 +141,10 @@ export function WorkflowSettings({
   className?: string;
 }) {
   return (
-    <WorkflowStep step="configure" className={className}>
-      {children}
-    </WorkflowStep>
+    <ToolSidebarSlot id="workflow-settings" order={20} className={className}>
+      <WorkflowStep step="configure" className={className}>
+        {children}
+      </WorkflowStep>
+    </ToolSidebarSlot>
   );
 }

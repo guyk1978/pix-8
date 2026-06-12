@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
+import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { BulkFileQueue } from "@/components/tools/BulkFileQueue";
@@ -296,26 +298,36 @@ export function Resizer() {
         <ProcessingModeToggle mode={mode} onChange={handleModeChange} />
 
         {mode === "single" ? (
-          <ToolStyledUploadZone
-            inputId="resizer-upload"
-            onFileChange={handleFileChange}
-            isDragging={isDragging}
-            onDraggingChange={setIsDragging}
-          >
-            {source ? (
-              <div className="pointer-events-none flex w-full flex-col items-center gap-3">
+          !source ? (
+            <ToolStyledUploadZone
+              inputId="resizer-upload"
+              onFileChange={handleFileChange}
+              isDragging={isDragging}
+              onDraggingChange={setIsDragging}
+            />
+          ) : (
+            <>
+              <ImageFileInput
+                id="resizer-replace"
+                fileName={source.file.name}
+                onFileChange={handleFileChange}
+              />
+              <ToolWorkspacePreview
+                caption={
+                  <>
+                    {source.width} × {source.height}px · {source.file.name}
+                  </>
+                }
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={source.url}
                   alt={t("alt.preview")}
-                  className="character-pixelated max-h-40 max-w-full rounded-sm border border-border object-contain sm:max-h-48"
+                  className="character-pixelated max-h-[min(50vh,420px)] max-w-full object-contain"
                 />
-                <p className="max-w-full truncate px-2 text-center font-mono text-xs text-muted">
-                  {source.width} × {source.height}px · {source.file.name}
-                </p>
-              </div>
-            ) : undefined}
-          </ToolStyledUploadZone>
+              </ToolWorkspacePreview>
+            </>
+          )
         ) : (
           <div className="space-y-4">
             <ToolStyledUploadZone
@@ -339,8 +351,6 @@ export function Resizer() {
         )}
 
         <ToolFieldsStage
-          robotAlt={t("characters.robotAlt")}
-          widthAlt={t("characters.widthAlt")}
           fields={[
             {
               label: t("common.height"),
@@ -379,37 +389,41 @@ export function Resizer() {
                 />
               ),
             },
+            {
+              label: t("toolUi.resizer.maintainAspectRatio"),
+              englishLabel: "Aspect ratio",
+              htmlFor: "resizer-aspect-ratio",
+              children: (
+                <div className="flex flex-col gap-2 px-1 py-2.5">
+                  <label className="flex min-h-11 cursor-pointer items-center gap-3">
+                    <input
+                      id="resizer-aspect-ratio"
+                      type="checkbox"
+                      checked={lockAspectRatio}
+                      disabled={mode === "single" ? !source : bulk.items.length === 0}
+                      onChange={(event) => setLockAspectRatio(event.target.checked)}
+                      className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent"
+                    />
+                    <span className="font-label text-muted">
+                      {t("toolUi.resizer.maintainAspectRatio")}
+                    </span>
+                  </label>
+                  {source && lockAspectRatio && mode === "single" && (
+                    <span className="font-mono text-xs tabular-nums text-muted">
+                      {aspectRatio.toFixed(3)} : 1
+                    </span>
+                  )}
+                </div>
+              ),
+            },
           ]}
         />
 
-        <div className="mt-2 flex justify-end border-t border-border pt-5 rtl:justify-start">
-          <StripMetadataToggle
-            checked={stripMetadata}
-            disabled={mode === "single" ? !source : bulk.items.length === 0}
-            onChange={setStripMetadata}
-          />
-        </div>
-
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <label className="flex min-h-11 cursor-pointer items-center gap-3">
-            <input
-              type="checkbox"
-              checked={lockAspectRatio}
-              disabled={mode === "single" ? !source : bulk.items.length === 0}
-              onChange={(event) => setLockAspectRatio(event.target.checked)}
-              className="h-4 w-4 shrink-0 rounded-sm border border-border bg-background accent-accent"
-            />
-            <span className="font-label text-muted">
-              {t("toolUi.resizer.maintainAspectRatio")}
-            </span>
-          </label>
-
-          {source && lockAspectRatio && mode === "single" && (
-            <span className="font-mono text-xs tabular-nums text-muted sm:text-right">
-              {aspectRatio.toFixed(3)} : 1
-            </span>
-          )}
-        </div>
+        <StripMetadataToggle
+          checked={stripMetadata}
+          disabled={mode === "single" ? !source : bulk.items.length === 0}
+          onChange={setStripMetadata}
+        />
 
         {displayError ? (
           <HelperErrorAlert message={displayError} className="mt-4" />

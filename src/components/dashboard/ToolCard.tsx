@@ -16,14 +16,14 @@ export function ToolCard({ tool, index }: ToolCardProps) {
   const { t } = useLanguage();
 
   return (
-    <div className="group relative border border-border bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--glow-teal)_35%,var(--border))] hover:bg-card-hover hover:shadow-[var(--glow-hover)]">
+    <div className="group relative rounded-lg bg-card shadow-[var(--shadow-elevated)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-card-hover hover:shadow-[var(--shadow-hover)]">
       <div className="absolute top-3 z-10 end-3">
         <FavoriteButton toolSlug={tool.id} size="sm" />
       </div>
 
-      <Link href={tool.href} className="flex gap-4 p-4 sm:p-5">
+      <Link href={tool.href} prefetch className="flex gap-4 p-4 sm:p-5">
         <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-border bg-background text-muted transition-colors duration-200 group-hover:border-muted group-hover:text-foreground"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-background text-muted shadow-[var(--shadow-elevated)] transition-all duration-200 group-hover:text-foreground group-hover:shadow-[var(--shadow-hover)]"
           aria-hidden
         >
           <ToolIcon id={tool.id} className="h-[18px] w-[18px]" />
@@ -36,7 +36,7 @@ export function ToolCard({ tool, index }: ToolCardProps) {
                 {t(getToolTranslationKey(tool.id, "name"))}
               </h3>
               {tool.status === "ready" && (
-                <span className="border border-border bg-background px-1.5 py-0.5 font-label text-muted">
+                <span className="rounded-md bg-background px-1.5 py-0.5 font-label text-muted shadow-[var(--shadow-elevated)]">
                   {t("common.ready")}
                 </span>
               )}

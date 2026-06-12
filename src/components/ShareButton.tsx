@@ -15,7 +15,11 @@ async function copyUrl(url: string): Promise<boolean> {
   }
 }
 
-export function ShareButton() {
+interface ShareButtonProps {
+  className?: string;
+}
+
+export function ShareButton({ className = "" }: ShareButtonProps) {
   const { language, t } = useLanguage();
   const { resolvedTheme } = useTheme();
   const { showToast } = useToast();
@@ -50,7 +54,10 @@ export function ShareButton() {
     <button
       type="button"
       onClick={handleShare}
-      className="flex h-9 w-9 items-center justify-center rounded-sm border border-border bg-background text-muted transition-colors hover:border-muted hover:text-foreground"
+      className={
+        className ||
+        "flex h-9 w-9 items-center justify-center rounded-sm border border-border bg-background text-muted transition-colors hover:border-muted hover:text-foreground"
+      }
       aria-label={t("share.ariaLabel")}
       title={t("share.title")}
     >

@@ -1,14 +1,15 @@
 "use client";
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
-import { HelperCharacter } from "@/components/characters/HelperCharacter";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
+import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { renderInvertedCanvas } from "@/lib/invertRender";
 import {
   buildDownloadFilename,
@@ -16,11 +17,8 @@ import {
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
-import { CHARACTER_SIZES } from "@/lib/characters";
-
 export function ImageInverter() {
   const { t } = useLanguage();
-  const characterSize = CHARACTER_SIZES.field + 8;
   const {
     canvasRef,
     source,
@@ -106,7 +104,7 @@ export function ImageInverter() {
   const canDownload = !!source && !isProcessing;
 
   return (
-    <ToolWorkspace>
+    <ToolWorkspace hasActiveImage={!!source}>
         {!source ? (
           <ToolStyledUploadZone
             inputId="image-inverter-upload"
@@ -123,50 +121,28 @@ export function ImageInverter() {
           />
         )}
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="relative space-y-3 overflow-visible pb-20 sm:pb-24">
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-label text-muted">{t("common.preview")}</span>
-              <span className="font-mono text-[10px] text-muted">
-                {inverted
-                  ? t("toolUi.imageInverter.inverted")
-                  : t("common.original")}
-              </span>
-            </div>
-            <div className="flex min-h-56 items-center justify-center overflow-hidden rounded-sm border border-border bg-background p-3 sm:min-h-72">
-              {source ? (
-                <canvas
-                  ref={previewCanvasRef}
-                  className="max-h-[min(50vh,420px)] max-w-full object-contain"
-                />
-              ) : (
-                <p className="px-4 text-center text-sm text-muted">
-                  {t("toolUi.imageInverter.previewHint")}
-                </p>
-              )}
-            </div>
-            {source && (
-              <p className="text-center font-mono text-[10px] text-muted">
+        {source ? (
+          <ToolWorkspacePreview
+            hint={
+              inverted
+                ? t("toolUi.imageInverter.inverted")
+                : t("common.original")
+            }
+            caption={
+              <>
                 {source.width} × {source.height}px · {source.file.name}
-              </p>
-            )}
+              </>
+            }
+          >
+            <canvas
+              ref={previewCanvasRef}
+              className="max-h-[min(50vh,420px)] max-w-full object-contain"
+            />
+          </ToolWorkspacePreview>
+        ) : null}
 
-            <div
-              className="pointer-events-none absolute bottom-0 left-0 z-10 sm:left-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="robot"
-                alt={t("characters.robotAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
-              />
-            </div>
-          </div>
-
-          <div className="relative space-y-4 overflow-visible border border-border bg-background p-4 pb-20 sm:pb-24">
+        <WorkflowSettings>
+          <div className="space-y-4">
             <label className="flex min-h-11 cursor-pointer items-center gap-3">
               <input
                 type="checkbox"
@@ -182,30 +158,14 @@ export function ImageInverter() {
             <p className="font-mono text-[10px] leading-relaxed text-muted">
               {t("toolUi.imageInverter.invertHint")}
             </p>
-
-            <div
-              className="pointer-events-none absolute bottom-2 right-0 z-10 sm:right-1"
-              dir="ltr"
-            >
-              <HelperCharacter
-                character="widthAlt"
-                alt={t("characters.widthAlt")}
-                size={characterSize}
-                glow="soft"
-                pixelated
-                animate="float"
-              />
-            </div>
           </div>
-        </div>
+        </WorkflowSettings>
 
-        <div className="mt-5 border-t border-border pt-5">
-          <StripMetadataToggle
-            checked={stripMetadata}
-            disabled={!source}
-            onChange={setStripMetadata}
-          />
-        </div>
+        <StripMetadataToggle
+          checked={stripMetadata}
+          disabled={!source}
+          onChange={setStripMetadata}
+        />
 
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />
