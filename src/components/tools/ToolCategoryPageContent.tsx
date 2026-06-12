@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { ToolCard } from "@/components/dashboard/ToolCard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import {
@@ -54,15 +54,15 @@ export function ToolCategoryPageContent({
       >
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
-            <Link href="/" className="transition-colors hover:text-foreground">
+            <AppLink href="/" className="transition-colors hover:text-foreground">
               {t("toolCategoryPages.breadcrumbHome")}
-            </Link>
+            </AppLink>
           </li>
           <li aria-hidden>·</li>
           <li>
-            <Link href="/" className="transition-colors hover:text-foreground">
+            <AppLink href="/" className="transition-colors hover:text-foreground">
               {t("toolCategoryPages.breadcrumbTools")}
-            </Link>
+            </AppLink>
           </li>
           <li aria-hidden>·</li>
           <li className="text-foreground">{t(`nav.toolCategories.${categoryId}`)}</li>
@@ -160,13 +160,13 @@ export function ToolCategoryPageContent({
         </h2>
         <div className="grid gap-2 sm:grid-cols-3">
           {otherCategories.map((item) => (
-            <Link
+            <AppLink
               key={item.id}
               href={getToolCategoryHref(item.id)}
               className="rounded-sm border border-border bg-card px-4 py-3 font-label text-sm text-muted transition-colors hover:border-muted hover:bg-surface hover:text-foreground"
             >
               {t(`nav.toolCategories.${item.id}`)}
-            </Link>
+            </AppLink>
           ))}
         </div>
       </section>

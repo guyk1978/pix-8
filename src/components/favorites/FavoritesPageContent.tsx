@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { ToolCard } from "@/components/dashboard/ToolCard";
 import { useFavorites } from "@/components/favorites/FavoritesContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -30,12 +30,12 @@ export function FavoritesPageContent() {
         <div className="flex min-h-48 flex-col items-center justify-center gap-3 border border-dashed border-border bg-card p-8 text-center">
           <p className="font-label text-muted">{t("favorites.empty")}</p>
           <p className="max-w-sm text-sm text-muted">{t("favorites.emptyHint")}</p>
-          <Link
+          <AppLink
             href="/"
             className="mt-2 rounded-sm border border-border bg-background px-4 py-2 font-label text-sm text-foreground transition-colors hover:border-muted hover:bg-surface"
           >
             {t("favorites.browseTools")}
-          </Link>
+          </AppLink>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

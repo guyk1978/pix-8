@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { BrandLogo, brandLogoAriaLabel } from "@/components/brand/BrandLogo";
 import { useToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -14,14 +14,13 @@ export function ToolControlSidebarContent() {
   return (
     <div className="flex h-full min-h-0 flex-col text-start" dir={dir}>
       <div className="flex shrink-0 items-center justify-start px-5 py-4 text-start">
-        <Link
+        <AppLink
           href={APP_ROUTES.home}
-          prefetch
           className="transition-opacity hover:opacity-80"
           aria-label={brandLogoAriaLabel(t)}
         >
           <BrandLogo size="sm" />
-        </Link>
+        </AppLink>
       </div>
 
       {toolName ? (
@@ -57,13 +56,12 @@ export function ToolControlSidebarContent() {
       </div>
 
       <div className="shrink-0 p-4 text-start">
-        <Link
+        <AppLink
           href={APP_ROUTES.home}
-          prefetch
           className="sidebar-back-link flex min-h-11 w-full items-center justify-center rounded-lg px-3 py-2.5 text-base text-muted"
         >
           {t("toolSidebar.backToDashboard")}
-        </Link>
+        </AppLink>
       </div>
     </div>
   );

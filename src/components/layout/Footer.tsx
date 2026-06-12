@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
 import { JOIN_MY_PDF_URL } from "@/lib/external-links";
@@ -41,13 +41,12 @@ export function Footer() {
             <ul className="space-y-2">
               {SIDEBAR_NAV_CATEGORIES.map((category) => (
                 <li key={category.id}>
-                  <Link
+                  <AppLink
                     href={getCategoryRoute(category.id)}
-                    prefetch
                     className={footerLinkClassName}
                   >
                     {t(`nav.toolCategories.${category.id}`)}
-                  </Link>
+                  </AppLink>
                 </li>
               ))}
             </ul>
@@ -58,13 +57,12 @@ export function Footer() {
             <ul className="grid grid-cols-2 gap-x-6 gap-y-2">
               {tools.map((tool) => (
                 <li key={tool.id}>
-                  <Link
+                  <AppLink
                     href={getToolRoute(tool.id)}
-                    prefetch
                     className={footerLinkClassName}
                   >
                     {t(getToolTranslationKey(tool.id, "name"))}
-                  </Link>
+                  </AppLink>
                 </li>
               ))}
             </ul>

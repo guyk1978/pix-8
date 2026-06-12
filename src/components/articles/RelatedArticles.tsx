@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useLocalizedArticles } from "@/hooks/useLocalizedArticle";
 import type { Article } from "@/lib/blog";
@@ -38,7 +38,7 @@ export function RelatedArticles({
       <ul className="space-y-3">
         {articles.map((article) => (
           <li key={article.slug}>
-            <Link
+            <AppLink
               href={`/articles/${article.slug}`}
               className="group block border border-border bg-card p-4 transition-colors hover:border-muted hover:bg-card-hover"
             >
@@ -56,7 +56,7 @@ export function RelatedArticles({
               <p className="mt-2 text-xs leading-relaxed text-muted">
                 {article.excerpt}
               </p>
-            </Link>
+            </AppLink>
           </li>
         ))}
       </ul>

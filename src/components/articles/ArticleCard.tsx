@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
 import type { Article } from "@/lib/blog";
@@ -18,7 +18,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
     : article.toolId;
 
   return (
-    <Link
+    <AppLink
       href={`/articles/${article.slug}`}
       className="group relative block overflow-hidden border border-border bg-card p-5 transition-colors hover:border-muted hover:bg-card-hover"
     >
@@ -35,6 +35,6 @@ export function ArticleCard({ article }: ArticleCardProps) {
       <span className="mt-4 inline-block font-label text-muted opacity-0 transition-opacity group-hover:opacity-100">
         {t("blog.readArticle")}
       </span>
-    </Link>
+    </AppLink>
   );
 }

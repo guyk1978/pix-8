@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { Folder, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -102,9 +102,8 @@ function NavItem({
   onNavigate?: () => void;
 }) {
   return (
-    <Link
+    <AppLink
       href={href}
-      prefetch
       onClick={onNavigate}
       title={collapsed ? label : undefined}
       className={`sidebar-nav-link flex items-center rounded-md font-label ${
@@ -113,7 +112,7 @@ function NavItem({
     >
       {icon}
       <span className="sidebar-nav-label">{label}</span>
-    </Link>
+    </AppLink>
   );
 }
 
@@ -140,15 +139,14 @@ export function NavigationSidebarContent({
         }`}
       >
         {!collapsed ? (
-          <Link
+          <AppLink
             href={APP_ROUTES.home}
-            prefetch
             onClick={onMobileClose}
             className="flex min-w-0 items-baseline gap-1 transition-opacity hover:opacity-80"
           >
             <span className="font-mono text-base font-medium text-foreground">pix</span>
             <span className="font-mono text-base font-medium text-muted">-8</span>
-          </Link>
+          </AppLink>
         ) : null}
 
         <button

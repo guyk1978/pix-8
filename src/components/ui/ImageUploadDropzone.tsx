@@ -76,7 +76,7 @@ export function ImageUploadDropzone({
           accept="image/*"
           multiple={multiple}
           aria-label={resolvedAriaLabel}
-          className="absolute inset-0 cursor-pointer opacity-0"
+          className="absolute inset-0 z-20 cursor-pointer opacity-0"
           onChange={(event) => {
             if (multiple && onFilesChange && event.target.files) {
               onFilesChange(event.target.files);

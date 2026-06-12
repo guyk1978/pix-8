@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { usePathname } from "next/navigation";
 import type { ComponentProps, ReactNode } from "react";
 import { isActiveHref } from "@/lib/routes";
 
-type NavLinkProps = Omit<ComponentProps<typeof Link>, "href"> & {
+type NavLinkProps = Omit<ComponentProps<typeof AppLink>, "href"> & {
   href: string;
   children: ReactNode;
   activeClassName?: string;
@@ -28,9 +28,8 @@ export function NavLink({
   const resolvedClassName = `${className} ${active ? activeClassName : inactiveClassName}`.trim();
 
   return (
-    <Link
+    <AppLink
       href={href}
-      prefetch
       className={resolvedClassName}
       onClick={(event) => {
         onNavigate?.();
@@ -39,6 +38,6 @@ export function NavLink({
       {...props}
     >
       {children}
-    </Link>
+    </AppLink>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
 import type { ToolId } from "@/lib/tools";
@@ -41,7 +41,7 @@ export function WorkflowSuggestions({ suggestions }: WorkflowSuggestionsProps) {
             : link.name;
 
           return (
-            <Link
+            <AppLink
               key={link.href}
               href={link.href}
               className="group shrink-0 rounded-sm border border-border bg-background px-4 py-2.5 font-label text-sm text-muted transition-all hover:border-muted hover:text-foreground hover:shadow-[var(--glow-hover)] focus-visible:border-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted"
@@ -55,7 +55,7 @@ export function WorkflowSuggestions({ suggestions }: WorkflowSuggestionsProps) {
                   {arrow}
                 </span>
               </span>
-            </Link>
+            </AppLink>
           );
         })}
       </div>

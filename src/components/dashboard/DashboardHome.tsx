@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { DashboardTools } from "@/components/dashboard/DashboardTools";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -21,13 +21,13 @@ export function DashboardHome() {
           <p className="mb-3 font-label text-muted">{t("home.browseCategories")}</p>
           <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
             {SIDEBAR_NAV_CATEGORIES.map((category) => (
-              <Link
+              <AppLink
                 key={category.id}
                 href={getToolCategoryHref(category.id)}
                 className="rounded-sm border border-border bg-card px-3 py-3 font-label text-sm text-muted transition-colors hover:border-[color-mix(in_srgb,var(--glow-teal)_35%,var(--border))] hover:bg-card-hover hover:text-foreground"
               >
                 {t(`nav.toolCategories.${category.id}`)}
-              </Link>
+              </AppLink>
             ))}
           </div>
         </section>

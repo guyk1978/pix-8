@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 
 function renderInline(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g);
@@ -18,13 +18,13 @@ function renderInline(text: string) {
       const isInternal = href.startsWith("/");
       if (isInternal) {
         return (
-          <Link
+          <AppLink
             key={index}
             href={href}
             className="text-foreground underline decoration-border underline-offset-2 hover:decoration-muted"
           >
             {label}
-          </Link>
+          </AppLink>
         );
       }
       return (

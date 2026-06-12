@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { LayoutGrid, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
@@ -139,16 +139,15 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
 
     return (
       <li key={tool.id}>
-        <Link
+        <AppLink
           href={tool.href}
-          prefetch
           onClick={handleMenuLinkClick}
           className={`apps-menu-link block rounded-md px-3 py-2 font-label text-[13px] ${
             active ? "apps-menu-link-active" : "text-muted"
           }`}
         >
           {getToolName(tool.id)}
-        </Link>
+        </AppLink>
       </li>
     );
   };
@@ -197,9 +196,8 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
                     key={category.id}
                     className="rounded-lg bg-surface/30 p-3 shadow-[var(--shadow-elevated)]"
                   >
-                    <Link
+                    <AppLink
                       href={category.href}
-                      prefetch
                       onClick={handleMenuLinkClick}
                       className="apps-menu-link mb-2 flex items-center gap-2 rounded-md px-2 py-2 font-label text-sm text-foreground"
                     >
@@ -207,7 +205,7 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
                         {CATEGORY_ICONS[category.id]}
                       </span>
                       {t(`nav.toolCategories.${category.id}`)}
-                    </Link>
+                    </AppLink>
 
                     <ul className="space-y-0.5">
                       {category.tools.map((tool) => renderToolLink(tool))}
@@ -228,14 +226,13 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
               </div>
 
               <div className="px-5 py-3">
-                <Link
+                <AppLink
                   href={APP_ROUTES.home}
-                  prefetch
                   onClick={handleMenuLinkClick}
                   className="apps-menu-link inline-block rounded-md px-2 py-1.5 font-label text-xs text-muted"
                 >
                   {t("nav.dashboard")} →
-                </Link>
+                </AppLink>
               </div>
             </div>
           </>,

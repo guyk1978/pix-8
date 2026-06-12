@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { Folder } from "lucide-react";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { useProjects } from "@/components/projects/ProjectsContext";
@@ -33,12 +33,12 @@ export function ProjectsPageContent() {
           />
           <p className="font-label text-muted">{t("projects.empty")}</p>
           <p className="max-w-sm text-sm text-muted">{t("projects.emptyHint")}</p>
-          <Link
+          <AppLink
             href="/"
             className="mt-2 rounded-sm border border-border bg-background px-4 py-2 font-label text-sm text-foreground transition-colors hover:border-muted hover:bg-surface"
           >
             {t("projects.browseTools")}
-          </Link>
+          </AppLink>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

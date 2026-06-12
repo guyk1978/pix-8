@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { usePathname } from "next/navigation";
 import { Folder, Star } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
@@ -29,15 +29,14 @@ interface HeaderNavLinkProps {
 
 function HeaderNavLink({ href, active, children, title }: HeaderNavLinkProps) {
   return (
-    <Link
+    <AppLink
       href={href}
-      prefetch
       className={headerNavTabClass(active)}
       title={title}
       aria-current={active ? "page" : undefined}
     >
       {children}
-    </Link>
+    </AppLink>
   );
 }
 
@@ -56,14 +55,13 @@ export function Header() {
     >
       <div className="app-header-inner mx-auto flex h-16 w-full max-w-[90rem] items-center justify-between gap-6 px-5 sm:px-8 lg:px-10">
         <div className="app-header-brand flex min-w-0 shrink-0 items-center">
-          <Link
+          <AppLink
             href={APP_ROUTES.home}
-            prefetch
             className="rounded-sm transition-opacity hover:opacity-80"
             aria-label={brandLogoAriaLabel(t)}
           >
             <BrandLogo size="md" />
-          </Link>
+          </AppLink>
         </div>
 
         <nav

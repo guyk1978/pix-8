@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppLink } from "@/components/layout/AppLink";
 import { ArticleBody } from "@/components/articles/ArticleBody";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
@@ -26,19 +26,19 @@ export function ArticlePageContent({
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <Link
+        <AppLink
           href="/blog"
           className="font-label text-muted transition-colors hover:text-foreground"
         >
           {t("blog.backToBlog")}
-        </Link>
+        </AppLink>
         <span className="text-border">/</span>
-        <Link
+        <AppLink
           href={tool?.href ?? "/"}
           className="font-label text-muted transition-colors hover:text-foreground"
         >
           {toolName}
-        </Link>
+        </AppLink>
         <span className="text-border">/</span>
         <span className="font-label text-muted">{t("blog.article")}</span>
       </div>
