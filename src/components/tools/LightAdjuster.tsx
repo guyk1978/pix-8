@@ -22,6 +22,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 const PRESET_KEYS = ["balanced", "brighten", "punch"] as const;
@@ -58,6 +59,19 @@ export function LightAdjuster() {
     DEFAULT_LIGHT_ADJUST_SETTINGS,
   );
   const debouncedSettings = useDebouncedValue(settings, 150);
+
+  useImageToolProject({
+    toolId: "light-adjuster",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, settings }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      if (payload.settings && typeof payload.settings === "object") {
+        setSettings(payload.settings as LightAdjustSettings);
+      }
+    },
+  });
 
   const presets = useMemo(
     () =>

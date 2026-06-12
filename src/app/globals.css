@@ -668,3 +668,4 @@ input[type="range"].slider-control::-moz-range-thumb {
 input[type="range"].slider-control:active::-moz-range-thumb {
   cursor: grabbing;
 }
+

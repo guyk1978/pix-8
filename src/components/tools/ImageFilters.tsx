@@ -23,6 +23,11 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import {
+  applyBooleanPayload,
+  applyNumberPayload,
+  useImageToolProject,
+} from "@/hooks/useToolProject";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 const activeFilterClassName =
@@ -63,6 +68,20 @@ export function ImageFilters() {
   const [activeFilter, setActiveFilter] = useState<ImageFilterId>(
     DEFAULT_IMAGE_FILTER,
   );
+
+  useImageToolProject({
+    toolId: "image-filters",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, activeFilter, comparePosition }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "comparePosition", setComparePosition);
+      if (typeof payload.activeFilter === "string") {
+        setActiveFilter(payload.activeFilter as ImageFilterId);
+      }
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

@@ -13,6 +13,7 @@ import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUpload
 import { SliderControl } from "@/components/ui/SliderControl";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
+import { useImageToolProject } from "@/hooks/useToolProject";
 import {
   buildSvgDownloadFilename,
   DEFAULT_SVG_TRACE_SETTINGS,
@@ -49,6 +50,19 @@ export function ImageToSvgConverter() {
   );
   const [svgOutput, setSvgOutput] = useState<string | null>(null);
   const debouncedSettings = useDebouncedValue(settings, 250);
+
+  useImageToolProject({
+    toolId: "image-to-svg",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ settings }),
+    applyPayload: (payload) => {
+      if (payload.settings && typeof payload.settings === "object") {
+        setSettings(payload.settings as SvgTraceSettings);
+      }
+      setSvgOutput(null);
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

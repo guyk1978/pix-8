@@ -54,6 +54,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${SITE_URL}/favorites`,
       lastModified: now,
     },
+    {
+      url: `${SITE_URL}/projects`,
+      lastModified: now,
+    },
   ];
 
   for (const categoryId of SIDEBAR_CATEGORY_IDS) {

@@ -16,6 +16,10 @@ import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
 import {
+  applyBooleanPayload,
+  useBulkToolProject,
+} from "@/hooks/useToolProject";
+import {
   type ImageFormat,
   buildDownloadFilename,
   formatToExtension,
@@ -62,6 +66,27 @@ export function Converter() {
 
   const quality =
     targetFormat === "jpeg" || targetFormat === "webp" ? 0.92 : undefined;
+
+  useBulkToolProject({
+    toolId: "converter",
+    mode,
+    source,
+    bulk,
+    canSave: mode === "single" ? !!source : bulk.items.length > 0,
+    loadFile,
+    getExtraPayload: () => ({ targetFormat, stripMetadata }),
+    applyExtraPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      if (
+        payload.targetFormat === "jpeg" ||
+        payload.targetFormat === "png" ||
+        payload.targetFormat === "webp"
+      ) {
+        setTargetFormat(payload.targetFormat as ImageFormat);
+      }
+    },
+    onModeRestore: setMode,
+  });
 
   const handleModeChange = useCallback(
     (nextMode: ProcessingMode) => {

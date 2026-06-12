@@ -15,6 +15,8 @@ import {
   formatByteCount,
 } from "@/lib/base64Encode";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
+import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 export function Base64Encoder() {
@@ -28,6 +30,16 @@ export function Base64Encoder() {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [isEncoding, setIsEncoding] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  useImageToolProject({
+    toolId: "base64-encoder",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ includePrefix }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "includePrefix", setIncludePrefix);
+    },
+  });
 
   const output = useMemo(
     () => (dataUrl ? formatBase64Output(dataUrl, includePrefix) : ""),
@@ -209,6 +221,10 @@ export function Base64Encoder() {
             />
           </div>
         </section>
+
+        <div className="mt-4">
+          <ToolProjectSaveButton />
+        </div>
 
         {source && (
           <p className="mt-4 text-center font-mono text-[10px] text-muted">

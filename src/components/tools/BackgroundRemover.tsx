@@ -16,6 +16,11 @@ import {
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 import {
+  applyBooleanPayload,
+  applyStringPayload,
+  useImageToolProject,
+} from "@/hooks/useToolProject";
+import {
   blobToImage,
   canvasToPngBlob,
   getBackgroundRemovalEngineError,
@@ -80,6 +85,29 @@ export function BackgroundRemover() {
   const [engineLoading, setEngineLoading] = useState(false);
   const [engineFailed, setEngineFailed] = useState(false);
   const [engineError, setEngineError] = useState<string | null>(null);
+
+  useImageToolProject({
+    toolId: "bg-remover",
+    source,
+    loadFile,
+    getExtraPayload: () => ({
+      backgroundMode,
+      backgroundColor,
+      stripMetadata,
+    }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyStringPayload(payload, "backgroundColor", setBackgroundColor);
+      if (
+        payload.backgroundMode === "transparent" ||
+        payload.backgroundMode === "solid"
+      ) {
+        setBackgroundMode(payload.backgroundMode);
+      }
+      setHasProcessed(false);
+      resultImageRef.current = null;
+    },
+  });
 
   const isBusy = processingPhase !== "idle";
   const isPreparingEngine =

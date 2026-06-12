@@ -10,6 +10,8 @@ import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
+import { useImageToolProject } from "@/hooks/useToolProject";
+import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
 import {
   sampleColorFromCanvas,
   type SampledColor,
@@ -125,6 +127,24 @@ export function ColorPicker() {
   const [hoverColor, setHoverColor] = useState<SampledColor | null>(null);
   const [pickedColor, setPickedColor] = useState<SampledColor | null>(null);
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
+
+  useImageToolProject({
+    toolId: "color-picker",
+    source,
+    loadFile,
+    getExtraPayload: () => ({
+      pickedColor,
+      hoverColor,
+    }),
+    applyPayload: (payload) => {
+      if (payload.pickedColor && typeof payload.pickedColor === "object") {
+        setPickedColor(payload.pickedColor as SampledColor);
+      }
+      if (payload.hoverColor && typeof payload.hoverColor === "object") {
+        setHoverColor(payload.hoverColor as SampledColor);
+      }
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {
@@ -434,6 +454,10 @@ export function ColorPicker() {
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />
         ) : null}
+
+        <div className="mt-4">
+          <ToolProjectSaveButton />
+        </div>
 
         <p className="mt-4 text-center font-mono text-[10px] text-muted">
           {t("toolUi.colorPicker.footer")}

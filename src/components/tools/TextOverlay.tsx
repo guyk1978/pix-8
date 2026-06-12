@@ -14,6 +14,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
 import {
   displayToNaturalCoords,
   renderTextOverlayCanvas,
@@ -95,6 +96,19 @@ export function TextOverlay() {
       })),
     [t],
   );
+
+  useImageToolProject({
+    toolId: "text-overlay",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, settings }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      if (payload.settings && typeof payload.settings === "object") {
+        setSettings(payload.settings as TextOverlaySettings);
+      }
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

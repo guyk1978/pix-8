@@ -10,6 +10,8 @@ import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
+import { useImageToolProject } from "@/hooks/useToolProject";
+import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
 import {
   buildCodeSnippet,
   CODE_FORMAT_OPTIONS,
@@ -45,6 +47,26 @@ export function CssPaletteGenerator() {
     () => (palette.length > 0 ? buildCodeSnippet(palette, codeFormat) : ""),
     [palette, codeFormat],
   );
+
+  useImageToolProject({
+    toolId: "css-palette-gen",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ codeFormat, palette }),
+    applyPayload: (payload) => {
+      if (
+        payload.codeFormat === "css" ||
+        payload.codeFormat === "scss" ||
+        payload.codeFormat === "json" ||
+        payload.codeFormat === "tailwind"
+      ) {
+        setCodeFormat(payload.codeFormat);
+      }
+      if (Array.isArray(payload.palette)) {
+        setPalette(payload.palette as PaletteSwatch[]);
+      }
+    },
+  });
 
   useEffect(() => {
     if (!source) {
@@ -268,6 +290,10 @@ export function CssPaletteGenerator() {
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />
         ) : null}
+
+        <div className="mt-4">
+          <ToolProjectSaveButton />
+        </div>
       
     </ToolWorkspace>
   );

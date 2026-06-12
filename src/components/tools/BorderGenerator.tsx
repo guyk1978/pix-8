@@ -20,6 +20,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 const PRESETS: { key: "gallery" | "minimal" | "soft"; settings: BorderSettings }[] = [
@@ -61,6 +62,19 @@ export function BorderGenerator() {
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [stripMetadata, setStripMetadata] = useState(true);
   const [settings, setSettings] = useState<BorderSettings>(DEFAULT_SETTINGS);
+
+  useImageToolProject({
+    toolId: "border-generator",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, settings }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      if (payload.settings && typeof payload.settings === "object") {
+        setSettings(payload.settings as BorderSettings);
+      }
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

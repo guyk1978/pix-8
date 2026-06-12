@@ -22,6 +22,11 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import {
+  applyBooleanPayload,
+  applyNumberPayload,
+  useImageToolProject,
+} from "@/hooks/useToolProject";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 function loadImageElement(url: string): Promise<HTMLImageElement> {
@@ -59,6 +64,24 @@ export function GrainGenerator() {
   const [comparePosition, setComparePosition] = useState(50);
   const [intensity, setIntensity] = useState(DEFAULT_GRAIN_SETTINGS.intensity);
   const debouncedIntensity = useDebouncedValue(intensity, 150);
+
+  useImageToolProject({
+    toolId: "grain-generator",
+    source,
+    loadFile,
+    getExtraPayload: () => ({
+      stripMetadata,
+      intensity,
+      comparePosition,
+      grainSeed,
+    }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "intensity", setIntensity);
+      applyNumberPayload(payload, "comparePosition", setComparePosition);
+      applyNumberPayload(payload, "grainSeed", setGrainSeed);
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

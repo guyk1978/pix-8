@@ -90,11 +90,26 @@ export function useBulkFiles() {
     };
   }, [revokeItemUrl]);
 
+  const loadFromFiles = useCallback(
+    async (files: File[]) => {
+      setItems((current) => {
+        for (const item of current) revokeItemUrl(item.url);
+        return [];
+      });
+
+      if (files.length > 0) {
+        await addFiles(files);
+      }
+    },
+    [addFiles, revokeItemUrl],
+  );
+
   return {
     items,
     addFiles,
     removeFile,
     clear,
+    loadFromFiles,
     error,
     isLoading,
     setError,

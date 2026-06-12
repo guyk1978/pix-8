@@ -18,6 +18,11 @@ import {
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
 import {
+  applyBooleanPayload,
+  useToolProject,
+} from "@/hooks/useToolProject";
+import { MAIN_IMAGE_KEY } from "@/lib/projects/types";
+import {
   loadMemeTemplateAsFile,
   MEME_TEMPLATES,
   type MemeTemplateId,
@@ -52,6 +57,37 @@ export function MemeGenerator() {
   const [settings, setSettings] = useState<MemeSettings>({
     topText: "",
     bottomText: "",
+  });
+
+  useToolProject({
+    toolId: "meme-generator",
+    canSave: !!source,
+    getPayload: () => ({
+      stripMetadata,
+      selectedTemplateId,
+      settings,
+    }),
+    getImages: () =>
+      source ? [{ key: MAIN_IMAGE_KEY, file: source.file }] : [],
+    restore: async (payload, files) => {
+      const file = files.get(MAIN_IMAGE_KEY);
+      if (!file) return;
+
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+
+      if (
+        payload.selectedTemplateId === null ||
+        typeof payload.selectedTemplateId === "string"
+      ) {
+        setSelectedTemplateId(payload.selectedTemplateId as MemeTemplateId | null);
+      }
+
+      if (payload.settings && typeof payload.settings === "object") {
+        setSettings(payload.settings as MemeSettings);
+      }
+
+      await loadFile(file);
+    },
   });
 
   const handleFileChange = useCallback(

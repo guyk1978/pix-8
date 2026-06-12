@@ -12,6 +12,10 @@ import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { SliderControl } from "@/components/ui/SliderControl";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
+import {
+  applyBooleanPayload,
+  useToolProject,
+} from "@/hooks/useToolProject";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   buildDownloadFilename,
@@ -56,6 +60,37 @@ export function ImageCollageMaker() {
     DEFAULT_COLLAGE_SETTINGS,
   );
   const debouncedGap = useDebouncedValue(settings.gap, 150);
+
+  useToolProject({
+    toolId: "image-collage",
+    canSave: bulk.items.length > 0,
+    getPayload: () => ({
+      stripMetadata,
+      settings,
+    }),
+    getImages: () =>
+      bulk.items.map((item, index) => ({
+        key: `image-${index}`,
+        file: item.file,
+      })),
+    restore: async (payload, files) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+
+      if (payload.settings && typeof payload.settings === "object") {
+        setSettings(payload.settings as CollageSettings);
+      }
+
+      const orderedFiles = [...files.entries()]
+        .filter(([key]) => key.startsWith("image-"))
+        .sort(
+          ([left], [right]) =>
+            Number(left.split("-")[1] ?? 0) - Number(right.split("-")[1] ?? 0),
+        )
+        .map(([, file]) => file);
+
+      await bulk.loadFromFiles(orderedFiles);
+    },
+  });
 
   const renderSettings: CollageSettings = {
     ...settings,

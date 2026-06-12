@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { Folder, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { SidebarProgressTracker } from "@/components/layout/SidebarProgressTracker";
@@ -41,6 +41,14 @@ function FavoritesIcon() {
   return (
     <NavIcon>
       <Star strokeWidth={1.5} className="h-4 w-4" />
+    </NavIcon>
+  );
+}
+
+function ProjectsIcon() {
+  return (
+    <NavIcon>
+      <Folder strokeWidth={1.5} className="h-4 w-4" />
     </NavIcon>
   );
 }
@@ -396,6 +404,15 @@ export function Sidebar({
           label={t("nav.favorites")}
           icon={<FavoritesIcon />}
           active={pathname === "/favorites"}
+          collapsed={collapsed}
+          onNavigate={onMobileClose}
+        />
+
+        <NavItem
+          href="/projects"
+          label={t("nav.projects")}
+          icon={<ProjectsIcon />}
+          active={pathname === "/projects"}
           collapsed={collapsed}
           onNavigate={onMobileClose}
         />

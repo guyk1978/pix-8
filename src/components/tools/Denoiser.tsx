@@ -22,6 +22,11 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import {
+  applyBooleanPayload,
+  applyNumberPayload,
+  useImageToolProject,
+} from "@/hooks/useToolProject";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 function loadImageElement(url: string): Promise<HTMLImageElement> {
@@ -58,6 +63,18 @@ export function Denoiser() {
   const [comparePosition, setComparePosition] = useState(50);
   const [strength, setStrength] = useState(DEFAULT_DENOISE_SETTINGS.strength);
   const debouncedStrength = useDebouncedValue(strength, 200);
+
+  useImageToolProject({
+    toolId: "denoiser",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, strength, comparePosition }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "strength", setStrength);
+      applyNumberPayload(payload, "comparePosition", setComparePosition);
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

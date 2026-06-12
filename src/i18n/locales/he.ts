@@ -14,6 +14,7 @@ export const he: TranslationDictionary = {
       enhancement: "שיפור תמונה",
     },
     favorites: "מועדפים",
+    projects: "הפרויקטים שלי",
     settings: "הגדרות",
     joinMyPdf: "איחוד תמונות ל-PDF",
     zeroUploads: "ללא העלאות · ללא מעקב",
@@ -185,6 +186,27 @@ export const he: TranslationDictionary = {
     addLabel: "הוסף למועדפים",
     removeLabel: "הסר מהמועדפים",
   },
+  projects: {
+    eyebrow: "סביבת עבודה מקומית",
+    title: "הפרויקטים שלי",
+    description:
+      "שמירות בשם של סשני עבודה — תמונות והגדרות נשמרות רק בדפדפן זה.",
+    empty: "אין פרויקטים שמורים עדיין",
+    emptyHint:
+      "פתחו כלי, הגדירו את העבודה, ואז לחצו שמור פרויקט כדי לאחסן כאן.",
+    browseTools: "עיון בכל הכלים",
+    saveProject: "שמור פרויקט",
+    saveTooltip:
+      "הפרויקט נשמר מקומית בדפדפן שלך — פרטי ומאובטח לחלוטין.",
+    saveModalTitle: "שמירת פרויקט",
+    saveModalHint:
+      "אחסון התמונה וההגדרות הנוכחיות מקומית. ניתן לפתוח מחדש בכל עת מדף הפרויקטים.",
+    projectName: "שם הפרויקט",
+    projectNamePlaceholder: "לדוגמה: טיוטת באנר ראשי",
+    openProject: "פתח",
+    deleteProject: "מחק",
+    lastUpdated: "עודכן {date}",
+  },
   footer: {
     description:
       "כלי תמונה ממוקדי פרטיות. כל העיבוד בדפדפן — הקבצים לא עוזבים את המכשיר.",
@@ -230,6 +252,7 @@ export const he: TranslationDictionary = {
     download: "הורדה",
     copyImage: "העתק תמונה",
     processing: "מעבד…",
+    cancel: "ביטול",
     copied: "הועתק!",
     copyToClipboard: "העתקה ללוח",
     reset: "איפוס",

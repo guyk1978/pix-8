@@ -19,6 +19,12 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import {
+  applyBooleanPayload,
+  applyNumberPayload,
+  useToolProject,
+} from "@/hooks/useToolProject";
+import { MAIN_IMAGE_KEY, WATERMARK_IMAGE_KEY } from "@/lib/projects/types";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 const POSITIONS: { id: WatermarkPosition; label: string }[] = [
@@ -68,6 +74,50 @@ export function Watermark() {
       watermarkUrlRef.current = null;
     }
   }, []);
+
+  useToolProject({
+    toolId: "watermark",
+    canSave: !!source,
+    getPayload: () => ({
+      stripMetadata,
+      opacity,
+      scale,
+      position,
+    }),
+    getImages: () => {
+      const images = source
+        ? [{ key: MAIN_IMAGE_KEY, file: source.file }]
+        : [];
+
+      if (watermark) {
+        images.push({ key: WATERMARK_IMAGE_KEY, file: watermark.file });
+      }
+
+      return images;
+    },
+    restore: async (payload, files) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "opacity", setOpacity);
+      applyNumberPayload(payload, "scale", setScale);
+
+      if (typeof payload.position === "string") {
+        setPosition(payload.position as WatermarkPosition);
+      }
+
+      const mainFile = files.get(MAIN_IMAGE_KEY);
+      if (mainFile) {
+        await loadFile(mainFile);
+      }
+
+      const watermarkFile = files.get(WATERMARK_IMAGE_KEY);
+      if (watermarkFile) {
+        revokeWatermarkUrl();
+        const parsed = await loadImageFromFile(watermarkFile);
+        watermarkUrlRef.current = parsed.objectUrl;
+        setWatermark(parsed);
+      }
+    },
+  });
 
   const handleMainFile = useCallback(
     (file: File | null) => {

@@ -14,6 +14,7 @@ import {
   copyImageToClipboard,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useImageToolProject } from "@/hooks/useToolProject";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
   buildFaviconExport,
@@ -47,6 +48,21 @@ export function FaviconGenerator() {
     DEFAULT_FAVICON_SETTINGS,
   );
   const [exportFormat, setExportFormat] = useState<FaviconExportFormat>("ico");
+
+  useImageToolProject({
+    toolId: "favicon-generator",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ settings, exportFormat }),
+    applyPayload: (payload) => {
+      if (payload.settings && typeof payload.settings === "object") {
+        setSettings(payload.settings as FaviconSettings);
+      }
+      if (payload.exportFormat === "ico" || payload.exportFormat === "png") {
+        setExportFormat(payload.exportFormat);
+      }
+    },
+  });
 
   const formatLabels: Record<FaviconExportFormat, string> = {
     ico: t("toolUi.favicon.ico"),

@@ -14,6 +14,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useImageToolProject } from "@/hooks/useToolProject";
 
 interface MetadataField {
   label: string;
@@ -120,6 +121,18 @@ export function MetadataRemover() {
   const [cleanBlob, setCleanBlob] = useState<Blob | null>(null);
   const [cleanFormat, setCleanFormat] = useState<"png" | "jpeg" | "webp">("jpeg");
   const [metadataRemoved, setMetadataRemoved] = useState(false);
+
+  useImageToolProject({
+    toolId: "metadata-remover",
+    source,
+    loadFile,
+    getExtraPayload: () => ({}),
+    applyPayload: () => {
+      setMetadataFields([]);
+      setCleanBlob(null);
+      setMetadataRemoved(false);
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

@@ -15,6 +15,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 export function ImageInverter() {
@@ -35,6 +36,17 @@ export function ImageInverter() {
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [stripMetadata, setStripMetadata] = useState(true);
   const [inverted, setInverted] = useState(true);
+
+  useImageToolProject({
+    toolId: "image-inverter",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, inverted }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyBooleanPayload(payload, "inverted", setInverted);
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

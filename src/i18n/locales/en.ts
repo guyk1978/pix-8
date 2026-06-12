@@ -12,6 +12,7 @@ export const en = {
       enhancement: "Enhancement",
     },
     favorites: "Favorites",
+    projects: "My Projects",
     settings: "Settings",
     joinMyPdf: "Combine images into a PDF",
     zeroUploads: "Zero uploads · Zero tracking",
@@ -184,6 +185,27 @@ export const en = {
     addLabel: "Add to favorites",
     removeLabel: "Remove from favorites",
   },
+  projects: {
+    eyebrow: "Local workspace",
+    title: "My Projects",
+    description:
+      "Named saves of your tool sessions — images and settings stored only in this browser.",
+    empty: "No saved projects yet",
+    emptyHint:
+      "Open any tool, configure your work, then use Save Project to store it here.",
+    browseTools: "Browse all tools",
+    saveProject: "Save Project",
+    saveTooltip:
+      "Your project is saved locally in your browser—completely private and secure.",
+    saveModalTitle: "Save project",
+    saveModalHint:
+      "Store your current image and tool settings locally. You can reopen this session anytime from My Projects.",
+    projectName: "Project name",
+    projectNamePlaceholder: "e.g. Hero banner draft",
+    openProject: "Open",
+    deleteProject: "Delete",
+    lastUpdated: "Updated {date}",
+  },
   footer: {
     description:
       "Privacy-first image utilities. All processing runs in your browser — files never leave your device.",
@@ -229,6 +251,7 @@ export const en = {
     download: "Download",
     copyImage: "Copy Image",
     processing: "Processing…",
+    cancel: "Cancel",
     copied: "Copied!",
     copyToClipboard: "Copy to Clipboard",
     reset: "Reset",

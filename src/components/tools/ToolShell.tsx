@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { RelatedArticles } from "@/components/articles/RelatedArticles";
+import { ToolProjectProvider } from "@/components/projects/ToolProjectContext";
 import { ToolHeaderHero } from "@/components/tools/ToolHeaderHero";
 import { WorkflowPanel } from "@/components/tools/workflow/WorkflowPanel";
 import { WorkflowProvider } from "@/components/tools/workflow/WorkflowContext";
@@ -32,6 +33,8 @@ export function ToolShell({
 
   return (
     <WorkflowProvider toolId={tool.id}>
+      <Suspense fallback={null}>
+        <ToolProjectProvider toolId={tool.id}>
       <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <div className="mb-6 flex items-center gap-3">
           <Link
@@ -67,6 +70,8 @@ export function ToolShell({
           articlesHe={relatedArticlesHe}
         />
       </div>
+        </ToolProjectProvider>
+      </Suspense>
     </WorkflowProvider>
   );
 }

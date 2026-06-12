@@ -15,6 +15,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
 
 type AspectPreset = "free" | "1:1" | "16:9" | "4:3" | "9:16" | "4:5";
 
@@ -172,6 +173,33 @@ export function Cropper() {
   const [stripMetadata, setStripMetadata] = useState(true);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [displaySize, setDisplaySize] = useState({ width: 0, height: 0 });
+
+  useImageToolProject({
+    toolId: "cropper",
+    source,
+    loadFile,
+    getExtraPayload: () => ({
+      stripMetadata,
+      crop,
+      aspectPreset,
+      socialPreset,
+    }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      if (typeof payload.aspectPreset === "string") {
+        setAspectPreset(payload.aspectPreset as AspectPreset);
+      }
+      if (
+        payload.socialPreset === null ||
+        typeof payload.socialPreset === "string"
+      ) {
+        setSocialPreset(payload.socialPreset as SocialPresetId | null);
+      }
+      if (payload.crop && typeof payload.crop === "object") {
+        setCrop(payload.crop as CropRegion);
+      }
+    },
+  });
 
   const aspectRatio = getAspectRatio(aspectPreset);
 

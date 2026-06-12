@@ -21,6 +21,11 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import {
+  applyBooleanPayload,
+  applyNumberPayload,
+  useImageToolProject,
+} from "@/hooks/useToolProject";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 export function LensCorrector() {
@@ -47,6 +52,18 @@ export function LensCorrector() {
     DEFAULT_LENS_CORRECTION_SETTINGS.correction,
   );
   const debouncedCorrection = useDebouncedValue(correction, 150);
+
+  useImageToolProject({
+    toolId: "lens-corrector",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, showGrid, correction }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyBooleanPayload(payload, "showGrid", setShowGrid);
+      applyNumberPayload(payload, "correction", setCorrection);
+    },
+  });
 
   const correctionLabel = useCallback(
     (value: number): string => {

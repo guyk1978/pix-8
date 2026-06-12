@@ -4,6 +4,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { AppShell } from "@/components/layout/AppShell";
 import { FavoritesProvider } from "@/components/favorites/FavoritesContext";
+import { ProjectsProvider } from "@/components/projects/ProjectsContext";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ShareMetaSync } from "@/components/ShareMetaSync";
@@ -72,12 +73,14 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <FavoritesProvider>
+              <ProjectsProvider>
               <ToastProvider>
                 <ShareMetaSync />
                 <AppShell>{children}</AppShell>
               <CookieConsent />
               <GoogleAnalytics />
               </ToastProvider>
+              </ProjectsProvider>
             </FavoritesProvider>
           </LanguageProvider>
         </ThemeProvider>

@@ -20,6 +20,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 type GrayscalePresetKey = "neutral" | "dramatic" | "soft";
@@ -50,6 +51,19 @@ export function GrayscaleConverter() {
   const [settings, setSettings] = useState<GrayscaleSettings>(
     DEFAULT_GRAYSCALE_SETTINGS,
   );
+
+  useImageToolProject({
+    toolId: "grayscale-converter",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, settings }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      if (payload.settings && typeof payload.settings === "object") {
+        setSettings(payload.settings as GrayscaleSettings);
+      }
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

@@ -1,9 +1,18 @@
 "use client";
 
+import { Copy, Download } from "lucide-react";
 import { HelperSuccessHint } from "@/components/characters/HelperSuccessHint";
 import { ProcessingIndicator } from "@/components/characters/ProcessingIndicator";
+import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
+import { useOptionalToolProjectContext } from "@/components/projects/ToolProjectContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { WorkflowStep } from "@/components/tools/workflow/WorkflowStep";
+import {
+  toolActionButtonClassName,
+  toolActionPrimaryClassName,
+  toolActionRowClassName,
+  toolActionStackClassName,
+} from "@/components/tools/toolActionStyles";
 
 interface ToolOutputActionsProps {
   onDownload: () => void | Promise<void>;
@@ -16,12 +25,6 @@ interface ToolOutputActionsProps {
   showSuccessHint?: boolean;
 }
 
-const primaryButtonClassName =
-  "min-h-11 flex-1 rounded-sm border border-[color-mix(in_srgb,var(--glow-teal)_40%,var(--border))] bg-accent-muted px-4 py-3 font-label text-accent shadow-[0_0_14px_color-mix(in_srgb,var(--glow-teal)_18%,transparent)] transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40";
-
-const secondaryButtonClassName =
-  "min-h-11 flex-1 rounded-sm border border-border bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40";
-
 export function ToolOutputActions({
   onDownload,
   onCopy,
@@ -33,6 +36,7 @@ export function ToolOutputActions({
   showSuccessHint = true,
 }: ToolOutputActionsProps) {
   const { t } = useLanguage();
+  const projectContext = useOptionalToolProjectContext();
   const resolvedCopyLabel = copyLabel ?? t("common.copyImage");
 
   const copyIsDisabled = copyDisabled ?? disabled;
@@ -52,23 +56,34 @@ export function ToolOutputActions({
         <div className="mt-5 space-y-4">
           {isReady ? <HelperSuccessHint /> : null}
 
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => void onDownload()}
-              className={primaryButtonClassName}
-            >
-              {isProcessing ? t("common.processing") : downloadLabel}
-            </button>
-            <button
-              type="button"
-              disabled={copyIsDisabled}
-              onClick={() => void onCopy()}
-              className={secondaryButtonClassName}
-            >
-              {isProcessing ? t("common.processing") : resolvedCopyLabel}
-            </button>
+          <div className={toolActionStackClassName}>
+            {projectContext ? <ToolProjectSaveButton /> : null}
+
+            <div className={toolActionRowClassName}>
+              <button
+                type="button"
+                disabled={copyIsDisabled}
+                onClick={() => void onCopy()}
+                className={toolActionButtonClassName}
+              >
+                <Copy className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
+                <span className="truncate">
+                  {isProcessing ? t("common.processing") : resolvedCopyLabel}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={() => void onDownload()}
+                className={toolActionPrimaryClassName}
+              >
+                <Download className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
+                <span className="truncate">
+                  {isProcessing ? t("common.processing") : downloadLabel}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </WorkflowStep>

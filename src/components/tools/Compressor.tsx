@@ -17,6 +17,11 @@ import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
 import {
+  applyBooleanPayload,
+  applyNumberPayload,
+  useBulkToolProject,
+} from "@/hooks/useToolProject";
+import {
   buildDownloadFilename,
   processImage as processImageCore,
   resolveFormat,
@@ -62,6 +67,21 @@ export function Compressor() {
 
   const outputFormat = source ? getCompressionFormat(source.mimeType) : "jpeg";
   const qualityNormalized = quality / 100;
+
+  useBulkToolProject({
+    toolId: "compressor",
+    mode,
+    source,
+    bulk,
+    canSave: mode === "single" ? !!source : bulk.items.length > 0,
+    loadFile,
+    getExtraPayload: () => ({ quality, stripMetadata }),
+    applyExtraPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "quality", setQuality);
+    },
+    onModeRestore: setMode,
+  });
 
   const handleModeChange = useCallback(
     (nextMode: ProcessingMode) => {

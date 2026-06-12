@@ -16,6 +16,10 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import {
+  applyBooleanPayload,
+  useImageToolProject,
+} from "@/hooks/useToolProject";
 
 const buttonClassName =
   "min-h-10 rounded-sm border border-border bg-background px-3 py-2 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
@@ -41,6 +45,26 @@ export function RotateFlip() {
   const [flipVertical, setFlipVertical] = useState(false);
   const [stripMetadata, setStripMetadata] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
+
+  useImageToolProject({
+    toolId: "rotate-flip",
+    source,
+    loadFile,
+    getExtraPayload: () => ({
+      stripMetadata,
+      rotation,
+      flipHorizontal,
+      flipVertical,
+    }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyBooleanPayload(payload, "flipHorizontal", setFlipHorizontal);
+      applyBooleanPayload(payload, "flipVertical", setFlipVertical);
+      if (typeof payload.rotation === "number") {
+        setRotation(payload.rotation as RotationDegrees);
+      }
+    },
+  });
 
   const transform: ImageTransform = {
     rotation,

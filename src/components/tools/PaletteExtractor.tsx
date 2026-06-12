@@ -11,6 +11,8 @@ import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
+import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
 import {
   extractDominantColors,
   type PaletteColor,
@@ -40,6 +42,19 @@ export function PaletteExtractor() {
   const [stripMetadata, setStripMetadata] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
+
+  useImageToolProject({
+    toolId: "palette-extractor",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, palette }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      if (Array.isArray(payload.palette)) {
+        setPalette(payload.palette as PaletteColor[]);
+      }
+    },
+  });
 
   useEffect(() => {
     if (!source) {
@@ -249,6 +264,10 @@ export function PaletteExtractor() {
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />
         ) : null}
+
+        <div className="mt-4">
+          <ToolProjectSaveButton />
+        </div>
     </ToolWorkspace>
   );
 }

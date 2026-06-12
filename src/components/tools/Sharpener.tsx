@@ -22,6 +22,11 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import {
+  applyBooleanPayload,
+  applyNumberPayload,
+  useImageToolProject,
+} from "@/hooks/useToolProject";
 import { CHARACTER_SIZES } from "@/lib/characters";
 
 export function Sharpener() {
@@ -49,6 +54,18 @@ export function Sharpener() {
   const [intensity, setIntensity] = useState(DEFAULT_SHARPEN_SETTINGS.intensity);
   const debouncedIntensity = useDebouncedValue(intensity, 150);
   const [comparePosition, setComparePosition] = useState(50);
+
+  useImageToolProject({
+    toolId: "sharpener",
+    source,
+    loadFile,
+    getExtraPayload: () => ({ stripMetadata, intensity, comparePosition }),
+    applyPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "intensity", setIntensity);
+      applyNumberPayload(payload, "comparePosition", setComparePosition);
+    },
+  });
 
   const handleFileChange = useCallback(
     (file: File | null) => {

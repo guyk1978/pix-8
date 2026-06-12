@@ -16,6 +16,11 @@ import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
 import {
+  applyBooleanPayload,
+  applyStringPayload,
+  useBulkToolProject,
+} from "@/hooks/useToolProject";
+import {
   buildDownloadFilename,
   processImage as processImageCore,
   resolveFormat,
@@ -78,6 +83,28 @@ export function Resizer() {
 
   const aspectRatio =
     source && source.height > 0 ? source.width / source.height : 1;
+
+  useBulkToolProject({
+    toolId: "resizer",
+    mode,
+    source,
+    bulk,
+    canSave: mode === "single" ? !!source : bulk.items.length > 0,
+    loadFile,
+    getExtraPayload: () => ({
+      width,
+      height,
+      lockAspectRatio,
+      stripMetadata,
+    }),
+    applyExtraPayload: (payload) => {
+      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyBooleanPayload(payload, "lockAspectRatio", setLockAspectRatio);
+      applyStringPayload(payload, "width", setWidth);
+      applyStringPayload(payload, "height", setHeight);
+    },
+    onModeRestore: setMode,
+  });
 
   useEffect(() => {
     if (!source) {
