@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   CONSENT_ACCEPTED_EVENT,
   GA_MEASUREMENT_ID,
@@ -51,18 +51,19 @@ function grantConsentAndConfigure(): void {
   });
 }
 
-function applyConsentIfGranted(): void {
-  if (hasAnalyticsConsent()) {
-    grantConsentAndConfigure();
-  }
-}
-
 export function GoogleAnalytics() {
+  const [shouldLoad, setShouldLoad] = useState(false);
+
   useEffect(() => {
     setDefaultConsentDenied();
-    applyConsentIfGranted();
+
+    if (hasAnalyticsConsent()) {
+      setShouldLoad(true);
+      grantConsentAndConfigure();
+    }
 
     const handleConsentAccepted = () => {
+      setShouldLoad(true);
       grantConsentAndConfigure();
     };
 
@@ -72,14 +73,14 @@ export function GoogleAnalytics() {
     };
   }, []);
 
-  if (!GA_MEASUREMENT_ID) return null;
+  if (!GA_MEASUREMENT_ID || !shouldLoad) return null;
 
   return (
     <Script
       id="google-analytics-gtag"
       src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
       strategy="afterInteractive"
-      onLoad={applyConsentIfGranted}
+      onLoad={grantConsentAndConfigure}
     />
   );
 }

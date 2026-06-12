@@ -43,18 +43,16 @@ export function ArticlePageContent({
         <span className="font-label text-muted">{t("blog.article")}</span>
       </div>
 
-      <article className="border border-border bg-card p-6 sm:p-8">
-        <header className="space-y-3 border-b border-border pb-6">
-          <p className="font-label text-muted">
+      <article className="article-page border border-border bg-card p-6 sm:p-10">
+        <header className="space-y-4 border-b border-border pb-8">
+          <p className="font-label text-sm text-muted">
             {t("blog.relatedTo", { tool: toolName })}
           </p>
-          <h1 className="text-2xl font-medium tracking-tight text-foreground">
-            {article.title}
-          </h1>
-          <p className="text-sm leading-relaxed text-muted">{article.excerpt}</p>
+          <h1 className="article-page-title">{article.title}</h1>
+          <p className="article-page-lead">{article.excerpt}</p>
           <time
             dateTime={article.date}
-            className="block font-mono text-xs text-muted"
+            className="block font-mono text-sm text-muted"
           >
             {article.date}
           </time>

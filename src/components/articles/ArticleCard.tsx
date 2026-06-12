@@ -28,10 +28,10 @@ export function ArticleCard({ article }: ArticleCardProps) {
           {article.date}
         </time>
       </div>
-      <h2 className="text-base font-medium text-foreground group-hover:text-foreground">
+      <h2 className="article-card-title group-hover:text-foreground">
         {article.title}
       </h2>
-      <p className="mt-2 text-sm leading-relaxed text-muted">{article.excerpt}</p>
+      <p className="article-card-excerpt mt-3">{article.excerpt}</p>
       <span className="mt-4 inline-block font-label text-muted opacity-0 transition-opacity group-hover:opacity-100">
         {t("blog.readArticle")}
       </span>

@@ -43,7 +43,7 @@ export function RelatedArticles({
               className="group block border border-border bg-card p-4 transition-colors hover:border-muted hover:bg-card-hover"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-sm font-medium text-foreground transition-colors group-hover:text-foreground">
+                <h3 className="article-card-title text-base transition-colors group-hover:text-foreground">
                   {article.title}
                 </h3>
                 <time
@@ -53,7 +53,7 @@ export function RelatedArticles({
                   {article.date}
                 </time>
               </div>
-              <p className="mt-2 text-xs leading-relaxed text-muted">
+              <p className="article-card-excerpt mt-2 text-sm">
                 {article.excerpt}
               </p>
             </AppLink>

@@ -5,11 +5,7 @@ function renderInline(text: string) {
 
   return parts.map((part, index) => {
     if (part.startsWith("**") && part.endsWith("**")) {
-      return (
-        <strong key={index} className="font-medium text-foreground">
-          {part.slice(2, -2)}
-        </strong>
-      );
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
     }
 
     const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
@@ -18,23 +14,13 @@ function renderInline(text: string) {
       const isInternal = href.startsWith("/");
       if (isInternal) {
         return (
-          <AppLink
-            key={index}
-            href={href}
-            className="text-foreground underline decoration-border underline-offset-2 hover:decoration-muted"
-          >
+          <AppLink key={index} href={href}>
             {label}
           </AppLink>
         );
       }
       return (
-        <a
-          key={index}
-          href={href}
-          className="text-foreground underline decoration-border underline-offset-2 hover:decoration-muted"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
+        <a key={index} href={href} rel="noopener noreferrer" target="_blank">
           {label}
         </a>
       );
@@ -63,13 +49,13 @@ function renderTable(block: string) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-xs">
+      <table className="w-full border-collapse">
         <thead>
           <tr>
             {header.map((cell) => (
               <th
                 key={cell}
-                className="border border-border bg-card-hover px-3 py-2 text-start font-label text-muted"
+                className="border border-border bg-card-hover px-4 py-2.5 text-start"
               >
                 {renderInline(cell)}
               </th>
@@ -80,10 +66,7 @@ function renderTable(block: string) {
           {bodyRows.map((row) => (
             <tr key={row.join("-")}>
               {row.map((cell) => (
-                <td
-                  key={cell}
-                  className="border border-border px-3 py-2 text-muted"
-                >
+                <td key={cell} className="border border-border px-4 py-2.5">
                   {renderInline(cell)}
                 </td>
               ))}
@@ -103,33 +86,21 @@ export function ArticleBody({ content }: ArticleBodyProps) {
   const blocks = content.split("\n\n");
 
   return (
-    <div className="mt-6 space-y-4 text-sm leading-relaxed">
+    <div className="article-prose mt-8">
       {blocks.map((block, index) => {
         const trimmed = block.trim();
         if (!trimmed || trimmed === "---") return null;
 
         if (trimmed.startsWith("# ")) {
-          return (
-            <h2 key={index} className="text-xl font-medium text-foreground">
-              {trimmed.replace(/^# /, "")}
-            </h2>
-          );
+          return <h2 key={index}>{trimmed.replace(/^# /, "")}</h2>;
         }
 
         if (trimmed.startsWith("## ")) {
-          return (
-            <h2 key={index} className="pt-2 font-label text-foreground">
-              {trimmed.replace(/^## /, "")}
-            </h2>
-          );
+          return <h2 key={index}>{trimmed.replace(/^## /, "")}</h2>;
         }
 
         if (trimmed.startsWith("### ")) {
-          return (
-            <h3 key={index} className="pt-1 text-sm font-medium text-foreground">
-              {trimmed.replace(/^### /, "")}
-            </h3>
-          );
+          return <h3 key={index}>{trimmed.replace(/^### /, "")}</h3>;
         }
 
         if (trimmed.startsWith("|")) {
@@ -138,14 +109,9 @@ export function ArticleBody({ content }: ArticleBodyProps) {
 
         if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
           return (
-            <ul
-              key={index}
-              className="list-inside list-disc space-y-1 text-muted"
-            >
+            <ul key={index} className="list-disc">
               {trimmed.split("\n").map((item) => (
-                <li key={item}>
-                  {renderInline(item.replace(/^[-*] /, ""))}
-                </li>
+                <li key={item}>{renderInline(item.replace(/^[-*] /, ""))}</li>
               ))}
             </ul>
           );
@@ -153,14 +119,9 @@ export function ArticleBody({ content }: ArticleBodyProps) {
 
         if (/^\d+\.\s/.test(trimmed)) {
           return (
-            <ol
-              key={index}
-              className="list-inside list-decimal space-y-1 text-muted"
-            >
+            <ol key={index} className="list-decimal">
               {trimmed.split("\n").map((item) => (
-                <li key={item}>
-                  {renderInline(item.replace(/^\d+\.\s/, ""))}
-                </li>
+                <li key={item}>{renderInline(item.replace(/^\d+\.\s/, ""))}</li>
               ))}
             </ol>
           );
@@ -168,17 +129,13 @@ export function ArticleBody({ content }: ArticleBodyProps) {
 
         if (trimmed.startsWith("*") && trimmed.endsWith("*")) {
           return (
-            <p key={index} className="border-s-2 border-border ps-4 italic text-muted">
+            <p key={index} className="article-prose-quote">
               {renderInline(trimmed.replace(/^\*|\*$/g, ""))}
             </p>
           );
         }
 
-        return (
-          <p key={index} className="text-muted">
-            {renderInline(trimmed)}
-          </p>
-        );
+        return <p key={index}>{renderInline(trimmed)}</p>;
       })}
     </div>
   );

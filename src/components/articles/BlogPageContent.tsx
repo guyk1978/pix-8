@@ -21,10 +21,10 @@ export function BlogPageContent({
     <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
       <section className="mb-10 space-y-3">
         <p className="font-label text-muted">{t("blog.eyebrow")}</p>
-        <h1 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
+        <h1 className="article-hub-title text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           {t("blog.title")}
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted">
+        <p className="article-page-lead max-w-2xl">
           {t("blog.description")}
         </p>
       </section>

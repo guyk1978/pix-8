@@ -228,11 +228,14 @@ export const en = {
     zeroUploads: "Zero uploads · Zero tracking",
   },
   cookie: {
-    title: "Cookie preferences",
+    title: "Cookies help us improve Pix-8",
     description:
-      "We use optional analytics cookies to understand how the site is used. Image processing always stays in your browser — your files are never uploaded. Accept to enable Google Analytics; decline to continue without tracking.",
+      "This site uses cookies for Google Analytics so we can understand how our tools are used and keep improving them. To continue using our free tools, please accept our cookie policy — your images always stay on your device and are never uploaded.",
     decline: "Decline",
     accept: "Accept",
+    deniedTitle: "Almost there",
+    denied:
+      "Access denied: You must accept the cookie policy to use this site.",
   },
   toolShell: {
     backToDashboard: "← Dashboard",
