@@ -18,6 +18,13 @@
 /out/
 .open-next/
 
+# OpenNext / Cloudflare worker artifacts (static export uses only _middleware.ts)
+functions/[[path]].js
+functions/.build/
+functions/middleware/
+functions/server-functions/
+functions/cloudflare/
+
 # production
 /build
 
