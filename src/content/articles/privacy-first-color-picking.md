@@ -10,7 +10,7 @@ excerpt: "Learn why a client-side color picker protects your design assets, deli
 
 In the world of UI/UX design and front-end development, precision is everything. Whether you are matching a brand's primary color or selecting a specific shade for a component, the ability to pick colors accurately from any source is a daily necessity. However, many online color-picking tools introduce unnecessary complexity and privacy risks.
 
-With [Color Picker](/tools/color-picker), Pix-8 provides a professional, browser-native solution that keeps your workflow private and your data secure.
+With [Color Picker](/tools/dev-tools/color-picker), Pix-8 provides a professional, browser-native solution that keeps your workflow private and your data secure.
 
 ## Why Developers Need a Local Color Picker
 
@@ -30,7 +30,7 @@ Native tools should work instantly, without lag or external dependencies. Server
 
 ## The Pix-8 Approach: Color Picker
 
-[Color Picker](/tools/color-picker) is designed for speed and reliability. It operates entirely within your browser, ensuring that your image analysis remains on your device.
+[Color Picker](/tools/dev-tools/color-picker) is designed for speed and reliability. It operates entirely within your browser, ensuring that your image analysis remains on your device.
 
 ### What Happens Locally
 
@@ -59,7 +59,7 @@ Because it doesn't rely on server communication, the tool is ready to use the mo
 
 ## How to Get the Best Results
 
-Using [Color Picker](/tools/color-picker) is straightforward:
+Using [Color Picker](/tools/dev-tools/color-picker) is straightforward:
 
 1. **Upload:** Drag your reference image into the workspace or click to browse.
 2. **Sample:** Hover over the area you care about and use the zoomed preview to lock onto the right pixel.
@@ -69,7 +69,7 @@ Using [Color Picker](/tools/color-picker) is straightforward:
 
 * **Sample mid-tones:** Avoid blown highlights and crushed shadows when matching brand colors from photography.
 * **Verify contrast:** After picking an accent, check it against your background for accessibility.
-* **Pair with palette tools:** Follow up with [Palette Extractor](/tools/palette-extractor) or [CSS Palette Generator](/tools/css-palette-gen) when you need a full scheme, not a single swatch.
+* **Pair with palette tools:** Follow up with [Palette Extractor](/tools/dev-tools/palette-extractor) or [CSS Palette Generator](/tools/dev-tools/css-palette-gen) when you need a full scheme, not a single swatch.
 
 For practical sampling techniques and brand-matching advice, see our companion guide: [Precision Color Picking: Matching Your Brand Perfectly](/articles/precision-color-picking).
 
@@ -85,9 +85,9 @@ For practical sampling techniques and brand-matching advice, see our companion g
 
 ## Conclusion
 
-A great developer tool is one that is invisible—it simply works when you need it. By offering a secure, local, and ultra-fast [Color Picker](/tools/color-picker), Pix-8 allows you to stay in the zone without compromising your security or productivity.
+A great developer tool is one that is invisible—it simply works when you need it. By offering a secure, local, and ultra-fast [Color Picker](/tools/dev-tools/color-picker), Pix-8 allows you to stay in the zone without compromising your security or productivity.
 
-Enhance your toolkit: visit [Color Picker](/tools/color-picker) today and get the precision your projects deserve.
+Enhance your toolkit: visit [Color Picker](/tools/dev-tools/color-picker) today and get the precision your projects deserve.
 
 ---
-*Want hands-on sampling tips next? Read [Precision Color Picking: Matching Your Brand Perfectly](/articles/precision-color-picking), then return to the [Color Picker tool](/tools/color-picker).*
+*Want hands-on sampling tips next? Read [Precision Color Picking: Matching Your Brand Perfectly](/articles/precision-color-picking), then return to the [Color Picker tool](/tools/dev-tools/color-picker).*

@@ -21,8 +21,8 @@ export function ToolWorkspaceLayout({ children }: ToolWorkspaceLayoutProps) {
   return (
     <div
       dir="ltr"
-      className={`flex min-h-0 min-w-0 flex-1 flex-row ${
-        showSidebar ? "tool-layout-with-sidebar" : ""
+      className={`flex w-full min-w-0 flex-row items-start ${
+        showSidebar ? "tool-layout-with-sidebar" : "min-h-0 flex-1"
       }`}
     >
       {showSidebar && !sidebarOnRight ? <ToolSidebarPanel /> : null}
@@ -30,7 +30,9 @@ export function ToolWorkspaceLayout({ children }: ToolWorkspaceLayoutProps) {
       <main
         dir={dir}
         lang={language}
-        className="app-main min-h-0 min-w-0 flex-1 overflow-y-auto bg-background text-start"
+        className={`app-main min-w-0 flex-1 bg-background text-start ${
+          showSidebar ? "" : "min-h-0 overflow-y-auto"
+        }`}
       >
         {children}
       </main>

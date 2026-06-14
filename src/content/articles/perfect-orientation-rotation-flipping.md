@@ -8,7 +8,7 @@ excerpt: "From correcting accidental upside-down shots to creating creative mirr
 
 # The Art of Orientation: Why Proper Rotation and Flipping Matters
 
-Sometimes, a great photo is just... sideways. Whether it was taken in a rush on a mobile device or captured during an action shot, incorrect orientation can ruin the impact of a otherwise perfect image. Our [Rotate & Flip Tool](/tools/rotate-flip) is designed to fix these issues in seconds without losing image quality.
+Sometimes, a great photo is just... sideways. Whether it was taken in a rush on a mobile device or captured during an action shot, incorrect orientation can ruin the impact of a otherwise perfect image. Our [Rotate & Flip Tool](/tools/editor-studio/rotate-flip) is designed to fix these issues in seconds without losing image quality.
 
 ## Correcting Common Orientation Errors
 Mobile sensors don't always get the orientation metadata right. Uploading a photo that is rotated 90 or 180 degrees creates a poor experience for your audience.
@@ -25,7 +25,7 @@ Rotation isn't just about fixing mistakes—it's a powerful creative tool. Flipp
 * **Creating Symmetry:** Horizontal flips are often used in graphic design to create interesting, symmetric patterns from single elements.
 
 ## Why Use a Browser-Based Tool?
-Just like our other utilities, the [Rotate & Flip Tool](/tools/rotate-flip) processes everything locally. 
+Just like our other utilities, the [Rotate & Flip Tool](/tools/editor-studio/rotate-flip) processes everything locally. 
 1. **No Data Loss:** Unlike some mobile apps that might re-encode your image and lower the quality, our tool performs lossless rotation where possible.
 2. **Instant Preview:** See the changes in real-time as you experiment with different angles.
 3. **Privacy:** Your private photos stay on your device, not on a server.
@@ -35,4 +35,4 @@ Just like our other utilities, the [Rotate & Flip Tool](/tools/rotate-flip) proc
 * **The Mirror Test:** If a layout feels cluttered, try flipping an image to see if the visual balance improves. Sometimes, the inverse of an image works much better with the surrounding text.
 
 ---
-*Got a photo that needs a turn? Head over to our [Rotate & Flip Tool](/tools/rotate-flip) and get your composition exactly right.*
+*Got a photo that needs a turn? Head over to our [Rotate & Flip Tool](/tools/editor-studio/rotate-flip) and get your composition exactly right.*

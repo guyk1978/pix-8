@@ -14,7 +14,7 @@ In the modern digital world, websites are viewed on thousands of screen types �
 
 **SVG (Scalable Vector Graphics)** solves this differently. Instead of storing colored squares, SVG stores mathematical descriptions of shapes — lines, curves, and paths. The browser renders those instructions at any resolution, so graphics stay crisp whether they appear at 16px or 1600px.
 
-Pix-8's [Image to SVG Converter](/tools/image-to-svg) brings professional vectorization to your browser. No uploads, no accounts, and your source files never leave your device.
+Pix-8's [Image to SVG Converter](/tools/dev-tools/image-to-svg) brings professional vectorization to your browser. No uploads, no accounts, and your source files never leave your device.
 
 ## Chapter 1: What Is SVG and How Does It Work?
 
@@ -67,9 +67,9 @@ Because SVG is text-based, meaningful titles and descriptions can be embedded. S
 
 ## Chapter 4: Step-by-Step – Convert an Image with Pix-8
 
-Follow this workflow inside the [Image to SVG Converter](/tools/image-to-svg):
+Follow this workflow inside the [Image to SVG Converter](/tools/dev-tools/image-to-svg):
 
-1. **Open the tool** — Navigate to the converter from the Pix-8 dashboard or bookmark `/tools/image-to-svg`.
+1. **Open the tool** — Navigate to the converter from the Pix-8 dashboard or bookmark `/tools/dev-tools/image-to-svg`.
 2. **Upload your file** — Drag and drop a PNG or JPEG into the dashed upload zone, or click to browse. Supported sources include flat logos, icons, and simple illustrations.
 3. **Choose color mode** — Select **Color** for multi-tone artwork, **Grayscale** for single-channel tracing, or **Black & White** for high-contrast logos and line art.
 4. **Adjust trace complexity** — Use the slider to balance detail versus file size. Lower values produce simpler paths; higher values preserve fine edges.
@@ -99,7 +99,7 @@ When enabled, the tracer omits short noisy segments and rounds coordinates. This
 
 Consider **Nimbus Analytics**, a fictional B2B dashboard startup. Their marketing site shipped with 48 PNG icons at 512×512px — roughly 2.1 MB of icon assets alone, even after PNG compression.
 
-Their frontend lead ran every icon through Pix-8's [Image to SVG Converter](/tools/image-to-svg) with **Black & White** or **Color** mode (depending on the asset), **Simplify paths** enabled, and moderate complexity. The resulting SVG set totaled about **620 KB** — a **70% reduction** in icon payload.
+Their frontend lead ran every icon through Pix-8's [Image to SVG Converter](/tools/dev-tools/image-to-svg) with **Black & White** or **Color** mode (depending on the asset), **Simplify paths** enabled, and moderate complexity. The resulting SVG set totaled about **620 KB** — a **70% reduction** in icon payload.
 
 Additional wins:
 
@@ -107,7 +107,7 @@ Additional wins:
 * `currentColor` styling unified icon color with the design system
 * Lighthouse "Properly size images" warnings for oversized PNGs disappeared
 
-Nimbus then passed hero illustrations through Pix-8's [Compressor](/tools/compressor) when raster fallbacks were still required, and used the [Favicon Generator](/tools/favicon-generator) to produce crisp tab icons from the same SVG sources.
+Nimbus then passed hero illustrations through Pix-8's [Compressor](/tools/optimization/compressor) when raster fallbacks were still required, and used the [Favicon Generator](/tools/dev-tools/favicon-generator) to produce crisp tab icons from the same SVG sources.
 
 This workflow — **trace locally, optimize globally** — is repeatable for any product team shipping icon-heavy interfaces.
 
@@ -115,11 +115,11 @@ This workflow — **trace locally, optimize globally** — is repeatable for any
 
 SVG conversion is rarely the last step. Combine Pix-8 utilities for a complete asset workflow:
 
-* **[Image to SVG Converter](/tools/image-to-svg)** — raster → vector, privately in the browser
-* **[Compressor](/tools/compressor)** — shrink any remaining raster assets (hero photos, OG images)
-* **[Converter](/tools/converter)** — export WebP or AVIF fallbacks when SVG is not appropriate
-* **[Favicon Generator](/tools/favicon-generator)** — produce `.ico` and PNG favicons from logo sources
-* **[Metadata Remover](/tools/metadata-remover)** — strip EXIF before publishing raster originals
+* **[Image to SVG Converter](/tools/dev-tools/image-to-svg)** — raster → vector, privately in the browser
+* **[Compressor](/tools/optimization/compressor)** — shrink any remaining raster assets (hero photos, OG images)
+* **[Converter](/tools/optimization/converter)** — export WebP or AVIF fallbacks when SVG is not appropriate
+* **[Favicon Generator](/tools/dev-tools/favicon-generator)** — produce `.ico` and PNG favicons from logo sources
+* **[Metadata Remover](/tools/optimization/metadata-remover)** — strip EXIF before publishing raster originals
 
 For additional SVG minification after download, many teams run output through dedicated optimizers like **SVGOMG** (SVGO in the browser). Pix-8's **Simplify paths** option reduces the need for aggressive post-processing, but a second pass can still remove redundant metadata and round coordinates further.
 
@@ -174,11 +174,11 @@ Pix-8 tools run in your browser at no upload cost because there is no server pro
 
 **Which input formats are supported?**
 
-The converter accepts PNG and JPEG — the most common exports for logos, icons, and illustrations. If your file is WebP or GIF, run it through Pix-8's [Converter](/tools/converter) first, then upload the output for tracing.
+The converter accepts PNG and JPEG — the most common exports for logos, icons, and illustrations. If your file is WebP or GIF, run it through Pix-8's [Converter](/tools/optimization/converter) first, then upload the output for tracing.
 
 **Can I edit the SVG after download?**
 
 Yes. SVG is plain text — open it in a code editor, Figma, Inkscape, or Illustrator to adjust colors, remove layers, or simplify paths manually before embedding on your site.
 
 ---
-*Ready to vectorize your assets? [Open the Pix-8 Image to SVG Converter](/tools/image-to-svg) and download your first scalable graphic in seconds.*
+*Ready to vectorize your assets? [Open the Pix-8 Image to SVG Converter](/tools/dev-tools/image-to-svg) and download your first scalable graphic in seconds.*

@@ -12,7 +12,7 @@ excerpt: "Learn layout design, five collage styles, image optimization, and how 
 
 We live in a world of visual saturation. A single photo is great, but a collage is a story. Whether it is a recap of a weekend trip, a before-and-after design comparison, or a product lineup for an e-commerce launch, collages let you present multiple dimensions of a moment in one frame — without asking the viewer to swipe through a carousel.
 
-Collages are also one of the fastest ways to create shareable content. You do not need Photoshop layers, subscription software, or a design degree. You need good photos, a clear layout idea, and a tool that respects your privacy. The [Image Collage Maker](/tools/image-collage) on Pix-8 combines all three: multi-image upload, preset layouts, spacing and background controls, and instant PNG export — entirely in your browser.
+Collages are also one of the fastest ways to create shareable content. You do not need Photoshop layers, subscription software, or a design degree. You need good photos, a clear layout idea, and a tool that respects your privacy. The [Image Collage Maker](/tools/editor-studio/image-collage) on Pix-8 combines all three: multi-image upload, preset layouts, spacing and background controls, and instant PNG export — entirely in your browser.
 
 This guide covers the creative side (balance, themes, and five designer-worthy styles), the technical side (Canvas rendering and client-side privacy), and the practical side (compression, cropping, and platform-ready workflows).
 
@@ -42,7 +42,7 @@ The word comes from the French *coller* — to glue. In digital design, we glue 
 
 ### The Rule of Thirds in Multi-Image Frames
 
-Even inside a grid cell, each image has its own focal point. When Pix-8 applies **cover-fit cropping** to fill a square cell, the center of the source image is prioritized. If your subject sits off-center, pre-crop with the [Cropper](/tools/cropper) so faces, products, or logos land where you want them before building the collage.
+Even inside a grid cell, each image has its own focal point. When Pix-8 applies **cover-fit cropping** to fill a square cell, the center of the source image is prioritized. If your subject sits off-center, pre-crop with the [Cropper](/tools/editor-studio/cropper) so faces, products, or logos land where you want them before building the collage.
 
 ## Chapter 2: The Privacy Revolution — Why Pix-8 Is Different
 
@@ -65,14 +65,14 @@ Because rendering happens locally, preview updates as soon as images load and se
 
 ### Step 1: Select a Layout
 
-Open the [Image Collage Maker](/tools/image-collage) and choose a preset that matches your story:
+Open the [Image Collage Maker](/tools/editor-studio/image-collage) and choose a preset that matches your story:
 
 * **Weekend recap?** Try **2 × 2** or **3 × 3** for a photo-wall feel.
 * **Before / after?** **Horizontal** puts two images in direct comparison.
 * **Tutorial steps?** **Vertical** reads top-to-bottom like a checklist.
 * **Side-by-side products?** **2 × 1** keeps pairs aligned in two columns.
 
-For platform-specific aspect ratios (9:16 Reels, 1:1 feed posts), crop source images first with [Social Media Presets in the Cropper](/tools/cropper), then assemble the collage.
+For platform-specific aspect ratios (9:16 Reels, 1:1 feed posts), crop source images first with [Social Media Presets in the Cropper](/tools/editor-studio/cropper), then assemble the collage.
 
 ### Step 2: Upload and Arrange
 
@@ -110,7 +110,7 @@ Understanding style presets helps you move from "random grid" to "designed compo
 
 **Pix-8 settings:** **Vertical** or **2 × 2**, gap 24–40px, background `#F5E6D3`, `#E8D4F0`, or soft mint. The empty space becomes part of the design rather than dead air.
 
-**Pro tip:** Slightly desaturate source photos with [Image Filters](/tools/image-filters) (Vintage or Sepia) before collaging for a cohesive retro palette.
+**Pro tip:** Slightly desaturate source photos with [Image Filters](/tools/editor-studio/image-filters) (Vintage or Sepia) before collaging for a cohesive retro palette.
 
 ### 3. Modern Instagram Mosaic
 
@@ -118,7 +118,7 @@ Understanding style presets helps you move from "random grid" to "designed compo
 
 **Why it works:** Instagram rewards grids that feel curated. A nine-cell recap of an event reads as premium content compared to a single wide shot.
 
-**Pix-8 settings:** **3 × 3** for up to nine highlights, gap 8–12px, dark or brand-colored background. Export, then run through [Compressor](/tools/compressor) before upload so mobile viewers load instantly.
+**Pix-8 settings:** **3 × 3** for up to nine highlights, gap 8–12px, dark or brand-colored background. Export, then run through [Compressor](/tools/optimization/compressor) before upload so mobile viewers load instantly.
 
 **Pro tip:** Plan color rhythm — alternate warm and cool cells so the eye travels diagonally across the grid.
 
@@ -128,7 +128,7 @@ Understanding style presets helps you move from "random grid" to "designed compo
 
 **Why it works:** Removing color forces attention to shape, texture, and expression. Editorial collages in black and white signal seriousness — journalism, fine art, luxury fashion.
 
-**Pix-8 settings:** Convert images first with [Grayscale Converter](/tools/grayscale-converter) or [Image Filters](/tools/image-filters), then **Horizontal** or **Vertical** layout with gap 16–24px and background `#000000` or `#1A1A1A`.
+**Pix-8 settings:** Convert images first with [Grayscale Converter](/tools/enhancement/grayscale-converter) or [Image Filters](/tools/editor-studio/image-filters), then **Horizontal** or **Vertical** layout with gap 16–24px and background `#000000` or `#1A1A1A`.
 
 **Pro tip:** Pair a high-contrast portrait with a wide environmental shot in a **Horizontal** strip. The contrast between face and place creates narrative tension.
 
@@ -138,7 +138,7 @@ Understanding style presets helps you move from "random grid" to "designed compo
 
 **Why it works:** Panoramic strips mimic the way human vision scans a scene. They work beautifully as website heroes, email headers, and slide deck covers.
 
-**Pix-8 settings:** **Horizontal** layout with three to five images, gap 0–6px for seamless blends or 12px for defined panels. Use the [Cropper](/tools/cropper) to align horizons across sources before collaging.
+**Pix-8 settings:** **Horizontal** layout with three to five images, gap 0–6px for seamless blends or 12px for defined panels. Use the [Cropper](/tools/editor-studio/cropper) to align horizons across sources before collaging.
 
 **Pro tip:** Match sky color and exposure across segments. A single stop of exposure difference breaks the illusion of one continuous panorama.
 
@@ -152,11 +152,11 @@ Each cell in Pix-8 renders at a fixed internal cell size, then the full canvas e
 
 ### Recommended Pix-8 Workflow
 
-1. **Crop for intent** — [Cropper](/tools/cropper) with Social Media Presets if the collage targets a specific platform ratio.
-2. **Resize if sources are huge** — [Resizer](/tools/resizer) to cap long edge at 1200–1600px for social collages, or 2000px for print-bound exports.
-3. **Compress individuals** — [Compressor](/tools/compressor) on each image (or your heaviest files) before collage assembly. Aim for 200–500KB per JPEG cell source.
-4. **Build the collage** — [Image Collage Maker](/tools/image-collage) with your chosen layout and gap.
-5. **Compress the final PNG** — If the exported collage exceeds your platform limit, run it through Compressor or convert to WebP with the [Converter](/tools/converter).
+1. **Crop for intent** — [Cropper](/tools/editor-studio/cropper) with Social Media Presets if the collage targets a specific platform ratio.
+2. **Resize if sources are huge** — [Resizer](/tools/editor-studio/resizer) to cap long edge at 1200–1600px for social collages, or 2000px for print-bound exports.
+3. **Compress individuals** — [Compressor](/tools/optimization/compressor) on each image (or your heaviest files) before collage assembly. Aim for 200–500KB per JPEG cell source.
+4. **Build the collage** — [Image Collage Maker](/tools/editor-studio/image-collage) with your chosen layout and gap.
+5. **Compress the final PNG** — If the exported collage exceeds your platform limit, run it through Compressor or convert to WebP with the [Converter](/tools/optimization/converter).
 
 ### Format Choices
 
@@ -172,11 +172,11 @@ On phones, upload fewer images per pass if the browser feels sluggish — build 
 
 Collage making is rarely the last step:
 
-* **[Border Generator](/tools/border-generator)** — Add outer padding when the collage needs matting for print or presentation slides.
-* **[Text Overlay](/tools/text-overlay)** — Title a recap collage with dates, locations, or campaign hashtags.
-* **[Watermark](/tools/watermark)** — Protect client proofs before sending collage composites for approval.
-* **[Metadata Remover](/tools/metadata-remover)** — Strip location data from the final PNG before public sharing.
-* **[Image Filters](/tools/image-filters)** — Unify color grading across cells when sources came from different cameras.
+* **[Border Generator](/tools/enhancement/border-generator)** — Add outer padding when the collage needs matting for print or presentation slides.
+* **[Text Overlay](/tools/editor-studio/text-overlay)** — Title a recap collage with dates, locations, or campaign hashtags.
+* **[Watermark](/tools/editor-studio/watermark)** — Protect client proofs before sending collage composites for approval.
+* **[Metadata Remover](/tools/optimization/metadata-remover)** — Strip location data from the final PNG before public sharing.
+* **[Image Filters](/tools/editor-studio/image-filters)** — Unify color grading across cells when sources came from different cameras.
 
 ## Chapter 7: Frequently Asked Questions
 
@@ -190,11 +190,11 @@ You adjust gap, background color, and layout in real time before download. To sw
 
 **Why do parts of my photo get cropped off?**
 
-Cells use **cover-fit** logic: images fill each square completely, similar to CSS `object-fit: cover`. Cropped edges are intentional. For full control, pre-crop with the [Cropper](/tools/cropper).
+Cells use **cover-fit** logic: images fill each square completely, similar to CSS `object-fit: cover`. Cropped edges are intentional. For full control, pre-crop with the [Cropper](/tools/editor-studio/cropper).
 
 **Can I make a 9:16 Story or TikTok collage?**
 
-Pix-8 does not ship a dedicated 9:16 collage preset yet. Build a **Vertical** strip or **2 × 1** grid, or crop each photo to 9:16 first, then collage. For precise platform ratios, start with [Social Media Presets](/tools/cropper).
+Pix-8 does not ship a dedicated 9:16 collage preset yet. Build a **Vertical** strip or **2 × 1** grid, or crop each photo to 9:16 first, then collage. For precise platform ratios, start with [Social Media Presets](/tools/editor-studio/cropper).
 
 **Does it work on mobile?**
 
@@ -210,8 +210,8 @@ No. All collage rendering uses local Canvas processing. Your files stay on your 
 
 ## Conclusion: From Scattered Shots to One Cohesive Story
 
-Collages turn volume into narrative. With the right layout, spacing, and preparation, a handful of casual photos become a professional asset — ready for social feeds, client decks, or personal archives. Pix-8's [Image Collage Maker](/tools/image-collage) keeps that power local, fast, and free.
+Collages turn volume into narrative. With the right layout, spacing, and preparation, a handful of casual photos become a professional asset — ready for social feeds, client decks, or personal archives. Pix-8's [Image Collage Maker](/tools/editor-studio/image-collage) keeps that power local, fast, and free.
 
 ---
 
-*Ready to build your first grid? [Open the Pix-8 Image Collage Maker](/tools/image-collage), upload your photos, and download a composite in seconds — privately, in your browser.*
+*Ready to build your first grid? [Open the Pix-8 Image Collage Maker](/tools/editor-studio/image-collage), upload your photos, and download a composite in seconds — privately, in your browser.*

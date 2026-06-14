@@ -12,7 +12,7 @@ export function ToolControlSidebarContent() {
     useToolSidebar();
 
   return (
-    <div className="flex h-full min-h-0 flex-col text-start" dir={dir}>
+    <div className="flex min-h-0 flex-col text-start" dir={dir}>
       <div className="flex shrink-0 items-center justify-start px-5 py-4 text-start">
         <AppLink
           href={APP_ROUTES.home}
@@ -35,7 +35,7 @@ export function ToolControlSidebarContent() {
       ) : null}
 
       <div
-        className="tool-sidebar-controls flex flex-1 flex-col overflow-x-hidden overflow-y-auto px-5 py-3 text-start"
+        className="tool-sidebar-controls flex flex-col overflow-x-hidden px-5 py-3 text-start"
         dir={dir}
       >
         <div

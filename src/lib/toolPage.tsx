@@ -1,5 +1,4 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import type { ComponentType } from "react";
 import { Base64Encoder } from "@/components/tools/Base64Encoder";
 import { BackgroundRemover } from "@/components/tools/BackgroundRemover";
 import { Compressor } from "@/components/tools/Compressor";
@@ -27,11 +26,14 @@ import { Resizer } from "@/components/tools/Resizer";
 import { RotateFlip } from "@/components/tools/RotateFlip";
 import { Watermark } from "@/components/tools/Watermark";
 import { ToolShell } from "@/components/tools/ToolShell";
+import { ToolJsonLd } from "@/components/tools/ToolJsonLd";
 import { getArticleBundlesByToolId } from "@/lib/blog";
-import { getToolById, tools, type ToolId } from "@/lib/tools";
-import type { ComponentType } from "react";
+import { getToolRoute } from "@/lib/sidebarNav";
+import { SITE_URL } from "@/lib/siteUrl";
+import type { Tool, ToolId } from "@/lib/tools";
+import type { Metadata } from "next";
 
-const TOOL_COMPONENTS: Partial<Record<ToolId, ComponentType>> = {
+export const TOOL_COMPONENTS: Partial<Record<ToolId, ComponentType>> = {
   resizer: Resizer,
   converter: Converter,
   compressor: Compressor,
@@ -60,45 +62,36 @@ const TOOL_COMPONENTS: Partial<Record<ToolId, ComponentType>> = {
   "meme-generator": MemeGenerator,
 };
 
-interface ToolPageProps {
-  params: Promise<{ toolId: string }>;
+export function buildToolPageMetadata(tool: Tool): Metadata {
+  const canonicalPath = getToolRoute(tool.id);
+
+  return {
+    title: tool.name,
+    description: tool.description,
+    alternates: {
+      canonical: `${SITE_URL}${canonicalPath}`,
+    },
+    openGraph: {
+      title: tool.name,
+      description: tool.description,
+      url: `${SITE_URL}${canonicalPath}`,
+    },
+  };
 }
 
-export function generateStaticParams() {
-  return tools.map((tool) => ({ toolId: tool.id }));
-}
-
-export async function generateMetadata({
-  params,
-}: ToolPageProps): Promise<Metadata> {
-  const { toolId } = await params;
-  const tool = getToolById(toolId as ToolId);
-
-  if (!tool) {
-    return { title: "Tool not found" };
-  }
-
-  return { title: tool.name };
-}
-
-export default async function ToolPage({ params }: ToolPageProps) {
-  const { toolId } = await params;
-  const tool = getToolById(toolId as ToolId);
-
-  if (!tool) {
-    notFound();
-  }
-
+export function ToolPageContent({ tool }: { tool: Tool }) {
   const ToolComponent = TOOL_COMPONENTS[tool.id];
   const { en: relatedArticlesEn, he: relatedArticlesHe } =
     getArticleBundlesByToolId(tool.id);
 
   return (
-    <ToolShell
-      tool={tool}
-      relatedArticlesEn={relatedArticlesEn}
-      relatedArticlesHe={relatedArticlesHe}
-    >
+    <>
+      <ToolJsonLd tool={tool} />
+      <ToolShell
+        tool={tool}
+        relatedArticlesEn={relatedArticlesEn}
+        relatedArticlesHe={relatedArticlesHe}
+      >
       {ToolComponent ? (
         <ToolComponent />
       ) : (
@@ -110,5 +103,6 @@ export default async function ToolPage({ params }: ToolPageProps) {
         </div>
       )}
     </ToolShell>
+    </>
   );
 }

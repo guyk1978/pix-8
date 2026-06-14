@@ -12,7 +12,7 @@ excerpt: "Learn meme history, virality psychology, ten iconic formats, brand str
 
 Memes are more than funny pictures. They are the shorthand of the digital age — a shared vocabulary that crosses languages, time zones, and platforms. Brands use memes to sound human. Developers use them to explain complex ideas in one frame. Educators use them to make dry topics memorable. Politicians, creators, and your group chat all speak meme fluently.
 
-Historically, making a meme meant opening Photoshop, hunting for template PNGs on sketchy sites, or fighting with mobile apps that watermark your export. With the [Pix-8 Meme Generator](/tools/meme-generator), that friction disappears. Upload any image or pick a built-in template, type top and bottom captions, and download a classic Impact-style meme — all in your browser, with zero server uploads.
+Historically, making a meme meant opening Photoshop, hunting for template PNGs on sketchy sites, or fighting with mobile apps that watermark your export. With the [Pix-8 Meme Generator](/tools/editor-studio/meme-generator), that friction disappears. Upload any image or pick a built-in template, type top and bottom captions, and download a classic Impact-style meme — all in your browser, with zero server uploads.
 
 This guide is your full playbook: where memes came from, why they spread, ten formats that shaped internet culture, professional workflows inside Pix-8, and how businesses can use humor without losing trust.
 
@@ -67,7 +67,7 @@ Click a thumbnail in the template gallery and the tool treats it exactly like an
 
 ### Step 1: Choose Your Canvas
 
-Open the [Meme Generator](/tools/meme-generator). Either:
+Open the [Meme Generator](/tools/editor-studio/meme-generator). Either:
 
 * **Pick a template** from the gallery for maximum pattern recognition, or
 * **Upload** PNG, JPEG, or WebP from your device for a custom meme.
@@ -144,19 +144,19 @@ The Meme Generator is powerful alone — but chaining Pix-8 tools produces sharp
 
 ### Workflow A: Crop First, Caption Second
 
-Screenshots often include browser chrome, notification bars, or awkward aspect ratios. Open the [Cropper](/tools/cropper), use **Social Media Presets** (1:1 for feed, 9:16 for Stories) to frame the subject, download, then upload the crop to the Meme Generator. Tight composition makes Impact text feel intentional, not pasted on.
+Screenshots often include browser chrome, notification bars, or awkward aspect ratios. Open the [Cropper](/tools/editor-studio/cropper), use **Social Media Presets** (1:1 for feed, 9:16 for Stories) to frame the subject, download, then upload the crop to the Meme Generator. Tight composition makes Impact text feel intentional, not pasted on.
 
 ### Workflow B: Filter for Mood, Then Meme
 
-Raw photos can look flat. Run an image through [Image Filters](/tools/image-filters) — **Grayscale** for deadpan humor, **Vintage** for nostalgic jokes, **Vignette** to focus attention on the center before adding captions. Export the filtered image, then load it as your meme base. Mood consistency between image and text multiplies shares.
+Raw photos can look flat. Run an image through [Image Filters](/tools/editor-studio/image-filters) — **Grayscale** for deadpan humor, **Vintage** for nostalgic jokes, **Vignette** to focus attention on the center before adding captions. Export the filtered image, then load it as your meme base. Mood consistency between image and text multiplies shares.
 
 ### Workflow C: Compress Before Publishing
 
-Meme PNGs from high-res sources can be huge. After download, pass the file through the [Compressor](/tools/compressor) to hit platform size limits without visible quality loss on mobile feeds.
+Meme PNGs from high-res sources can be huge. After download, pass the file through the [Compressor](/tools/optimization/compressor) to hit platform size limits without visible quality loss on mobile feeds.
 
 ### Workflow D: Brand-Safe Memes
 
-For business accounts: crop to remove sensitive UI, strip metadata with [Metadata Remover](/tools/metadata-remover), add captions in Meme Generator, compress, publish. You get humor without leaking internal URLs or GPS data.
+For business accounts: crop to remove sensitive UI, strip metadata with [Metadata Remover](/tools/optimization/metadata-remover), add captions in Meme Generator, compress, publish. You get humor without leaking internal URLs or GPS data.
 
 ### Workflow E: Custom Template Pipeline
 
@@ -217,8 +217,8 @@ Yes. The responsive layout supports upload, template selection, preview, and dow
 
 ## Conclusion: Speak the Internet's Language — Privately
 
-Memes are not a distraction from serious work. They are how serious ideas travel in 2026. The Pix-8 [Meme Generator](/tools/meme-generator) gives you classic formatting, iconic templates, live preview, and client-side privacy — the same stack professionals need without Photoshop or sketchy upload sites.
+Memes are not a distraction from serious work. They are how serious ideas travel in 2026. The Pix-8 [Meme Generator](/tools/editor-studio/meme-generator) gives you classic formatting, iconic templates, live preview, and client-side privacy — the same stack professionals need without Photoshop or sketchy upload sites.
 
 ---
 
-*Ready to post? [Open the Pix-8 Meme Generator](/tools/meme-generator), pick a template or upload your image, type your caption, and download in seconds.*
+*Ready to post? [Open the Pix-8 Meme Generator](/tools/editor-studio/meme-generator), pick a template or upload your image, type your caption, and download in seconds.*

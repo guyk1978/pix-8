@@ -8,7 +8,7 @@ excerpt: "Learn how to save underexposed photos and make your images pop by mast
 
 # Mastering Light: Adjusting Brightness and Contrast
 
-Light is the soul of photography. However, even the best photographers occasionally end up with a shot that is too dark or lacks the "punch" needed to grab attention. Our [Brightness & Contrast Tool](/tools/light-adjuster) is the perfect utility to balance your exposure and add depth to your images.
+Light is the soul of photography. However, even the best photographers occasionally end up with a shot that is too dark or lacks the "punch" needed to grab attention. Our [Brightness & Contrast Tool](/tools/enhancement/light-adjuster) is the perfect utility to balance your exposure and add depth to your images.
 
 ## Understanding the Basics
 * **Brightness:** Think of this as the overall light level of your photo. Increasing it brightens the shadows and mid-tones, making a dark image more visible.
@@ -27,7 +27,7 @@ Light is the soul of photography. However, even the best photographers occasiona
 * **Work with Layers:** If you are using professional software, remember that simple adjustments like these are the foundation of any great edit.
 
 ## Why Use Our Tool?
-Our [Brightness & Contrast Tool](/tools/light-adjuster) processes your images instantly in your browser. No server uploads, no slow processing times, and no loss of quality. Just clean, professional adjustments that you control.
+Our [Brightness & Contrast Tool](/tools/enhancement/light-adjuster) processes your images instantly in your browser. No server uploads, no slow processing times, and no loss of quality. Just clean, professional adjustments that you control.
 
 ---
-*Ready to fix your exposure? Use our [Brightness & Contrast Tool](/tools/light-adjuster) to balance your lighting and make your images stand out.*
+*Ready to fix your exposure? Use our [Brightness & Contrast Tool](/tools/enhancement/light-adjuster) to balance your lighting and make your images stand out.*

@@ -8,7 +8,7 @@ excerpt: "Cropping is more than just removing edges. Learn how to use compositio
 
 # The Art of Cropping: Directing the Viewer's Eye
 
-A camera captures a wide scene, but a great photograph captures a single moment. Cropping is the silent editor of your images. By removing distractions and focusing on what truly matters, our [Cropper Tool](/tools/cropper) helps you turn "snapshots" into compelling visual narratives.
+A camera captures a wide scene, but a great photograph captures a single moment. Cropping is the silent editor of your images. By removing distractions and focusing on what truly matters, our [Cropper Tool](/tools/editor-studio/cropper) helps you turn "snapshots" into compelling visual narratives.
 
 ## Beyond Removing Distractions
 Most people think of cropping as a way to get rid of unwanted objects in the background. While that is true, effective cropping is about **composition**.
@@ -32,4 +32,4 @@ Most people think of cropping as a way to get rid of unwanted objects in the bac
 * **Think about the destination:** Before you crop, ask yourself: "Where will this image live?" A horizontal banner crop is very different from a vertical phone crop.
 
 ---
-*Ready to master your composition? Use our [Cropper Tool](/tools/cropper) to find the perfect frame for your photos.*
+*Ready to master your composition? Use our [Cropper Tool](/tools/editor-studio/cropper) to find the perfect frame for your photos.*

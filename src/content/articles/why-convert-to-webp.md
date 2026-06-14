@@ -14,7 +14,7 @@ For years, the internet ran on JPEG and PNG. They were the reliable standards, b
 Developed by Google, WebP is a modern image format that provides superior lossless and lossy compression for images on the web. Using WebP, webmasters and web developers can create smaller, richer images that make the web faster.
 
 ## The Performance Advantage
-When you use our [Converter Tool](/tools/converter) to switch your images to WebP, you aren't just changing a file extension; you are optimizing your digital footprint.
+When you use our [Converter Tool](/tools/optimization/converter) to switch your images to WebP, you aren't just changing a file extension; you are optimizing your digital footprint.
 
 ### 1. Massive File Size Reduction
 WebP images are consistently smaller than their JPEG or PNG counterparts. In many cases, you can achieve the same visual quality with **25% to 35% smaller file sizes**. On a website with dozens of images, this is the difference between a sluggish, frustrating experience and a lightning-fast site.
@@ -31,7 +31,7 @@ In 2026, user patience is at an all-time low. Research consistently shows that a
 ## How to Make the Switch
 You don't need a degree in graphic design to keep up with modern web standards:
 1. **Take your existing JPEGs/PNGs.**
-2. Upload them to our [Converter Tool](/tools/converter).
+2. Upload them to our [Converter Tool](/tools/optimization/converter).
 3. Select "WebP" as your output format.
 4. Download and replace the old files on your site.
 
@@ -39,4 +39,4 @@ You don't need a degree in graphic design to keep up with modern web standards:
 Yes. Every major modern browser (Chrome, Firefox, Edge, Safari) supports WebP. It has become the "lingua franca" of web images. There is no longer a technical reason to stick with outdated, bloated PNG files for your website content.
 
 ---
-*Ready to speed up your website? Use our [Converter](/tools/converter) to modernize your image library today.*
+*Ready to speed up your website? Use our [Converter](/tools/optimization/converter) to modernize your image library today.*

@@ -30,7 +30,7 @@ Sensitive project images should never travel across the public internet to third
 
 ## Introducing Cropper: The Pix-8 Privacy Standard
 
-[Cropper](/tools/cropper) is designed to eliminate these concerns entirely. By utilizing advanced **client-side processing**, Cropper performs all calculations directly in your browser. The original image never leaves your local machine.
+[Cropper](/tools/editor-studio/cropper) is designed to eliminate these concerns entirely. By utilizing advanced **client-side processing**, Cropper performs all calculations directly in your browser. The original image never leaves your local machine.
 
 ### What Happens Locally
 
@@ -59,7 +59,7 @@ Professional workflows depend on predictable output. Cropper preserves the color
 
 ## How to Get the Best Results
 
-Using [Cropper](/tools/cropper) is intuitive:
+Using [Cropper](/tools/editor-studio/cropper) is intuitive:
 
 1. **Load:** Drag your image into the workspace or click to browse.
 2. **Select:** Adjust the aspect ratio (Free, 1:1, 16:9, or 4:3) or drag the crop box to your desired area.
@@ -131,9 +131,9 @@ Before using any online crop tool, ask:
 
 ## Conclusion
 
-The shift toward privacy-first utilities is inevitable. As creators, we have a responsibility to use tools that respect our workflows and our data. With [Cropper](/tools/cropper), Pix-8 delivers a no-compromise experience that is faster, safer, and inherently more private.
+The shift toward privacy-first utilities is inevitable. As creators, we have a responsibility to use tools that respect our workflows and our data. With [Cropper](/tools/editor-studio/cropper), Pix-8 delivers a no-compromise experience that is faster, safer, and inherently more private.
 
-Ready to start? Open [Cropper](/tools/cropper) today and experience the difference of local-first editing.
+Ready to start? Open [Cropper](/tools/editor-studio/cropper) today and experience the difference of local-first editing.
 
 ---
-*Want composition tips next? Read [The Art of Cropping](/articles/the-art-of-cropping), then return to the [Cropper tool](/tools/cropper) to apply them.*
+*Want composition tips next? Read [The Art of Cropping](/articles/the-art-of-cropping), then return to the [Cropper tool](/tools/editor-studio/cropper) to apply them.*

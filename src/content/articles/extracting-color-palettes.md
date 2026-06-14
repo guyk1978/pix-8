@@ -8,7 +8,7 @@ excerpt: "Learn how to turn any image into a cohesive color scheme. Master the a
 
 # From Photo to Design: How to Extract Professional Color Palettes
 
-Have you ever looked at a photograph and thought, "These colors look amazing together"? Whether it's a sunset, a vintage film shot, or a minimalist interior design photo, color plays a massive role in the mood and "feel" of a project. Our [Palette Extractor Tool](/tools/palette-extractor) is here to help you capture that magic.
+Have you ever looked at a photograph and thought, "These colors look amazing together"? Whether it's a sunset, a vintage film shot, or a minimalist interior design photo, color plays a massive role in the mood and "feel" of a project. Our [Palette Extractor Tool](/tools/dev-tools/palette-extractor) is here to help you capture that magic.
 
 ## Why Extract a Color Palette?
 Consistency is the backbone of professional design. If you're building a website, a presentation, or a brand identity, using a cohesive color palette ensures that everything feels like part of a unified whole. 
@@ -37,4 +37,4 @@ Our tool uses an algorithm to identify the dominant, secondary, and accent color
 * **Accessibility Check:** After extracting your colors, always ensure there is enough contrast between your text color and your background color.
 
 ---
-*Ready to find your signature color scheme? Use our [Palette Extractor Tool](/tools/palette-extractor) and bring your design ideas to life.*
+*Ready to find your signature color scheme? Use our [Palette Extractor Tool](/tools/dev-tools/palette-extractor) and bring your design ideas to life.*

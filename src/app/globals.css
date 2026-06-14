@@ -320,6 +320,52 @@ p {
     var(--background);
 }
 
+/* ── Homepage processing steps ── */
+
+.processing-steps-section {
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2rem;
+}
+
+.processing-steps-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .processing-steps-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+.processing-step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--card);
+  padding: 1rem 1.1rem;
+}
+
+.processing-step-title {
+  margin: 0;
+  font-size: clamp(1rem, 1.4vw, 1.1875rem);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--foreground);
+}
+
+.processing-step-text {
+  margin: 0;
+  font-size: clamp(0.8125rem, 1.1vw, 0.9375rem);
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--foreground) 82%, var(--muted));
+}
+
 /* ── App header: airy tab navigation ── */
 
 .app-header {
@@ -434,17 +480,17 @@ p {
 }
 
 .tool-layout-with-sidebar {
-  min-height: 0;
-  overflow: hidden;
+  align-items: flex-start;
 }
 
 .tool-sidebar-panel {
   display: none;
+  position: sticky;
+  top: calc(4rem + 20px);
   width: 22.5rem;
   max-width: min(22.5rem, 36vw);
   flex-shrink: 0;
-  min-height: 0;
-  overflow: hidden;
+  align-self: flex-start;
   border: none;
   background: var(--sidebar);
   animation: tool-sidebar-panel-in 0.28s ease-out;

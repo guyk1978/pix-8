@@ -8,7 +8,7 @@ excerpt: "Learn the secrets of sharpening images to improve clarity, fix blurrin
 
 # Bring Details to Life: How to Sharpen Your Images
 
-Blurry photos can make even the best composition look amateurish. Whether it's a slight camera shake or a soft focus, our [Sharpening Tool](/tools/sharpener) helps you recover clarity and make your images look crisp and professional.
+Blurry photos can make even the best composition look amateurish. Whether it's a slight camera shake or a soft focus, our [Sharpening Tool](/tools/enhancement/sharpener) helps you recover clarity and make your images look crisp and professional.
 
 ## Why Sharpening Matters
 Sharpening works by increasing the contrast along the edges of objects in your photo. This creates the illusion of more detail and definition. When done correctly, it can transform a "soft" image into one that feels sharp, vibrant, and high-quality.
@@ -24,4 +24,4 @@ Sharpening works by increasing the contrast along the edges of objects in your p
 * **Privacy-First:** Your photos stay on your device, never touching a server.
 
 ---
-*Ready to see every detail? Use our [Sharpening Tool](/tools/sharpener) to add crispness to your photos.*
+*Ready to see every detail? Use our [Sharpening Tool](/tools/enhancement/sharpener) to add crispness to your photos.*

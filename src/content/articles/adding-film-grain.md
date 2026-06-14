@@ -8,7 +8,7 @@ excerpt: "Give your digital photos a classic, cinematic touch by adding subtle f
 
 # The Filmic Look: How to Add Texture with Grain
 
-In the era of ultra-sharp digital photography, sometimes the "perfect" image feels too clinical. Adding subtle grain mimics the organic texture of classic film, providing warmth, depth, and a cinematic quality that is highly sought after for social media and creative projects. Our [Grain Generator](/tools/grain-generator) allows you to dial in the perfect amount of grit for your photos.
+In the era of ultra-sharp digital photography, sometimes the "perfect" image feels too clinical. Adding subtle grain mimics the organic texture of classic film, providing warmth, depth, and a cinematic quality that is highly sought after for social media and creative projects. Our [Grain Generator](/tools/enhancement/grain-generator) allows you to dial in the perfect amount of grit for your photos.
 
 ## Why Add Grain?
 * **Cinematic Aesthetic:** Grain adds a layer of complexity to flat areas (like skies or shadows), making the image feel more "alive."
@@ -20,4 +20,4 @@ In the era of ultra-sharp digital photography, sometimes the "perfect" image fee
 * **Combine with Grayscale:** Grain looks particularly striking on black-and-white photos.
 
 ---
-*Ready for that filmic look? Use our [Grain Generator](/tools/grain-generator) to add texture and soul to your images.*
+*Ready for that filmic look? Use our [Grain Generator](/tools/enhancement/grain-generator) to add texture and soul to your images.*

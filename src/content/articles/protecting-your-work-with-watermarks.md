@@ -26,7 +26,7 @@ The biggest mistake people make is placing a massive, opaque watermark right in 
 
 
 ## How to Use Our Watermark Tool
-Our [Watermark Tool](/tools/watermark) makes this process automated and consistent:
+Our [Watermark Tool](/tools/editor-studio/watermark) makes this process automated and consistent:
 1. Upload your image.
 2. Add your text or logo.
 3. Adjust the positioning and transparency to fit your brand.
@@ -36,4 +36,4 @@ Our [Watermark Tool](/tools/watermark) makes this process automated and consiste
 Remember, the goal is to make it harder for someone to claim your work as their own. If the watermark destroys the beauty of the photo, users will be less likely to share it. Aim for a subtle integration that respects the integrity of your visual content.
 
 ---
-*Ready to secure your work? Visit our [Watermark Tool](/tools/watermark) and start branding your images.*
+*Ready to secure your work? Visit our [Watermark Tool](/tools/editor-studio/watermark) and start branding your images.*

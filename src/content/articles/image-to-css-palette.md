@@ -8,7 +8,7 @@ excerpt: "Stop guessing hex codes. Learn how to extract professional CSS color p
 
 # From Pixel to Code: Generating CSS Palettes from Images
 
-Designers and developers often face the same challenge: finding the perfect set of colors that work in harmony. You have an image with a vibe you love, but converting that into a functional color palette for a website takes time. Our [CSS Palette Generator](/tools/css-palette-gen) automates this process, turning visuals into production-ready code.
+Designers and developers often face the same challenge: finding the perfect set of colors that work in harmony. You have an image with a vibe you love, but converting that into a functional color palette for a website takes time. Our [CSS Palette Generator](/tools/dev-tools/css-palette-gen) automates this process, turning visuals into production-ready code.
 
 ## Why Developers Love This Tool
 Instead of manually sampling colors and writing out HEX values, our tool does the heavy lifting:
@@ -17,7 +17,7 @@ Instead of manually sampling colors and writing out HEX values, our tool does th
 * **Efficiency:** Save minutes of tedious work every time you start a new UI project.
 
 ## How It Works
-1. **Upload:** Drop your image into the [CSS Palette Generator](/tools/css-palette-gen).
+1. **Upload:** Drop your image into the [CSS Palette Generator](/tools/dev-tools/css-palette-gen).
 2. **Analyze:** The tool instantly maps the most prominent colors found in the image.
 3. **Copy:** Select your preferred code format (CSS, SCSS, or Tailwind) and click to copy. It's that simple.
 
@@ -29,4 +29,4 @@ Instead of manually sampling colors and writing out HEX values, our tool does th
 We believe your creative assets should stay yours. All analysis happens locally on your browser. Your images are never stored or sent to a server, keeping your project designs confidential.
 
 ---
-*Ready to style your next project with perfect colors? Use our [CSS Palette Generator](/tools/css-palette-gen) and get your design system ready in seconds.*
+*Ready to style your next project with perfect colors? Use our [CSS Palette Generator](/tools/dev-tools/css-palette-gen) and get your design system ready in seconds.*

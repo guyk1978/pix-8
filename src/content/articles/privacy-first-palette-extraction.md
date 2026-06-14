@@ -10,7 +10,7 @@ excerpt: "Learn why client-side palette extraction protects your mood boards, de
 
 Choosing the right color palette is the heartbeat of any design project. Whether you are building a brand identity or creating a user interface, extracting the perfect harmony of colors from an image is a critical step. However, traditional online palette generators often rely on server-side processing, which can compromise the privacy of your mood boards and client assets.
 
-With [Palette Extractor](/tools/palette-extractor), Pix-8 introduces a faster, more secure way to capture color data.
+With [Palette Extractor](/tools/dev-tools/palette-extractor), Pix-8 introduces a faster, more secure way to capture color data.
 
 ## The Pitfalls of Traditional Color Extractors
 
@@ -30,7 +30,7 @@ Many tools lack the precision needed to extract accurate color profiles, forcing
 
 ## The Pix-8 Solution: Palette Extractor
 
-[Palette Extractor](/tools/palette-extractor) is built differently. By utilizing client-side processing, the tool analyzes your images directly in your browser. **Your images never leave your device.**
+[Palette Extractor](/tools/dev-tools/palette-extractor) is built differently. By utilizing client-side processing, the tool analyzes your images directly in your browser. **Your images never leave your device.**
 
 ### What Happens Locally
 
@@ -59,7 +59,7 @@ Perform color analysis anywhere, even without an active internet connection. Stu
 
 ## How to Get the Best Results
 
-Using [Palette Extractor](/tools/palette-extractor) is straightforward:
+Using [Palette Extractor](/tools/dev-tools/palette-extractor) is straightforward:
 
 1. **Upload:** Drag your reference image into the workspace or click to browse.
 2. **Review:** Inspect the dominant swatches the tool surfaces from your image.
@@ -70,7 +70,7 @@ Using [Palette Extractor](/tools/palette-extractor) is straightforward:
 * **Choose intentional references:** Landscapes for calm schemes, neon street photography for energy, product shots for commercial tones.
 * **Limit your palette:** Three to five colors usually carry a design; too many swatches create visual noise.
 * **Check contrast:** After extraction, verify text/background pairs meet accessibility targets.
-* **Pair with CSS output:** Follow up with [CSS Palette Generator](/tools/css-palette-gen) when you need ready-made variables for code.
+* **Pair with CSS output:** Follow up with [CSS Palette Generator](/tools/dev-tools/css-palette-gen) when you need ready-made variables for code.
 
 For practical use cases and mood-building advice, see our companion guide: [From Photo to Design: How to Extract Professional Color Palettes](/articles/extracting-color-palettes).
 
@@ -116,9 +116,9 @@ Before using any online palette tool, ask:
 
 ## Conclusion
 
-Modern design requires tools that are as fast as the designers who use them. By prioritizing local processing and accuracy, [Palette Extractor](/tools/palette-extractor) ensures that your focus remains on creativity, not on privacy concerns or technical bottlenecks.
+Modern design requires tools that are as fast as the designers who use them. By prioritizing local processing and accuracy, [Palette Extractor](/tools/dev-tools/palette-extractor) ensures that your focus remains on creativity, not on privacy concerns or technical bottlenecks.
 
-Start creating today: open [Palette Extractor](/tools/palette-extractor) and capture your perfect color story.
+Start creating today: open [Palette Extractor](/tools/dev-tools/palette-extractor) and capture your perfect color story.
 
 ---
-*Want composition and mood tips next? Read [From Photo to Design: How to Extract Professional Color Palettes](/articles/extracting-color-palettes), then return to the [Palette Extractor tool](/tools/palette-extractor).*
+*Want composition and mood tips next? Read [From Photo to Design: How to Extract Professional Color Palettes](/articles/extracting-color-palettes), then return to the [Palette Extractor tool](/tools/dev-tools/palette-extractor).*

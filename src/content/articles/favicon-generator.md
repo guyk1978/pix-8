@@ -8,7 +8,7 @@ excerpt: "Learn why a favicon is vital for your brand identity and how to create
 
 # Branding Your Browser: The Importance of a Custom Favicon
 
-When a user opens your website, the first thing they see—even before the page finishes loading—is the small icon in the browser tab. This is your **Favicon**. It's a tiny detail, but it's a critical component of professional branding. Our [Favicon Generator Tool](/tools/favicon-generator) makes it effortless to create and export the perfect icon for your site.
+When a user opens your website, the first thing they see—even before the page finishes loading—is the small icon in the browser tab. This is your **Favicon**. It's a tiny detail, but it's a critical component of professional branding. Our [Favicon Generator Tool](/tools/dev-tools/favicon-generator) makes it effortless to create and export the perfect icon for your site.
 
 ## Why a Favicon Matters
 1. **Brand Recognition:** A favicon helps users identify your site among dozens of open browser tabs. Without one, users see a generic browser placeholder, which looks unprofessional.
@@ -23,7 +23,7 @@ Because a favicon is displayed at a very small size (typically 16x16 to 32x32 pi
 * **Keep it Clean:** Avoid fine details or small text that will disappear when shrunk down.
 
 ## How Our Generator Works
-1. **Upload:** Choose a high-resolution version of your logo in our [Favicon Generator Tool](/tools/favicon-generator).
+1. **Upload:** Choose a high-resolution version of your logo in our [Favicon Generator Tool](/tools/dev-tools/favicon-generator).
 2. **Crop & Preview:** Use our built-in previewer to ensure it looks sharp at a small scale.
 3. **Export:** Download your favicon in the standard `.ico` or `.png` format, ready to be dropped into your website's root folder.
 
@@ -31,4 +31,4 @@ Because a favicon is displayed at a very small size (typically 16x16 to 32x32 pi
 You don't need to sign up for an account or upload your logo to a third-party server to generate an icon. Our tool processes the conversion locally, meaning your brand assets stay on your computer.
 
 ---
-*Give your website the professional edge it deserves. Use our [Favicon Generator Tool](/tools/favicon-generator) to create your perfect favicon today.*
+*Give your website the professional edge it deserves. Use our [Favicon Generator Tool](/tools/dev-tools/favicon-generator) to create your perfect favicon today.*

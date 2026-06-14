@@ -10,7 +10,7 @@ excerpt: "Learn why client-side background removal protects your assets, deliver
 
 In the fast-paced world of digital design, the ability to isolate subjects is a fundamental skill. From e-commerce product shots to creative marketing assets, professional-grade masking is essential. However, the industry standard has long been dominated by cloud-based services that require you to upload your sensitive images to a remote server.
 
-Today, we are setting a new benchmark with [Background Remover](/tools/bg-remover)—a powerful, client-side utility that brings professional masking tools directly to your browser without ever compromising your privacy.
+Today, we are setting a new benchmark with [Background Remover](/tools/optimization/bg-remover)—a powerful, client-side utility that brings professional masking tools directly to your browser without ever compromising your privacy.
 
 ## The Problem with Cloud-Based Masking
 
@@ -30,7 +30,7 @@ When you deal with client-sensitive data, you cannot afford to leave footprints 
 
 ## Introducing Background Remover: The Pix-8 Privacy Standard
 
-[Background Remover](/tools/bg-remover) eliminates these bottlenecks entirely. By using high-performance, client-side algorithms, the tool processes your images locally in your browser. **Your images never leave your device.**
+[Background Remover](/tools/optimization/bg-remover) eliminates these bottlenecks entirely. By using high-performance, client-side algorithms, the tool processes your images locally in your browser. **Your images never leave your device.**
 
 ### What Happens Locally
 
@@ -59,7 +59,7 @@ Perfect for working on the go, even without a stable internet connection. Load t
 
 ## Optimizing Your Workflow
 
-To get the best results from [Background Remover](/tools/bg-remover):
+To get the best results from [Background Remover](/tools/optimization/bg-remover):
 
 1. **Upload:** Drag and drop your image into the workspace or click to browse.
 2. **Process:** The local engine identifies the subject and masks it instantly.
@@ -123,9 +123,9 @@ Before using any online background remover, ask:
 
 ## Conclusion
 
-True professional autonomy means using tools that respect your workflow and security. By moving background removal from the cloud to the client, [Background Remover](/tools/bg-remover) empowers designers to work faster, safer, and more efficiently.
+True professional autonomy means using tools that respect your workflow and security. By moving background removal from the cloud to the client, [Background Remover](/tools/optimization/bg-remover) empowers designers to work faster, safer, and more efficiently.
 
-Experience the future of masking: open [Background Remover](/tools/bg-remover) today and elevate your design process.
+Experience the future of masking: open [Background Remover](/tools/optimization/bg-remover) today and elevate your design process.
 
 ---
-*New to AI segmentation? Read [The Magic of AI: Removing Backgrounds in Seconds](/articles/ai-background-removal), then return to the [Background Remover tool](/tools/bg-remover) to try it locally.*
+*New to AI segmentation? Read [The Magic of AI: Removing Backgrounds in Seconds](/articles/ai-background-removal), then return to the [Background Remover tool](/tools/optimization/bg-remover) to try it locally.*

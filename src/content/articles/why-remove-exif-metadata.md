@@ -8,7 +8,7 @@ excerpt: "Every photo you take contains hidden information. Learn what EXIF meta
 
 # The Invisible Data Trail: Why You Should Strip Metadata from Your Photos
 
-When you share a photo online, you're sharing more than just the image—you're sharing a digital footprint. Modern cameras and smartphones embed "EXIF metadata" into every file. Our [Metadata Remover Tool](/tools/metadata-remover) allows you to strip this data instantly, keeping your private information private.
+When you share a photo online, you're sharing more than just the image—you're sharing a digital footprint. Modern cameras and smartphones embed "EXIF metadata" into every file. Our [Metadata Remover Tool](/tools/optimization/metadata-remover) allows you to strip this data instantly, keeping your private information private.
 
 ## What is EXIF Metadata?
 EXIF (Exchangeable Image File Format) is standard data attached to your images. It often includes:
@@ -23,7 +23,7 @@ While this data is useful for organizing your own photo library, it becomes a se
 3. **Data Hygiene:** Keeping your files "lean" by removing unnecessary metadata can also reduce file size slightly.
 
 ## How Our Tool Protects You
-Our [Metadata Remover Tool](/tools/metadata-remover) acts as a digital "eraser."
+Our [Metadata Remover Tool](/tools/optimization/metadata-remover) acts as a digital "eraser."
 1. **Local-Only Processing:** Just like all our tools, the metadata is stripped locally in your browser. Your file is never sent to a server.
 2. **Instant Cleanup:** Upload your file, and we clear the EXIF tags in milliseconds.
 3. **Download Safely:** You get a clean, scrubbed image ready for public sharing.
@@ -34,4 +34,4 @@ Our [Metadata Remover Tool](/tools/metadata-remover) acts as a digital "eraser."
 * **Sharing with Strangers:** If you're sending photos to someone you don't know well, strip the metadata first.
 
 ---
-*Take control of your data trail. Visit our [Metadata Remover Tool](/tools/metadata-remover) and share your photos with confidence.*
+*Take control of your data trail. Visit our [Metadata Remover Tool](/tools/optimization/metadata-remover) and share your photos with confidence.*

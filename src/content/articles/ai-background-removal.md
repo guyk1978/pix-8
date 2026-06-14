@@ -8,7 +8,7 @@ excerpt: "How artificial intelligence is revolutionizing photo editing. Learn ho
 
 # The Magic of AI: Removing Backgrounds in Seconds
 
-Gone are the days when removing a background required hours of meticulous work with the "pen tool" in complex software. Today, artificial intelligence can identify subjects and strip away backgrounds in the blink of an eye. Our [Background Remover Tool](/tools/bg-remover) brings this power directly to your browser.
+Gone are the days when removing a background required hours of meticulous work with the "pen tool" in complex software. Today, artificial intelligence can identify subjects and strip away backgrounds in the blink of an eye. Our [Background Remover Tool](/tools/optimization/bg-remover) brings this power directly to your browser.
 
 ## How Does AI Background Removal Work?
 Modern AI models for image segmentation are trained on millions of images. These models learn to distinguish between the "foreground" (the primary subject) and the "background" by analyzing color patterns, edges, depth of field, and textures.
@@ -36,4 +36,4 @@ When you upload your photo to our tool, the AI performs these steps:
 * **Complexity:** While the AI is incredibly smart, very busy backgrounds with similar colors to the subject might require a little extra focus from you.
 
 ---
-*Ready to make your subject pop? Try our [Background Remover Tool](/tools/bg-remover) and see the magic happen for yourself.*
+*Ready to make your subject pop? Try our [Background Remover Tool](/tools/optimization/bg-remover) and see the magic happen for yourself.*

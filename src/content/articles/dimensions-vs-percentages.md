@@ -8,7 +8,7 @@ excerpt: "Should you resize by specific pixel dimensions or by percentages? Lear
 
 # Pixels or Percentages? The Complete Guide to Resizing Images
 
-When you open our [Resizer Tool](/tools/resizer), you are greeted with two main options: resizing by specific dimensions (pixels) or by percentages. While both achieve the goal of making your image smaller or larger, they serve entirely different purposes in a professional workflow.
+When you open our [Resizer Tool](/tools/editor-studio/resizer), you are greeted with two main options: resizing by specific dimensions (pixels) or by percentages. While both achieve the goal of making your image smaller or larger, they serve entirely different purposes in a professional workflow.
 
 ## The Case for Specific Dimensions (Pixels)
 Resizing by pixels is the standard for web development and e-commerce. If your website has a specific layout requirement—for example, a product card that needs to be exactly 400x400 pixels—you must use the dimension-based approach.
@@ -39,4 +39,4 @@ A good rule of thumb is to ask yourself: **"Is the output destination fixed?"**
 * **Don't Upscale Unnecessarily:** Resizing an image to be larger than its original size will result in pixelation and loss of quality. Always aim to resize *downward*.
 
 ---
-*Ready to optimize your images? Use our [Resizer](/tools/resizer) to experiment with both methods and see which fits your workflow best.*
+*Ready to optimize your images? Use our [Resizer](/tools/editor-studio/resizer) to experiment with both methods and see which fits your workflow best.*

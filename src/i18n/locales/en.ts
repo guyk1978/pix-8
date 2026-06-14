@@ -67,6 +67,29 @@ export const en = {
     utility: "utility",
     utilities: "utilities",
     browseCategories: "Browse by category",
+    installApp: "Download as app",
+    installAppUnavailable:
+      "Use your browser menu to install this site as an app (Add to Home Screen / Install).",
+    processingSteps: {
+      title: "Pix-8 Processing Steps",
+      upload: {
+        label: "Step 1 - Upload image",
+        description:
+          "Click the button to choose a file from your computer. JPG, PNG, and WEBP files are supported.",
+      },
+      process: {
+        label: "Step 2 - Process",
+        description:
+          "Fast image processing happens here. The software processes your data directly in your browser.",
+      },
+      download: {
+        label: "Step 3 - Download image",
+        description:
+          "Processing is complete. Click the button to save the processed image to your computer.",
+        filename: "Generic_image-12.jpg",
+        size: "Size: 35.75 KB",
+      },
+    },
   },
   toolCategoryPages: {
     eyebrow: "Tool category",

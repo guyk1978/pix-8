@@ -12,7 +12,7 @@ excerpt: "Learn aspect ratios for Instagram, TikTok, and YouTube, how precision 
 
 In today's visual-first digital landscape, your image is your brand's calling card. Whether you are a small business owner managing an Instagram feed, a social media manager juggling multiple clients, or a content creator producing daily TikToks, you have likely faced the frustration of an automatic crop gone wrong. Heads disappear from the frame, critical text is cut off at the edges, and professional content suddenly looks amateur.
 
-The secret to viral, high-quality content is not always a better camera — it is the **aspect ratio**. This guide explains why precision cropping is the difference between being scrolled past and stopping the thumb. It also shows how Pix-8's [Cropper](/tools/cropper) with **Social Media Presets** turns a technical task into an accessible content-creation workflow.
+The secret to viral, high-quality content is not always a better camera — it is the **aspect ratio**. This guide explains why precision cropping is the difference between being scrolled past and stopping the thumb. It also shows how Pix-8's [Cropper](/tools/editor-studio/cropper) with **Social Media Presets** turns a technical task into an accessible content-creation workflow.
 
 ## Chapter 1: Understanding Aspect Ratios
 
@@ -45,7 +45,7 @@ Agencies and creators who maintain consistent framing across posts build recogni
 
 ## Chapter 3: Pix-8 Social Media Presets
 
-The [Cropper](/tools/cropper) includes a dedicated **Social Media Presets** panel:
+The [Cropper](/tools/editor-studio/cropper) includes a dedicated **Social Media Presets** panel:
 
 | Preset | Ratio | Best for |
 | --- | --- | --- |
@@ -60,7 +60,7 @@ General aspect controls (**Free**, **1:1**, **16:9**, **4:3**) remain available 
 
 ## Chapter 4: Step-by-Step – Crop for Instagram or TikTok
 
-1. Open the [Cropper](/tools/cropper) on Pix-8.
+1. Open the [Cropper](/tools/editor-studio/cropper) on Pix-8.
 2. Drag and drop your PNG, JPEG, or WebP into the upload zone.
 3. Choose a **Social Media Preset** that matches your destination platform.
 4. Move and resize the crop overlay until your subject sits in the frame.
@@ -128,11 +128,11 @@ Before you hit publish, verify five points: Is the main subject inside the frame
 
 Social cropping is one step in a larger asset pipeline:
 
-* **[Compressor](/tools/compressor)** — shrink file size after crop for faster uploads on mobile networks.
-* **[Converter](/tools/converter)** — export WebP for web or JPEG for platforms that prefer it.
-* **[Border Generator](/tools/border-generator)** — add padding when your source is too small for 16:9 without stretching.
-* **[Light Adjuster](/tools/light-adjuster)** — fix exposure before crop if shadows hide product detail.
-* **[Metadata Remover](/tools/metadata-remover)** — strip GPS and camera EXIF before publishing client photos.
+* **[Compressor](/tools/optimization/compressor)** — shrink file size after crop for faster uploads on mobile networks.
+* **[Converter](/tools/optimization/converter)** — export WebP for web or JPEG for platforms that prefer it.
+* **[Border Generator](/tools/enhancement/border-generator)** — add padding when your source is too small for 16:9 without stretching.
+* **[Light Adjuster](/tools/enhancement/light-adjuster)** — fix exposure before crop if shadows hide product detail.
+* **[Metadata Remover](/tools/optimization/metadata-remover)** — strip GPS and camera EXIF before publishing client photos.
 
 For images too small to fill a wide frame, avoid upscaling. Use borders or blurred backgrounds instead of stretching — stretching causes pixelation.
 
@@ -150,7 +150,7 @@ Cropping removes pixels outside the frame — that is unavoidable. Pix-8 exports
 
 **What if my image is too small for a 16:9 crop?**
 
-Stretching a small image to fill 16:9 will blur it. Use the [Border Generator](/tools/border-generator) to add colored margins, or choose a tighter ratio like 4:5 or 1:1 that fits your source dimensions.
+Stretching a small image to fill 16:9 will blur it. Use the [Border Generator](/tools/enhancement/border-generator) to add colored margins, or choose a tighter ratio like 4:5 or 1:1 that fits your source dimensions.
 
 **Can I crop multiple images at once?**
 
@@ -165,4 +165,4 @@ Yes. Select **Landscape (16:9)** and reposition the crop window over the best ho
 If you export the exact recommended ratio, platforms generally honor your frame. Uploading mismatched ratios triggers automatic cropping — the problem this tool prevents.
 
 ---
-*Ready to crop like a pro? [Open the Pix-8 Cropper](/tools/cropper), pick a Social Media Preset, and publish content that fits every platform.*
+*Ready to crop like a pro? [Open the Pix-8 Cropper](/tools/editor-studio/cropper), pick a Social Media Preset, and publish content that fits every platform.*

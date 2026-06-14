@@ -68,6 +68,29 @@ export const he: TranslationDictionary = {
     utility: "כלי",
     utilities: "כלים",
     browseCategories: "עיון לפי קטגוריה",
+    installApp: "הורד כאפליקציה",
+    installAppUnavailable:
+      "השתמש בתפריט הדפדפן כדי להתקין את האתר כאפליקציה (הוסף למסך הבית / התקנה).",
+    processingSteps: {
+      title: "Pix-8 Processing Steps",
+      upload: {
+        label: "שלב 1 - תעלה תמונה",
+        description:
+          "לחץ על הכפתור כדי לבחור קובץ מהמחשב שלך. ניתן להעלות קבצי JPG, PNG, WEBP.",
+      },
+      process: {
+        label: "שלב 2 - עיבוד",
+        description:
+          "כאן מתבצע העיבוד המהיר של התמונה. התוכנה מעבדת את הנתונים ישירות בדפדפן שלך.",
+      },
+      download: {
+        label: "שלב 3 - הורד את התמונה",
+        description:
+          "העיבוד הסתיים. לחץ על הכפתור כדי לשמור את התמונה המעובדת במחשב שלך.",
+        filename: "Generic_image-12.jpg",
+        size: "Size: 35.75 KB",
+      },
+    },
   },
   toolCategoryPages: {
     eyebrow: "קטגוריית כלים",

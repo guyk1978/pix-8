@@ -44,7 +44,7 @@ When an image leaves your computer, you lose control over it. Encryption protect
 
 ### What "Never Leaves Your Device" Actually Means
 
-In pix-8's [Resizer Tool](/tools/resizer), the workflow is:
+In pix-8's [Resizer Tool](/tools/editor-studio/resizer), the workflow is:
 
 1. You select a file from disk.
 2. The browser reads it into memory via the File API.
@@ -137,9 +137,9 @@ Before trusting any image tool, ask:
 
 ## What's Next?
 
-If you are ready to process images without compromising your data, start with the [Resizer Tool](/tools/resizer). Upload a photo, set your dimensions, enable Privacy Mode, and download—your files never touch our infrastructure.
+If you are ready to process images without compromising your data, start with the [Resizer Tool](/tools/editor-studio/resizer). Upload a photo, set your dimensions, enable Privacy Mode, and download—your files never touch our infrastructure.
 
 For a shorter practical walkthrough, see also: [How to resize images without uploading them](/articles/resize-without-uploading).
 
 ---
-*Ready to reclaim your privacy? Head back to the [Resizer](/tools/resizer) and get started.*
+*Ready to reclaim your privacy? Head back to the [Resizer](/tools/editor-studio/resizer) and get started.*

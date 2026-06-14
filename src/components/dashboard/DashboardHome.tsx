@@ -3,6 +3,7 @@
 import { AppLink } from "@/components/layout/AppLink";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { DashboardTools } from "@/components/dashboard/DashboardTools";
+import { ProcessingStepsShowcase } from "@/components/dashboard/ProcessingStepsShowcase";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolCategoryHref } from "@/lib/toolCategoryPages";
 import { SIDEBAR_NAV_CATEGORIES } from "@/lib/sidebarNav";
@@ -15,6 +16,8 @@ export function DashboardHome() {
       <section className="brand-logo-hero-section">
         <BrandLogo size="hero" showTagline showGlow />
       </section>
+
+      <ProcessingStepsShowcase />
 
       <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <section className="mb-8">

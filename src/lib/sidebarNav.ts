@@ -69,6 +69,32 @@ export function getSidebarCategoryTools(
     .filter((tool): tool is Tool => !!tool);
 }
 
+export function getToolCategoryId(toolId: ToolId): SidebarNavCategoryId {
+  const category = SIDEBAR_NAV_CATEGORIES.find((entry) =>
+    entry.toolIds.includes(toolId),
+  );
+
+  if (!category) {
+    throw new Error(`No sidebar category assigned to tool: ${toolId}`);
+  }
+
+  return category.id;
+}
+
+export function getToolRoute(toolId: ToolId): string {
+  return `/tools/${getToolCategoryId(toolId)}/${toolId}`;
+}
+
+export function getLegacyToolRoute(toolId: ToolId): string {
+  return `/tools/${toolId}`;
+}
+
+export function isSidebarNavCategoryId(
+  value: string,
+): value is SidebarNavCategoryId {
+  return SIDEBAR_CATEGORY_IDS.includes(value as SidebarNavCategoryId);
+}
+
 export function findSidebarCategoryForPath(
   pathname: string,
 ): SidebarNavCategoryId | null {
@@ -76,10 +102,19 @@ export function findSidebarCategoryForPath(
   const categoryPrefix = "/tools/category/";
   if (normalized.startsWith(categoryPrefix)) {
     const categoryId = normalized.slice(categoryPrefix.length);
-    if (
-      SIDEBAR_CATEGORY_IDS.includes(categoryId as SidebarNavCategoryId)
-    ) {
-      return categoryId as SidebarNavCategoryId;
+    if (isSidebarNavCategoryId(categoryId)) {
+      return categoryId;
+    }
+  }
+
+  const nestedToolMatch = normalized.match(/^\/tools\/([^/]+)\/([^/]+)$/);
+  if (nestedToolMatch) {
+    const [, categoryId, toolId] = nestedToolMatch;
+    if (isSidebarNavCategoryId(categoryId)) {
+      const tool = getToolById(toolId as ToolId);
+      if (tool?.href === normalized) {
+        return categoryId;
+      }
     }
   }
 

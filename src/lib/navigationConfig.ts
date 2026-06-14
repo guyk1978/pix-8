@@ -1,11 +1,14 @@
 import { normalizePathname } from "@/lib/routes";
 import {
   getAppsMenuCategories,
+  getToolRoute,
   getUncategorizedTools,
   SIDEBAR_NAV_CATEGORIES,
   type SidebarNavCategoryId,
 } from "@/lib/sidebarNav";
-import { getToolById, tools, type Tool, type ToolId } from "@/lib/tools";
+import { tools, type Tool, type ToolId } from "@/lib/tools";
+
+export { getToolRoute } from "@/lib/sidebarNav";
 
 /** Primary app pages (non-tool routes). */
 export const APP_ROUTES = {
@@ -22,11 +25,6 @@ export interface PrimaryNavItem {
   href: string;
   labelKey: string;
   isActive: (pathname: string) => boolean;
-}
-
-export function getToolRoute(toolId: ToolId): string {
-  const tool = getToolById(toolId);
-  return tool?.href ?? `/tools/${toolId}`;
 }
 
 export function getCategoryRoute(categoryId: SidebarNavCategoryId): string {
@@ -114,12 +112,9 @@ export function validateNavigationConfig(): string[] {
   }
 
   for (const tool of tools) {
-    const expected = `/tools/${tool.id}`;
+    const expected = getToolRoute(tool.id);
     if (tool.href !== expected) {
       issues.push(`Tool ${tool.id} href mismatch: ${tool.href} !== ${expected}`);
-    }
-    if (!getToolById(tool.id)) {
-      issues.push(`Tool ${tool.id} missing from tools registry`);
     }
   }
 

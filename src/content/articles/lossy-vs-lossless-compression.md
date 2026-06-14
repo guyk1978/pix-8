@@ -8,7 +8,7 @@ excerpt: "Understanding the balance between file size and image quality. Learn w
 
 # Lossy vs. Lossless Compression: How to Shrink Images Without Ruining Quality
 
-When you use our [Compressor Tool](/tools/compressor), you are often faced with a choice: how much should I compress this image? Understanding the technology behind compression is the key to balancing a lightning-fast website with professional-grade visuals.
+When you use our [Compressor Tool](/tools/optimization/compressor), you are often faced with a choice: how much should I compress this image? Understanding the technology behind compression is the key to balancing a lightning-fast website with professional-grade visuals.
 
 ## What is Compression?
 At its core, compression is the process of removing redundant data from a file without significantly changing the visual representation. Think of it like packing a suitcase: if you fold your clothes efficiently, you can fit more in the same space without damaging the clothes.
@@ -40,4 +40,4 @@ The decision depends on the goal of your image:
 * **Always keep a master copy:** Because lossy compression is permanent, never compress your *only* copy of a photo. Keep the original stored safely, and compress a *copy* for the web.
 
 ---
-*Ready to optimize your assets? Head over to our [Compressor](/tools/compressor) and see how much weight you can shed from your images today.*
+*Ready to optimize your assets? Head over to our [Compressor](/tools/optimization/compressor) and see how much weight you can shed from your images today.*
