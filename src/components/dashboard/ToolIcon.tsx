@@ -11,6 +11,7 @@ import {
   Frame,
   Laugh,
   LayoutGrid,
+  Layers,
   Globe,
   Maximize,
   Maximize2,
@@ -25,6 +26,7 @@ import {
   Stamp,
   SunMedium,
   Type,
+  ZoomIn,
   Zap,
   type LucideIcon,
 } from "lucide-react";
@@ -42,6 +44,7 @@ const TOOL_ICONS: Record<ToolId, LucideIcon> = {
   "metadata-remover": ShieldOff,
   "color-picker": Pipette,
   "text-overlay": Type,
+  "image-overlay": Layers,
   "border-generator": Frame,
   "grayscale-converter": Blend,
   "favicon-generator": Globe,
@@ -57,6 +60,7 @@ const TOOL_ICONS: Record<ToolId, LucideIcon> = {
   "image-to-svg": Spline,
   "image-collage": LayoutGrid,
   "meme-generator": Laugh,
+  magnifier: ZoomIn,
 };
 
 interface ToolIconProps {

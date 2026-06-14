@@ -1,130 +1,211 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useToolProjectContext,
-  type ToolProjectHandlers,
-  type ToolProjectSnapshot,
+  type ToolProjectRestoreMeta,
 } from "@/components/projects/ToolProjectContext";
 import { MAIN_IMAGE_KEY } from "@/lib/projects/types";
+import {
+  buildToolProjectPayload,
+  parseToolProjectPayload,
+} from "@/lib/projects/toolState";
 import type { ToolId } from "@/lib/tools";
-
-interface UseToolProjectOptions {
-  toolId: ToolId;
-  canSave: boolean;
-  getPayload: () => Record<string, unknown>;
-  getImages: () => ProjectImageInputLike[];
-  restore: (
-    payload: Record<string, unknown>,
-    files: Map<string, File>,
-  ) => void | Promise<void>;
-}
 
 interface ProjectImageInputLike {
   key: string;
   file: File;
 }
 
+export interface UseToolProjectResult {
+  isResultMarked: boolean;
+  setIsResultMarked: (value: boolean) => void;
+}
+
+interface UseToolProjectOptions {
+  toolId: ToolId;
+  canSave: boolean;
+  getToolState: () => Record<string, unknown>;
+  getImages: () => ProjectImageInputLike[];
+  restore: (
+    settings: Record<string, unknown>,
+    files: Map<string, File>,
+    meta: ToolProjectRestoreMeta,
+  ) => void | Promise<void>;
+  isResultMarked?: boolean;
+  onIsResultMarkedChange?: (value: boolean) => void;
+  resultMarkDisabled?: boolean;
+  resultMarkHint?: string | null;
+  resultMarkCheckboxId?: string;
+}
+
 export function useToolProject({
   canSave,
-  getPayload,
+  getToolState,
   getImages,
   restore,
-}: UseToolProjectOptions): void {
-  const { registerHandlers } = useToolProjectContext();
+  isResultMarked: controlledIsResultMarked,
+  onIsResultMarkedChange,
+  resultMarkDisabled,
+  resultMarkHint,
+  resultMarkCheckboxId,
+}: UseToolProjectOptions): UseToolProjectResult {
+  const { registerHandlers, registerResultMark } = useToolProjectContext();
 
-  const getPayloadRef = useRef(getPayload);
+  const [internalIsResultMarked, setInternalIsResultMarked] = useState(false);
+  const isResultMarked = controlledIsResultMarked ?? internalIsResultMarked;
+  const setIsResultMarked = onIsResultMarkedChange ?? setInternalIsResultMarked;
+
+  const getToolStateRef = useRef(getToolState);
   const getImagesRef = useRef(getImages);
   const restoreRef = useRef(restore);
+  const setIsResultMarkedRef = useRef(setIsResultMarked);
 
-  getPayloadRef.current = getPayload;
+  getToolStateRef.current = getToolState;
   getImagesRef.current = getImages;
   restoreRef.current = restore;
+  setIsResultMarkedRef.current = setIsResultMarked;
 
   useEffect(() => {
-    const handlers: ToolProjectHandlers = {
+    const handlers = {
       canSave,
-      getSnapshot: (): ToolProjectSnapshot | null => {
+      isResultMarked,
+      getSnapshot: () => {
         if (!canSave) return null;
 
         const images = getImagesRef.current();
         if (images.length === 0) return null;
 
         return {
-          payload: getPayloadRef.current(),
+          payload: buildToolProjectPayload(
+            isResultMarked,
+            getToolStateRef.current(),
+          ),
           images: images.map((image) => ({
             key: image.key,
             file: image.file,
           })),
         };
       },
-      restore: (payload, files) => restoreRef.current(payload, files),
+      restore: async (payload: Record<string, unknown>, files: Map<string, File>) => {
+        const parsed = parseToolProjectPayload(payload);
+        setIsResultMarkedRef.current(parsed.isResultMarked);
+        await restoreRef.current(parsed.settings, files, {
+          isResultMarked: parsed.isResultMarked,
+        });
+      },
     };
 
     registerHandlers(handlers);
 
     return () => registerHandlers(null);
-  }, [canSave, registerHandlers]);
+  }, [canSave, isResultMarked, registerHandlers]);
+
+  useEffect(() => {
+    registerResultMark({
+      isResultMarked,
+      onChange: setIsResultMarked,
+      disabled: resultMarkDisabled ?? !canSave,
+      hint: resultMarkHint,
+      checkboxId: resultMarkCheckboxId,
+    });
+
+    return () => registerResultMark(null);
+  }, [
+    canSave,
+    isResultMarked,
+    registerResultMark,
+    resultMarkCheckboxId,
+    resultMarkDisabled,
+    resultMarkHint,
+    setIsResultMarked,
+  ]);
+
+  return { isResultMarked, setIsResultMarked };
 }
 
 interface UseImageToolProjectOptions {
   toolId: ToolId;
   source: { file: File } | null;
   loadFile: (file: File) => void | Promise<void>;
+  getToolState?: () => Record<string, unknown>;
+  applyToolState?: (settings: Record<string, unknown>) => void;
+  /** @deprecated Use getToolState */
   getExtraPayload?: () => Record<string, unknown>;
-  applyPayload?: (payload: Record<string, unknown>) => void;
+  /** @deprecated Use applyToolState */
+  applyPayload?: (settings: Record<string, unknown>) => void;
+  isResultMarked?: boolean;
+  onIsResultMarkedChange?: (value: boolean) => void;
+  resultMarkDisabled?: boolean;
+  resultMarkHint?: string | null;
+  resultMarkCheckboxId?: string;
 }
 
 export function useImageToolProject({
   toolId,
   source,
   loadFile,
+  getToolState,
+  applyToolState,
   getExtraPayload,
   applyPayload,
-}: UseImageToolProjectOptions): void {
-  useToolProject({
+  isResultMarked,
+  onIsResultMarkedChange,
+  resultMarkDisabled,
+  resultMarkHint,
+  resultMarkCheckboxId,
+}: UseImageToolProjectOptions): UseToolProjectResult {
+  const resolveToolState = getToolState ?? getExtraPayload ?? (() => ({}));
+  const resolveApplyToolState = applyToolState ?? applyPayload;
+
+  return useToolProject({
     toolId,
     canSave: !!source,
-    getPayload: () => getExtraPayload?.() ?? {},
+    isResultMarked,
+    onIsResultMarkedChange,
+    resultMarkDisabled: resultMarkDisabled ?? !source,
+    resultMarkHint,
+    resultMarkCheckboxId,
+    getToolState: resolveToolState,
     getImages: () =>
       source ? [{ key: MAIN_IMAGE_KEY, file: source.file }] : [],
-    restore: async (payload, files) => {
-      const file = files.get(MAIN_IMAGE_KEY);
-      if (!file) return;
-
-      applyPayload?.(payload);
-      await loadFile(file);
+    restore: async (settings, _files, _meta) => {
+      resolveApplyToolState?.(settings);
+      const file = _files.get(MAIN_IMAGE_KEY);
+      if (file) {
+        await loadFile(file);
+      }
     },
   });
 }
 
 export function applyBooleanPayload(
-  payload: Record<string, unknown>,
+  settings: Record<string, unknown>,
   key: string,
   setter: (value: boolean) => void,
 ): void {
-  if (typeof payload[key] === "boolean") {
-    setter(payload[key] as boolean);
+  if (typeof settings[key] === "boolean") {
+    setter(settings[key] as boolean);
   }
 }
 
 export function applyNumberPayload(
-  payload: Record<string, unknown>,
+  settings: Record<string, unknown>,
   key: string,
   setter: (value: number) => void,
 ): void {
-  if (typeof payload[key] === "number") {
-    setter(payload[key] as number);
+  if (typeof settings[key] === "number") {
+    setter(settings[key] as number);
   }
 }
 
 export function applyStringPayload(
-  payload: Record<string, unknown>,
+  settings: Record<string, unknown>,
   key: string,
   setter: (value: string) => void,
 ): void {
-  if (typeof payload[key] === "string") {
-    setter(payload[key] as string);
+  if (typeof settings[key] === "string") {
+    setter(settings[key] as string);
   }
 }
 
@@ -138,9 +219,17 @@ interface UseBulkToolProjectOptions {
   };
   canSave: boolean;
   loadFile: (file: File) => void | Promise<void>;
-  getExtraPayload: () => Record<string, unknown>;
-  applyExtraPayload: (payload: Record<string, unknown>) => void;
+  getToolState?: () => Record<string, unknown>;
+  applyToolState?: (settings: Record<string, unknown>) => void;
   onModeRestore?: (mode: "single" | "batch") => void;
+  /** @deprecated Use getToolState */
+  getExtraPayload?: () => Record<string, unknown>;
+  /** @deprecated Use applyToolState */
+  applyExtraPayload?: (settings: Record<string, unknown>) => void;
+  isResultMarked?: boolean;
+  onIsResultMarkedChange?: (value: boolean) => void;
+  resultMarkDisabled?: boolean;
+  resultMarkHint?: string | null;
 }
 
 export function useBulkToolProject({
@@ -150,16 +239,29 @@ export function useBulkToolProject({
   bulk,
   canSave,
   loadFile,
+  getToolState,
+  applyToolState,
   getExtraPayload,
   applyExtraPayload,
   onModeRestore,
-}: UseBulkToolProjectOptions): void {
-  useToolProject({
+  isResultMarked,
+  onIsResultMarkedChange,
+  resultMarkDisabled,
+  resultMarkHint,
+}: UseBulkToolProjectOptions): UseToolProjectResult {
+  const resolveToolState = getToolState ?? getExtraPayload ?? (() => ({}));
+  const resolveApplyToolState = applyToolState ?? applyExtraPayload ?? (() => {});
+
+  return useToolProject({
     toolId,
     canSave,
-    getPayload: () => ({
+    isResultMarked,
+    onIsResultMarkedChange,
+    resultMarkDisabled,
+    resultMarkHint,
+    getToolState: () => ({
       mode,
-      ...getExtraPayload(),
+      ...resolveToolState(),
     }),
     getImages: () => {
       if (mode === "single" && source) {
@@ -171,10 +273,10 @@ export function useBulkToolProject({
         file: item.file,
       }));
     },
-    restore: async (payload, files) => {
-      const restoredMode = payload.mode === "batch" ? "batch" : "single";
+    restore: async (settings, files, _meta) => {
+      const restoredMode = settings.mode === "batch" ? "batch" : "single";
       onModeRestore?.(restoredMode);
-      applyExtraPayload(payload);
+      resolveApplyToolState(settings);
 
       if (restoredMode === "batch") {
         const orderedFiles = [...files.entries()]

@@ -231,6 +231,13 @@ export const en = {
     saveProject: "Save Project",
     saveTooltip:
       "Your project is saved locally in your browser—completely private and secure.",
+    markAsFinalResult: "Mark as final result",
+    markAsFinalHint:
+      "Confirm that the current preview and settings represent the finished result you want to save.",
+    markFinalRequiredTitle: "Mark your result first",
+    markFinalRequiredHint:
+      'Check "Mark as final result" before saving. This stores the complete tool state so the project reopens exactly as you left it.',
+    markFinalRequiredDismiss: "Got it",
     saveModalTitle: "Save project",
     saveModalHint:
       "Store your current image and tool settings locally. You can reopen this session anytime from My Projects.",
@@ -882,6 +889,96 @@ export const en = {
       boxOpacity: "Box opacity",
       footer: "Text is baked into the export locally — nothing is uploaded.",
     },
+    imageOverlay: {
+      uploadHint: "Photos · portraits · Instagram-ready shots",
+      chooseOverlay: "Choose overlay",
+      overlayActive: "Active",
+      overlayHint:
+        "Pick a transparent graphic, then drag it on the preview. Scroll to resize, Shift+drag to rotate.",
+      dragToPosition: "Drag to move · scroll to resize · Shift+drag to rotate",
+      position: "Position",
+      positionPlaceholder: "—",
+      controls: "Overlay controls",
+      opacity: "Opacity",
+      size: "Size",
+      rotation: "Rotation",
+      footer:
+        "Overlays are merged locally on canvas — your photo never leaves the browser.",
+      presets: {
+        stars: { title: "Stars" },
+        flowers: { title: "Flowers" },
+        birds: { title: "Birds" },
+        sparkles: { title: "Sparkles" },
+        hearts: { title: "Hearts" },
+      },
+      seo: {
+        title: "How to add beautiful overlays to your photos for Instagram",
+        intro:
+          "Pix-8 Image Overlay is a free Photo Overlay Editor that lets you layer transparent effects on top of any photo — perfect for stories, reels covers, and feed posts. Upload your image, pick a preset from our library, and fine-tune placement without installing software.",
+        keywords:
+          "Use this free online image overlay tool to add transparent effects to photos: stars, flowers, birds, sparkles, and hearts. Adjust opacity, size, and rotation, then download a merged PNG or JPEG ready to post.",
+        step1: "Upload your base photo (JPEG, PNG, or WebP).",
+        step2:
+          "Select an overlay from the gallery — stars, flowers, birds, and more.",
+        step3:
+          "Drag to position, scroll to resize, or hold Shift and drag to rotate. Use the opacity slider for a subtle Instagram-ready look.",
+        step4: "Download the merged image with one click — processed entirely in your browser.",
+        outro:
+          "Whether you need a dreamy sparkle layer or a playful heart accent, this Photo Overlay Editor keeps every edit local, fast, and free.",
+        articleLink:
+          "Read the full guide: Online Photo Overlay Editor — stars, flowers, and transparent effects for Instagram.",
+      },
+    },
+    magnifier: {
+      uploadHint: "Inspect details · screenshots · product photos",
+      previewHint: "Scroll to zoom · drag to pan when zoomed in",
+      zoom: "Zoom",
+      zoomLevel: "Zoom level",
+      scaleDisplay: "Display scale: {scale}%",
+      resetView: "Reset view",
+      miniMapLabel: "Image overview mini-map",
+      footer: "Zoom and pan run locally — your image never leaves the browser.",
+      refinement: {
+        title: "Image Refinement",
+        sharpen: "Sharpen",
+        level: "Sharpening level",
+        type: "Sharpening type",
+        hint: "Refinement is non-destructive — the original file is never modified. Adjustments render on the preview canvas only.",
+        showOriginal: "Show Original",
+        showingOriginal: "Showing original…",
+        active: "Sharpened",
+        processing: "Refining…",
+        failed: "Image refinement failed.",
+        loadFailed: "Failed to load image for refinement.",
+        types: {
+          adaptive: "Adaptive",
+          "high-pass": "High Pass",
+          "unsharp-mask": "Unsharp Mask",
+        },
+      },
+      seo: {
+        title: "Image Magnifier — zoom and pan to find small details",
+        intro:
+          "Use the free Image Magnifier to examine photos up to 32× magnification. Perfect for inspecting screenshots, product labels, textures, and fine print without uploading files to a server.",
+        keywords:
+          "Online image zoom tool with pan, mouse-wheel magnification, and a mini-map viewport indicator. Privacy-first, browser-based detail inspection.",
+        articleLink:
+          "Read the full guide: Online Image Magnifier — zoom, pan, and sharpen to discover hidden details.",
+      },
+      export: {
+        title: "Save & Export",
+        markAsResult: "Mark as result",
+        markHint:
+          "Lock the current zoom, pan position, and sharpening settings as your export target.",
+        resultLocked: "Result locked",
+        resultStale: "View changed — mark again to export",
+        download: "Download view",
+        exporting: "Exporting…",
+        saved: "View exported successfully",
+        copyView: "Copy view",
+        dimensions: "Export size: {width} × {height}px",
+      },
+    },
     watermark: {
       couldNotLoad: "Could not load the watermark image.",
     },
@@ -1014,6 +1111,16 @@ export const en = {
       name: "Meme Generator",
       description:
         "Add classic top and bottom meme captions with Impact-style text and outlines.",
+    },
+    "image-overlay": {
+      name: "Image Overlay",
+      description:
+        "Add semi-transparent decorative overlays — stars, flowers, birds — with drag, resize, and rotation.",
+    },
+    magnifier: {
+      name: "Image Magnifier",
+      description:
+        "Zoom and pan images up to 32× to inspect fine details. Mouse-wheel zoom, drag to pan, with a mini-map overview.",
     },
   },
 } as const;

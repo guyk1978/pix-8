@@ -16,7 +16,7 @@ import {
 import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
-import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
+import { ToolProjectSaveSection } from "@/components/projects/ToolProjectSaveSection";
 import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
 
 export function Base64Encoder() {
@@ -195,7 +195,7 @@ export function Base64Encoder() {
         </WorkflowSettings>
 
         <div className="mt-4">
-          <ToolProjectSaveButton />
+          <ToolProjectSaveSection />
         </div>
 
         {source && (

@@ -63,7 +63,7 @@ export function ImageCollageMaker() {
   useToolProject({
     toolId: "image-collage",
     canSave: bulk.items.length > 0,
-    getPayload: () => ({
+    getToolState: () => ({
       stripMetadata,
       settings,
     }),
@@ -72,11 +72,11 @@ export function ImageCollageMaker() {
         key: `image-${index}`,
         file: item.file,
       })),
-    restore: async (payload, files) => {
-      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+    restore: async (toolSettings, files) => {
+      applyBooleanPayload(toolSettings, "stripMetadata", setStripMetadata);
 
-      if (payload.settings && typeof payload.settings === "object") {
-        setSettings(payload.settings as CollageSettings);
+      if (toolSettings.settings && typeof toolSettings.settings === "object") {
+        setSettings(toolSettings.settings as CollageSettings);
       }
 
       const orderedFiles = [...files.entries()]

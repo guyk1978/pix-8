@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ArticleJsonLd } from "@/components/articles/ArticleJsonLd";
 import { ArticlePageContent } from "@/components/articles/ArticlePageContent";
 import { getAllArticles, getArticleBySlug } from "@/lib/blog";
+import { SITE_URL } from "@/lib/siteUrl";
 import { getToolById } from "@/lib/tools";
 
 interface ArticlePageProps {
@@ -25,6 +27,14 @@ export async function generateMetadata({
   return {
     title: article.title,
     description: article.excerpt,
+    alternates: {
+      canonical: `${SITE_URL}/articles/${article.slug}`,
+    },
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      url: `${SITE_URL}/articles/${article.slug}`,
+    },
   };
 }
 
@@ -40,10 +50,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const tool = getToolById(articleEn.toolId);
 
   return (
-    <ArticlePageContent
-      articleEn={articleEn}
-      articleHe={articleHe}
-      tool={tool}
-    />
+    <>
+      <ArticleJsonLd article={articleEn} />
+      <ArticlePageContent
+        articleEn={articleEn}
+        articleHe={articleHe}
+        tool={tool}
+      />
+    </>
   );
 }

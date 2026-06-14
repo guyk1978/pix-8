@@ -77,6 +77,7 @@ const TOOLS_WITH_CONFIGURE: Set<ToolId> = new Set([
   "rotate-flip",
   "watermark",
   "text-overlay",
+  "image-overlay",
   "border-generator",
   "light-adjuster",
   "sharpener",
@@ -90,6 +91,7 @@ const TOOLS_WITH_CONFIGURE: Set<ToolId> = new Set([
   "css-palette-gen",
   "favicon-generator",
   "bg-remover",
+  "magnifier",
 ]);
 
 function buildSteps(toolId: ToolId): WorkflowStepId[] {

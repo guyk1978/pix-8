@@ -20,10 +20,12 @@ export const SIDEBAR_NAV_CATEGORIES: SidebarNavCategory[] = [
       "cropper",
       "rotate-flip",
       "text-overlay",
+      "image-overlay",
       "meme-generator",
       "image-collage",
       "watermark",
       "image-filters",
+      "magnifier",
     ],
   },
   {

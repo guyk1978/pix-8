@@ -61,28 +61,28 @@ export function MemeGenerator() {
   useToolProject({
     toolId: "meme-generator",
     canSave: !!source,
-    getPayload: () => ({
+    getToolState: () => ({
       stripMetadata,
       selectedTemplateId,
       settings,
     }),
     getImages: () =>
       source ? [{ key: MAIN_IMAGE_KEY, file: source.file }] : [],
-    restore: async (payload, files) => {
+    restore: async (toolSettings, files) => {
       const file = files.get(MAIN_IMAGE_KEY);
       if (!file) return;
 
-      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyBooleanPayload(toolSettings, "stripMetadata", setStripMetadata);
 
       if (
-        payload.selectedTemplateId === null ||
-        typeof payload.selectedTemplateId === "string"
+        toolSettings.selectedTemplateId === null ||
+        typeof toolSettings.selectedTemplateId === "string"
       ) {
-        setSelectedTemplateId(payload.selectedTemplateId as MemeTemplateId | null);
+        setSelectedTemplateId(toolSettings.selectedTemplateId as MemeTemplateId | null);
       }
 
-      if (payload.settings && typeof payload.settings === "object") {
-        setSettings(payload.settings as MemeSettings);
+      if (toolSettings.settings && typeof toolSettings.settings === "object") {
+        setSettings(toolSettings.settings as MemeSettings);
       }
 
       await loadFile(file);

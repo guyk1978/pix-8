@@ -78,6 +78,8 @@ const ERROR_MESSAGE_KEYS: Record<string, string> = {
   "Failed to load image for sharpening.": "toolUi.sharpener.loadFailed",
   "Adjustment failed.": "toolUi.lightAdjuster.adjustmentFailed",
   "Sharpening failed.": "toolUi.sharpener.sharpeningFailed",
+  "Image refinement failed.": "toolUi.magnifier.refinement.failed",
+  "Failed to load image for refinement.": "toolUi.magnifier.refinement.loadFailed",
   "Could not sample color.": "toolUi.colorPicker.sampleFailed",
   "Could not load the watermark image.": "toolUi.watermark.couldNotLoad",
   "Metadata could not be verified as removed.": "toolUi.metadataRemover.verifyFailed",

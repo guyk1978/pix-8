@@ -12,7 +12,8 @@ const WORKFLOW_MAP: Record<ToolId, ToolId[]> = {
   "palette-extractor": ["css-palette-gen", "color-picker", "base64-encoder"],
   "metadata-remover": ["compressor", "resizer", "watermark"],
   "color-picker": ["css-palette-gen", "palette-extractor", "text-overlay"],
-  "text-overlay": ["border-generator", "watermark", "compressor"],
+  "text-overlay": ["image-overlay", "border-generator", "compressor"],
+  "image-overlay": ["text-overlay", "image-filters", "compressor"],
   "border-generator": ["compressor", "grain-generator", "watermark"],
   "grayscale-converter": ["grain-generator", "sharpener", "compressor"],
   "favicon-generator": ["base64-encoder", "compressor", "metadata-remover"],
@@ -28,6 +29,7 @@ const WORKFLOW_MAP: Record<ToolId, ToolId[]> = {
   "image-to-svg": ["compressor", "favicon-generator", "border-generator"],
   "image-collage": ["compressor", "border-generator", "image-filters"],
   "meme-generator": ["compressor", "cropper", "text-overlay"],
+  magnifier: ["color-picker", "sharpener", "cropper"],
 };
 
 export function getWorkflowSuggestions(toolId: ToolId): WorkflowLink[] {

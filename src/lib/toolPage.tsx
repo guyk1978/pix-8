@@ -18,6 +18,8 @@ import { ImageToSvgConverter } from "@/components/tools/ImageToSvgConverter";
 import { LightAdjuster } from "@/components/tools/LightAdjuster";
 import { Sharpener } from "@/components/tools/Sharpener";
 import { GrayscaleConverter } from "@/components/tools/GrayscaleConverter";
+import { ImageMagnifier } from "@/components/tools/ImageMagnifier";
+import { ImageOverlay } from "@/components/tools/ImageOverlay";
 import { TextOverlay } from "@/components/tools/TextOverlay";
 import { MemeGenerator } from "@/components/tools/MemeGenerator";
 import { MetadataRemover } from "@/components/tools/MetadataRemover";
@@ -45,6 +47,7 @@ export const TOOL_COMPONENTS: Partial<Record<ToolId, ComponentType>> = {
   "metadata-remover": MetadataRemover,
   "color-picker": ColorPicker,
   "text-overlay": TextOverlay,
+  "image-overlay": ImageOverlay,
   "border-generator": BorderGenerator,
   "grayscale-converter": GrayscaleConverter,
   "favicon-generator": FaviconGenerator,
@@ -60,6 +63,7 @@ export const TOOL_COMPONENTS: Partial<Record<ToolId, ComponentType>> = {
   "image-to-svg": ImageToSvgConverter,
   "image-collage": ImageCollageMaker,
   "meme-generator": MemeGenerator,
+  magnifier: ImageMagnifier,
 };
 
 export function buildToolPageMetadata(tool: Tool): Metadata {

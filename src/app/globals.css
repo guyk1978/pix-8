@@ -1266,6 +1266,15 @@ p {
   min-height: 0;
 }
 
+.apps-menu-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  animation: apps-menu-fade 0.2s ease-out;
+}
+
 .apps-menu-panel {
   border: none;
   background: color-mix(in srgb, var(--card) 96%, var(--sidebar));
@@ -1300,10 +1309,6 @@ p {
   color: var(--foreground);
 }
 
-.apps-menu-backdrop {
-  animation: apps-menu-fade 0.2s ease-out;
-}
-
 @keyframes apps-menu-fade {
   from {
     opacity: 0;
@@ -1317,12 +1322,12 @@ p {
 @keyframes apps-menu-rise {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(8px) scale(0.98);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 

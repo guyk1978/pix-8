@@ -77,7 +77,7 @@ export function Watermark() {
   useToolProject({
     toolId: "watermark",
     canSave: !!source,
-    getPayload: () => ({
+    getToolState: () => ({
       stripMetadata,
       opacity,
       scale,
@@ -94,13 +94,13 @@ export function Watermark() {
 
       return images;
     },
-    restore: async (payload, files) => {
-      applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
-      applyNumberPayload(payload, "opacity", setOpacity);
-      applyNumberPayload(payload, "scale", setScale);
+    restore: async (settings, files) => {
+      applyBooleanPayload(settings, "stripMetadata", setStripMetadata);
+      applyNumberPayload(settings, "opacity", setOpacity);
+      applyNumberPayload(settings, "scale", setScale);
 
-      if (typeof payload.position === "string") {
-        setPosition(payload.position as WatermarkPosition);
+      if (typeof settings.position === "string") {
+        setPosition(settings.position as WatermarkPosition);
       }
 
       const mainFile = files.get(MAIN_IMAGE_KEY);

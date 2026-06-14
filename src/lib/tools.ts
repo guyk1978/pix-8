@@ -12,6 +12,7 @@ export type ToolId =
   | "metadata-remover"
   | "color-picker"
   | "text-overlay"
+  | "image-overlay"
   | "border-generator"
   | "grayscale-converter"
   | "favicon-generator"
@@ -26,7 +27,8 @@ export type ToolId =
   | "image-filters"
   | "image-to-svg"
   | "image-collage"
-  | "meme-generator";
+  | "meme-generator"
+  | "magnifier";
 
 export interface Tool {
   id: ToolId;
@@ -135,6 +137,16 @@ export const tools: Tool[] = [
     description: "Add quotes, labels, and captions to images with draggable text and live preview.",
     href: "/tools/editor-studio/text-overlay",
     tag: "TYPE",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "image-overlay",
+    name: "Image Overlay",
+    description:
+      "Add semi-transparent decorative overlays — stars, flowers, birds — with drag, resize, and rotation.",
+    href: "/tools/editor-studio/image-overlay",
+    tag: "LAYER",
     category: "basic-editing",
     status: "ready",
   },
@@ -274,6 +286,16 @@ export const tools: Tool[] = [
       "Add classic top and bottom Impact text with outlines to any image. Real-time preview, client-side only.",
     href: "/tools/editor-studio/meme-generator",
     tag: "MEME",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "magnifier",
+    name: "Image Magnifier",
+    description:
+      "Zoom and pan images up to 32× to inspect fine details. Mouse-wheel zoom, drag to pan, with a mini-map overview.",
+    href: "/tools/editor-studio/magnifier",
+    tag: "ZOOM",
     category: "basic-editing",
     status: "ready",
   },

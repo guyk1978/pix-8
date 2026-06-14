@@ -10,7 +10,7 @@ import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUpload
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import { useImageToolProject } from "@/hooks/useToolProject";
-import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
+import { ToolProjectSaveSection } from "@/components/projects/ToolProjectSaveSection";
 import {
   buildCodeSnippet,
   CODE_FORMAT_OPTIONS,
@@ -263,7 +263,7 @@ export function CssPaletteGenerator() {
         ) : null}
 
         <div className="mt-4">
-          <ToolProjectSaveButton />
+          <ToolProjectSaveSection />
         </div>
       
     </ToolWorkspace>

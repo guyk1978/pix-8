@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <circle cx="140" cy="150" r="36" fill="#F9A8D4"/>
+  <circle cx="116" cy="126" r="28" fill="#FBCFE8"/>
+  <circle cx="164" cy="126" r="28" fill="#FBCFE8"/>
+  <circle cx="116" cy="174" r="28" fill="#FBCFE8"/>
+  <circle cx="164" cy="174" r="28" fill="#FBCFE8"/>
+  <circle cx="140" cy="150" r="16" fill="#FDE68A"/>
+  <circle cx="360" cy="120" r="32" fill="#C4B5FD"/>
+  <circle cx="338" cy="98" r="24" fill="#DDD6FE"/>
+  <circle cx="382" cy="98" r="24" fill="#DDD6FE"/>
+  <circle cx="338" cy="142" r="24" fill="#DDD6FE"/>
+  <circle cx="382" cy="142" r="24" fill="#DDD6FE"/>
+  <circle cx="360" cy="120" r="14" fill="#FDE68A"/>
+  <circle cx="220" cy="320" r="40" fill="#FDA4AF"/>
+  <circle cx="192" cy="292" r="30" fill="#FECDD3"/>
+  <circle cx="248" cy="292" r="30" fill="#FECDD3"/>
+  <circle cx="192" cy="348" r="30" fill="#FECDD3"/>
+  <circle cx="248" cy="348" r="30" fill="#FECDD3"/>
+  <circle cx="220" cy="320" r="18" fill="#FDE68A"/>
+  <circle cx="400" cy="340" r="34" fill="#F9A8D4"/>
+  <circle cx="376" cy="316" r="26" fill="#FBCFE8"/>
+  <circle cx="424" cy="316" r="26" fill="#FBCFE8"/>
+  <circle cx="376" cy="364" r="26" fill="#FBCFE8"/>
+  <circle cx="424" cy="364" r="26" fill="#FBCFE8"/>
+  <circle cx="400" cy="340" r="15" fill="#FDE68A"/>
+</svg>

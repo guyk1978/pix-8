@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { MarkFinalResultPrompt } from "@/components/projects/MarkFinalResultPrompt";
 import { SaveProjectModal } from "@/components/projects/SaveProjectModal";
 import { getProject, loadProjectImages, saveProject } from "@/lib/projects/save";
 import type { ProjectImageInput } from "@/lib/projects/types";
@@ -22,8 +23,21 @@ export interface ToolProjectSnapshot {
   images: ProjectImageInput[];
 }
 
+export interface ToolProjectRestoreMeta {
+  isResultMarked: boolean;
+}
+
+export interface ToolResultMarkRegistration {
+  isResultMarked: boolean;
+  onChange: (value: boolean) => void;
+  disabled?: boolean;
+  hint?: string | null;
+  checkboxId?: string;
+}
+
 export interface ToolProjectHandlers {
   canSave: boolean;
+  isResultMarked: boolean;
   getSnapshot: () => ToolProjectSnapshot | null;
   restore: (
     payload: Record<string, unknown>,
@@ -33,8 +47,11 @@ export interface ToolProjectHandlers {
 
 interface ToolProjectContextValue {
   canSave: boolean;
+  isResultMarked: boolean;
+  resultMark: ToolResultMarkRegistration | null;
   openSaveModal: () => void;
   registerHandlers: (handlers: ToolProjectHandlers | null) => void;
+  registerResultMark: (registration: ToolResultMarkRegistration | null) => void;
 }
 
 const ToolProjectContext = createContext<ToolProjectContextValue | null>(null);
@@ -56,8 +73,13 @@ export function ToolProjectProvider({
   const handlersRef = useRef<ToolProjectHandlers | null>(null);
   const restoredIdRef = useRef<string | null>(null);
   const [canSave, setCanSave] = useState(false);
+  const [isResultMarked, setIsResultMarked] = useState(false);
+  const [resultMark, setResultMark] = useState<ToolResultMarkRegistration | null>(
+    null,
+  );
   const [handlersReady, setHandlersReady] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMarkPromptOpen, setIsMarkPromptOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
@@ -67,10 +89,29 @@ export function ToolProjectProvider({
   const registerHandlers = useCallback((handlers: ToolProjectHandlers | null) => {
     handlersRef.current = handlers;
     setCanSave(handlers?.canSave ?? false);
+    setIsResultMarked(handlers?.isResultMarked ?? false);
     setHandlersReady(handlers !== null);
   }, []);
 
+  const registerResultMark = useCallback(
+    (registration: ToolResultMarkRegistration | null) => {
+      setResultMark(registration);
+      if (registration) {
+        setIsResultMarked(registration.isResultMarked);
+      }
+    },
+    [],
+  );
+
   const openSaveModal = useCallback(() => {
+    const handlers = handlersRef.current;
+    if (!handlers?.canSave) return;
+
+    if (!handlers.isResultMarked) {
+      setIsMarkPromptOpen(true);
+      return;
+    }
+
     setEditingProjectId(null);
     setDefaultName("");
     setIsModalOpen(true);
@@ -121,7 +162,7 @@ export function ToolProjectProvider({
     async (name: string) => {
       const handlers = handlersRef.current;
       const snapshot = handlers?.getSnapshot();
-      if (!handlers || !snapshot) return;
+      if (!handlers || !snapshot || !handlers.isResultMarked) return;
 
       setIsSaving(true);
 
@@ -146,10 +187,20 @@ export function ToolProjectProvider({
   const value = useMemo(
     () => ({
       canSave,
+      isResultMarked,
+      resultMark,
       openSaveModal,
       registerHandlers,
+      registerResultMark,
     }),
-    [canSave, openSaveModal, registerHandlers],
+    [
+      canSave,
+      isResultMarked,
+      openSaveModal,
+      registerHandlers,
+      registerResultMark,
+      resultMark,
+    ],
   );
 
   return (
@@ -160,6 +211,10 @@ export function ToolProjectProvider({
           {restoreError}
         </p>
       ) : null}
+      <MarkFinalResultPrompt
+        open={isMarkPromptOpen}
+        onClose={() => setIsMarkPromptOpen(false)}
+      />
       <SaveProjectModal
         open={isModalOpen}
         defaultName={defaultName}

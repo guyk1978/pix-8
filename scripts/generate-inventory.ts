@@ -1,11 +1,56 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { getAllArticles } from "../src/lib/blog";
+import { SIDEBAR_CATEGORY_IDS } from "../src/lib/sidebarNav";
+import { SITE_URL } from "../src/lib/siteUrl";
 import { dashboardSections, tools, type ToolCategory } from "../src/lib/tools";
 
 const OUTPUT_DIR = "local";
 const OUTPUT_FILE = join(OUTPUT_DIR, "inventory.html");
 const DEV_BASE = "http://localhost:3000";
+const PROD_BASE = SITE_URL;
+
+interface SitemapEntry {
+  path: string;
+  label: string;
+  group: string;
+}
+
+function buildSitemapEntries(): SitemapEntry[] {
+  const entries: SitemapEntry[] = [
+    { path: "/", label: "Home", group: "Core" },
+    { path: "/blog", label: "Blog", group: "Core" },
+    { path: "/settings", label: "Settings", group: "Core" },
+    { path: "/favorites", label: "Favorites", group: "Core" },
+    { path: "/projects", label: "Projects", group: "Core" },
+  ];
+
+  for (const categoryId of SIDEBAR_CATEGORY_IDS) {
+    entries.push({
+      path: `/tools/category/${categoryId}`,
+      label: `Category: ${categoryId}`,
+      group: "Tool categories",
+    });
+  }
+
+  for (const tool of tools) {
+    entries.push({
+      path: tool.href,
+      label: tool.name,
+      group: "Tools",
+    });
+  }
+
+  for (const article of getAllArticles("en")) {
+    entries.push({
+      path: `/articles/${article.slug}`,
+      label: article.title,
+      group: "Articles",
+    });
+  }
+
+  return entries;
+}
 
 const categoryLabels: Record<ToolCategory, string> = {
   "basic-editing": "Basic Editing",
@@ -136,9 +181,58 @@ function renderBlogSection(
     </section>`;
 }
 
+function renderSitemapSection(entries: SitemapEntry[]): string {
+  const groups = [...new Set(entries.map((entry) => entry.group))];
+
+  const sections = groups
+    .map((group) => {
+      const groupEntries = entries.filter((entry) => entry.group === group);
+      const rows = groupEntries
+        .map(
+          (entry) => `
+        <tr>
+          <td><a href="${DEV_BASE}${escapeAttr(entry.path)}">${escapeHtml(entry.label)}</a></td>
+          <td><code>${escapeHtml(entry.path)}</code></td>
+          <td><a href="${escapeAttr(PROD_BASE + entry.path)}" rel="noopener">${escapeHtml(PROD_BASE + entry.path)}</a></td>
+        </tr>`,
+        )
+        .join("");
+
+      return `
+      <details class="sitemap-group" open>
+        <summary>${escapeHtml(group)} <span class="count">${groupEntries.length}</span></summary>
+        <table>
+          <thead>
+            <tr>
+              <th>Label</th>
+              <th>Path</th>
+              <th>Production URL</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </details>`;
+    })
+    .join("");
+
+  return `
+    <section class="block">
+      <h2>
+        <span class="h2-title">Sitemap URLs <span class="count">${entries.length}</span></span>
+        ${renderCopyButton(
+          entries.map((entry) => `${PROD_BASE}${entry.path}`),
+          "Copy sitemap URLs",
+        )}
+      </h2>
+      <p class="desc" style="margin-bottom: 1rem;">Mirrors <code>src/app/sitemap.ts</code> — canonical production URLs included at build time.</p>
+      ${sections}
+    </section>`;
+}
+
 export function generateInventory(): string {
   const articlesEn = getAllArticles("en");
   const articlesHe = getAllArticles("he");
+  const sitemapEntries = buildSitemapEntries();
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -267,6 +361,28 @@ export function generateInventory(): string {
     }
     .stat .label { margin-bottom: 0.25rem; }
     .stat .value { font-family: ui-monospace, monospace; font-size: 1.25rem; }
+    .sitemap-group {
+      border: 1px solid #333;
+      background: #161616;
+      margin-bottom: 0.75rem;
+    }
+    .sitemap-group summary {
+      cursor: pointer;
+      font-family: ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #a3a3a3;
+      padding: 0.75rem 1rem;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .sitemap-group summary::-webkit-details-marker { display: none; }
+    .sitemap-group table { border: none; }
+    .sitemap-group td, .sitemap-group th { border-left: none; border-right: none; }
+    .sitemap-group tr:last-child td { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -280,7 +396,9 @@ export function generateInventory(): string {
       <div class="stat"><p class="label">Articles (EN)</p><p class="value">${articlesEn.length}</p></div>
       <div class="stat"><p class="label">Articles (HE)</p><p class="value">${articlesHe.length}</p></div>
       <div class="stat"><p class="label">Ready</p><p class="value">${tools.filter((t) => t.status === "ready").length}</p></div>
+      <div class="stat"><p class="label">Sitemap URLs</p><p class="value">${sitemapEntries.length}</p></div>
     </div>
+    ${renderSitemapSection(sitemapEntries)}
     ${renderToolsSection()}
     ${renderBlogSection("en", "Articles (English)", "Copy EN titles")}
     ${renderBlogSection("he", "Articles (Hebrew)", "Copy HE titles")}

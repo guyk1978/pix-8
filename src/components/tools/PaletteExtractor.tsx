@@ -12,7 +12,7 @@ import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUpload
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
 import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
-import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
+import { ToolProjectSaveSection } from "@/components/projects/ToolProjectSaveSection";
 import {
   extractDominantColors,
   type PaletteColor,
@@ -236,7 +236,7 @@ export function PaletteExtractor() {
         ) : null}
 
         <div className="mt-4">
-          <ToolProjectSaveButton />
+          <ToolProjectSaveSection />
         </div>
     </ToolWorkspace>
   );

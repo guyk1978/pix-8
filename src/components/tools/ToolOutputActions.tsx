@@ -3,7 +3,7 @@
 import { Copy, Download } from "lucide-react";
 import { HelperSuccessHint } from "@/components/characters/HelperSuccessHint";
 import { ProcessingIndicator } from "@/components/characters/ProcessingIndicator";
-import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
+import { ToolProjectSaveSection } from "@/components/projects/ToolProjectSaveSection";
 import { useOptionalToolProjectContext } from "@/components/projects/ToolProjectContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { WorkflowStep } from "@/components/tools/workflow/WorkflowStep";
@@ -57,7 +57,7 @@ export function ToolOutputActions({
           {isReady ? <HelperSuccessHint /> : null}
 
           <div className={toolActionStackClassName}>
-            {projectContext ? <ToolProjectSaveButton /> : null}
+            {projectContext ? <ToolProjectSaveSection /> : null}
 
             <div className={toolActionRowClassName}>
               <button

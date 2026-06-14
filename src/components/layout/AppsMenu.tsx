@@ -155,22 +155,20 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
   const menuPortal =
     open && mounted
       ? createPortal(
-          <>
-            <button
-              type="button"
-              aria-label={t("header.closeApps")}
-              className="apps-menu-backdrop fixed inset-0 z-[100] bg-black/50 backdrop-blur-[2px]"
-              onClick={closeMenu}
-            />
-
+          <div
+            className="apps-menu-overlay fixed inset-0 z-[100] flex h-screen w-screen items-center justify-center bg-black/50 p-3 backdrop-blur-[2px] sm:p-6"
+            onClick={closeMenu}
+            role="presentation"
+          >
             <div
               id={panelId}
               role="dialog"
+              aria-modal="true"
               aria-label={t("nav.apps")}
-              className="apps-menu-panel pointer-events-auto fixed start-3 end-3 top-[3.75rem] z-[101] max-h-[min(78vh,42rem)] overflow-hidden rounded-xl sm:start-auto sm:end-6 sm:w-[min(92vw,56rem)]"
+              className="apps-menu-panel pointer-events-auto flex w-full max-w-[min(92vw,56rem)] max-h-[min(90vh,42rem)] flex-col overflow-hidden rounded-xl"
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="flex items-center justify-between px-5 py-4">
+              <div className="flex shrink-0 items-center justify-between px-5 py-4">
                 <div>
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--glow-teal)]">
                     {t("nav.toolCategoriesLabel")}
@@ -190,7 +188,7 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
                 </button>
               </div>
 
-              <div className="grid max-h-[calc(min(78vh,42rem)-4rem)] gap-4 overflow-y-auto px-4 pb-4 sm:grid-cols-2">
+              <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto px-4 pb-4 sm:grid-cols-2">
                 {categories.map((category) => (
                   <section
                     key={category.id}
@@ -225,7 +223,7 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
                 ) : null}
               </div>
 
-              <div className="px-5 py-3">
+              <div className="shrink-0 px-5 py-3">
                 <AppLink
                   href={APP_ROUTES.home}
                   onClick={handleMenuLinkClick}
@@ -235,7 +233,7 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
                 </AppLink>
               </div>
             </div>
-          </>,
+          </div>,
           document.body,
         )
       : null;
