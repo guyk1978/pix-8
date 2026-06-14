@@ -66,6 +66,8 @@ export const en = {
     noToolsHint: "Try a different search term.",
     utility: "utility",
     utilities: "utilities",
+    showMore: "Show more",
+    showLess: "Show less",
     browseCategories: "Browse by category",
     installApp: "Download as app",
     installAppUnavailable:

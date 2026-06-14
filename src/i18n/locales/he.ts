@@ -67,6 +67,8 @@ export const he: TranslationDictionary = {
     noToolsHint: "נסה מונח חיפוש אחר.",
     utility: "כלי",
     utilities: "כלים",
+    showMore: "הצג עוד",
+    showLess: "הצג פחות",
     browseCategories: "עיון לפי קטגוריה",
     installApp: "הורד כאפליקציה",
     installAppUnavailable:

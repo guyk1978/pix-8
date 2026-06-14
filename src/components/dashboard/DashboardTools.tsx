@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ToolCard } from "@/components/dashboard/ToolCard";
+import { CategorySection } from "@/components/dashboard/CategorySection";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
-import { dashboardSections, tools } from "@/lib/tools";
+import { groupToolsByHomeCategory } from "@/lib/homeToolCategories";
+import { tools } from "@/lib/tools";
 
 export function DashboardTools() {
   const { t } = useLanguage();
@@ -29,13 +30,13 @@ export function DashboardTools() {
     });
   }, [searchQuery, t]);
 
-  const sectionLabels: Record<string, string> = {
-    tools: t("nav.tools"),
-    advanced: t("nav.advanced"),
-  };
+  const categorizedTools = useMemo(
+    () => groupToolsByHomeCategory(filteredTools),
+    [filteredTools],
+  );
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-10">
       <div className="max-w-md">
         <label htmlFor="tool-search" className="sr-only">
           {t("home.searchLabel")}
@@ -50,43 +51,19 @@ export function DashboardTools() {
         />
       </div>
 
-      {filteredTools.length === 0 ? (
+      {categorizedTools.length === 0 ? (
         <div className="flex min-h-36 flex-col items-center justify-center border border-border bg-card p-8 text-center">
           <p className="font-label text-muted">{t("home.noTools")}</p>
           <p className="mt-2 text-sm text-muted">{t("home.noToolsHint")}</p>
         </div>
       ) : (
-        dashboardSections.map((section) => {
-          const sectionTools = filteredTools.filter((tool) =>
-            section.categories.includes(tool.category),
-          );
-
-          if (sectionTools.length === 0) return null;
-
-          const countLabel =
-            sectionTools.length === 1
-              ? `1 ${t("home.utility")}`
-              : `${sectionTools.length} ${t("home.utilities")}`;
-
-          return (
-            <div key={section.id}>
-              <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
-                <h2 className="font-label text-foreground">
-                  {sectionLabels[section.id] ?? section.label}
-                </h2>
-                <span className="font-mono text-xs tabular-nums text-muted">
-                  {countLabel}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {sectionTools.map((tool, index) => (
-                  <ToolCard key={tool.id} tool={tool} index={index} />
-                ))}
-              </div>
-            </div>
-          );
-        })
+        categorizedTools.map(({ category, tools: categoryTools }) => (
+          <CategorySection
+            key={category.id}
+            categoryId={category.id}
+            tools={categoryTools}
+          />
+        ))
       )}
     </section>
   );
