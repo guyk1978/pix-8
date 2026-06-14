@@ -10,6 +10,10 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ShareMetaSync } from "@/components/ShareMetaSync";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/shareImages";
+import {
+  getGoogleAnalyticsConsentInlineScript,
+  getGoogleAnalyticsScriptSrc,
+} from "@/lib/googleAnalyticsScripts";
 import "./globals.css";
 
 const inter = Inter({
@@ -64,6 +68,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const googleAnalyticsScriptSrc = getGoogleAnalyticsScriptSrc();
+
   return (
     <html
       lang="en"
@@ -71,6 +77,19 @@ export default function RootLayout({
       className={`${inter.variable} ${robotoMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        {googleAnalyticsScriptSrc ? (
+          <>
+            <script
+              id="google-analytics-consent"
+              dangerouslySetInnerHTML={{
+                __html: getGoogleAnalyticsConsentInlineScript(),
+              }}
+            />
+            <script async src={googleAnalyticsScriptSrc} />
+          </>
+        ) : null}
+      </head>
       <body className="min-h-full bg-background text-foreground">
         <ThemeProvider>
           <LanguageProvider>
