@@ -333,6 +333,8 @@ export const he: TranslationDictionary = {
     title: "העלאה",
     dropHeadline: "גרור תמונה לכאן...",
     dropHint: "גרור תמונה לכאן או לחץ לבחירה",
+    dropHintBefore: "גרור תמונה לכאן או לחץ ל",
+    dropHintBrowse: "בחירה",
     dropLogoHint: "גרור לוגו לכאן או לחץ לבחירה",
     dropMultipleHint: "גרור מספר קבצים לכאן או לחץ לבחירה",
     addToBatch: "הוספת תמונות לאצווה",
@@ -340,6 +342,7 @@ export const he: TranslationDictionary = {
     uploadImagesAria: "העלאת תמונות",
     uploadLogoAria: "העלאת לוגו או תמונה",
     formatsHint: "PNG · JPEG · WebP",
+    formatsLabel: "פורמטים נתמכים",
   },
   privacy: {
     stripMetadata: "הסרת מטא-דאטה",

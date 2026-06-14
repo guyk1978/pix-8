@@ -496,6 +496,24 @@ p {
   animation: tool-sidebar-panel-in 0.28s ease-out;
 }
 
+.tool-sidebar-header {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+}
+
+.tool-sidebar-category {
+  line-height: 1.2;
+}
+
+.tool-sidebar-title {
+  line-height: 1.1;
+}
+
+.tool-sidebar-empty {
+  max-width: 18rem;
+  padding-top: 0.75rem;
+  padding-bottom: 1.25rem;
+}
+
 .tool-sidebar-panel[dir="ltr"] {
   direction: ltr;
   text-align: start;
@@ -1685,12 +1703,120 @@ button[data-favorite="true"] svg path {
   display: none;
 }
 
+.tool-upload-zone {
+  border: 1px dashed color-mix(in srgb, var(--border) 82%, transparent);
+  background: color-mix(in srgb, var(--card) 38%, var(--background));
+  box-shadow: var(--shadow-elevated);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.tool-upload-zone:hover {
+  border-color: color-mix(in srgb, var(--glow-teal) 38%, var(--border));
+  box-shadow:
+    var(--shadow-elevated),
+    0 0 0 1px color-mix(in srgb, var(--glow-teal) 10%, transparent),
+    0 0 28px color-mix(in srgb, var(--glow-teal) 7%, transparent);
+}
+
+.tool-upload-zone.tool-dropzone-active {
+  border-color: color-mix(in srgb, var(--glow-teal) 52%, var(--border));
+  background: color-mix(in srgb, var(--card) 52%, var(--background));
+  box-shadow:
+    var(--shadow-hover),
+    0 0 0 1px color-mix(in srgb, var(--glow-teal) 16%, transparent),
+    0 0 36px color-mix(in srgb, var(--glow-teal) 12%, transparent);
+}
+
+.tool-upload-zone.tool-dropzone {
+  background: color-mix(in srgb, var(--card) 38%, var(--background));
+}
+
+.dark .tool-upload-zone.tool-dropzone {
+  background: color-mix(in srgb, var(--card) 55%, var(--background));
+}
+
+.tool-upload-zone::before {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.tool-upload-zone:hover::before,
+.tool-upload-zone.tool-dropzone-active::before {
+  opacity: 0.65;
+}
+
+.upload-zone-icon {
+  width: 3rem;
+  height: 3rem;
+  color: color-mix(in srgb, var(--muted) 88%, var(--foreground));
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tool-upload-zone:hover .upload-zone-icon,
+.upload-zone-icon--active {
+  color: color-mix(in srgb, var(--glow-teal) 58%, var(--foreground));
+  transform: translateY(-1px);
+}
+
+.upload-zone-browse {
+  color: color-mix(in srgb, var(--glow-teal) 72%, var(--foreground));
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--glow-teal) 35%, transparent);
+  text-underline-offset: 0.18em;
+  transition: color 0.2s ease;
+}
+
+.tool-upload-zone:hover .upload-zone-browse {
+  color: color-mix(in srgb, var(--glow-teal) 88%, var(--foreground));
+}
+
+.upload-zone-format-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.375rem;
+}
+
+.upload-zone-format-tag {
+  border-radius: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  background: color-mix(in srgb, var(--card) 72%, transparent);
+  padding: 0.125rem 0.5rem;
+  font-family: var(--font-roboto-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .tool-styled-dropzone {
   z-index: 1;
   border: none;
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--surface) 40%, var(--background)) !important;
   box-shadow: var(--shadow-elevated);
+}
+
+.tool-styled-dropzone.tool-upload-zone {
+  border: 1px dashed color-mix(in srgb, var(--border) 82%, transparent) !important;
+  background: color-mix(in srgb, var(--card) 38%, var(--background)) !important;
+}
+
+.dark .tool-styled-dropzone.tool-upload-zone {
+  background: color-mix(in srgb, #12151c 70%, #0a0c12) !important;
+}
+
+.tool-styled-dropzone.tool-upload-zone:hover {
+  background: color-mix(in srgb, var(--card) 44%, var(--background)) !important;
+}
+
+.tool-styled-dropzone.tool-upload-zone.tool-dropzone-active {
+  background: color-mix(in srgb, var(--card) 54%, var(--background)) !important;
 }
 
 .tool-styled-dropzone::before {

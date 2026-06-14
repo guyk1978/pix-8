@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { BrandLogo } from "@/components/brand/BrandLogo";
+import { UploadZoneDefaultContent } from "@/components/ui/UploadZoneDefaultContent";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { WorkflowStep } from "@/components/tools/workflow/WorkflowStep";
 
@@ -39,14 +39,11 @@ export function ImageUploadDropzone({
   const resolvedAriaLabel =
     ariaLabel ??
     (multiple ? t("upload.uploadImagesAria") : t("upload.uploadImageAria"));
-  const resolvedTitle = title ?? t("upload.title");
-  const resolvedHint = hint ?? t("upload.dropHint");
-  const resolvedFormatHint = formatHint ?? t("upload.formatsHint");
 
   return (
     <WorkflowStep step="upload">
       <div
-        className={`tool-dropzone relative flex cursor-pointer flex-col items-center justify-center gap-3 p-6 transition-all duration-300 sm:min-h-64 sm:p-10 ${
+        className={`tool-dropzone tool-upload-zone relative flex cursor-pointer flex-col items-center justify-center transition-all duration-300 sm:min-h-64 ${
           isDragging ? "tool-dropzone-active" : ""
         } ${className}`}
         onDragEnter={(event) => {
@@ -88,28 +85,15 @@ export function ImageUploadDropzone({
         />
 
         {children ? (
-          <div className="relative z-10 flex w-full flex-col items-center gap-4">
-            <BrandLogo size="lg" showGlow className={isDragging ? "scale-105 transition-transform" : ""} />
+          <div className="relative z-10 flex w-full flex-col items-center gap-4 p-6 sm:p-10">
             {children}
           </div>
         ) : (
-          <div className="pointer-events-none relative z-10 flex w-full flex-col items-center gap-4 text-center">
-            <BrandLogo
-              size="lg"
-              showGlow
-              className={`transition-transform duration-300 ${isDragging ? "scale-105" : ""}`}
-            />
-
-            <div>
-              <p className="text-base font-medium text-foreground sm:text-lg">
-                {resolvedHint}
-              </p>
-              <p className="mt-1 font-label text-muted">{resolvedTitle}</p>
-              <p className="mt-2 font-mono text-[10px] text-muted">
-                {resolvedFormatHint}
-              </p>
-            </div>
-          </div>
+          <UploadZoneDefaultContent
+            hint={hint}
+            formatHint={formatHint}
+            isDragging={isDragging}
+          />
         )}
       </div>
     </WorkflowStep>

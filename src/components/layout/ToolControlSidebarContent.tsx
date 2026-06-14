@@ -1,7 +1,6 @@
 "use client";
 
 import { AppLink } from "@/components/layout/AppLink";
-import { BrandLogo, brandLogoAriaLabel } from "@/components/brand/BrandLogo";
 import { useToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { APP_ROUTES } from "@/lib/navigationConfig";
@@ -13,25 +12,15 @@ export function ToolControlSidebarContent() {
 
   return (
     <div className="flex min-h-0 flex-col text-start" dir={dir}>
-      <div className="flex shrink-0 items-center justify-start px-5 py-4 text-start">
-        <AppLink
-          href={APP_ROUTES.home}
-          className="transition-opacity hover:opacity-80"
-          aria-label={brandLogoAriaLabel(t)}
-        >
-          <BrandLogo size="sm" />
-        </AppLink>
-      </div>
-
       {toolName ? (
-        <div className="shrink-0 px-5 pb-3 text-start">
-          <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--glow-teal)]">
+        <header className="tool-sidebar-header shrink-0 px-5 pb-5 pt-5 text-start">
+          <p className="tool-sidebar-category font-label text-[11px] uppercase tracking-[0.12em] text-[var(--glow-teal)]">
             {toolTag ?? t("toolSidebar.eyebrow")}
           </p>
-          <p className="mt-1 truncate text-xl font-semibold leading-snug text-foreground">
+          <h2 className="tool-sidebar-title mt-2 truncate text-2xl font-bold leading-none tracking-tight text-foreground">
             {toolName}
-          </p>
-        </div>
+          </h2>
+        </header>
       ) : null}
 
       <div
@@ -44,7 +33,7 @@ export function ToolControlSidebarContent() {
           dir={dir}
         >
           {activeSlotCount === 0 ? (
-            <p className="px-2 py-5 text-center text-base leading-relaxed text-muted">
+            <p className="tool-sidebar-empty px-0 py-6 text-start text-sm leading-relaxed text-muted">
               {t("toolSidebar.empty")}
             </p>
           ) : null}

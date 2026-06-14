@@ -333,6 +333,8 @@ export const en = {
     title: "Upload",
     dropHeadline: "Drop image here...",
     dropHint: "Drop an image here or tap to browse",
+    dropHintBefore: "Drop an image here or tap to ",
+    dropHintBrowse: "browse",
     dropLogoHint: "Drop your logo here or tap to browse",
     dropMultipleHint: "Drop multiple files or tap to browse",
     addToBatch: "Add images to batch",
@@ -340,6 +342,7 @@ export const en = {
     uploadImagesAria: "Upload images",
     uploadLogoAria: "Upload logo or image",
     formatsHint: "PNG · JPEG · WebP",
+    formatsLabel: "Supported formats",
   },
   privacy: {
     stripMetadata: "Strip Metadata",

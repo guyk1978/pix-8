@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { BrandLogo } from "@/components/brand/BrandLogo";
+import { UploadZoneDefaultContent } from "@/components/ui/UploadZoneDefaultContent";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { WorkflowStep } from "@/components/tools/workflow/WorkflowStep";
 
@@ -54,7 +54,7 @@ export function ToolStyledUploadZone({
     <WorkflowStep step="upload">
       <div className="tool-styled-upload-stage relative w-full">
         <div
-          className={`tool-dropzone tool-styled-dropzone relative flex w-full cursor-pointer items-stretch transition-all duration-300 ${heightClass} ${
+          className={`tool-dropzone tool-styled-dropzone tool-upload-zone relative flex w-full cursor-pointer items-stretch transition-all duration-300 ${heightClass} ${
             isDragging ? "tool-dropzone-active" : ""
           } ${className}`}
           onDragEnter={(event) => {
@@ -95,18 +95,13 @@ export function ToolStyledUploadZone({
               {children}
             </div>
           ) : (
-            <div className="relative z-10 flex w-full flex-col items-center justify-center gap-4 px-6 py-10 text-center sm:px-12 sm:py-12">
-              <BrandLogo size="lg" showGlow />
-              <p className="text-xl font-medium tracking-tight text-foreground sm:text-2xl">
-                {headline ?? t("upload.dropHeadline")}
-              </p>
-              <p className="max-w-md text-base text-muted">
-                {hint ?? t("upload.dropHint")}
-              </p>
-              <p className="mt-2 font-mono text-xs text-muted/90">
-                {formatHint ?? t("upload.formatsHint")}
-              </p>
-            </div>
+            <UploadZoneDefaultContent
+              headline={headline}
+              hint={hint}
+              formatHint={formatHint}
+              isDragging={isDragging}
+              compact={compact}
+            />
           )}
         </div>
       </div>
