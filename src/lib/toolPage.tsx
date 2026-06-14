@@ -18,6 +18,7 @@ import { ImageToSvgConverter } from "@/components/tools/ImageToSvgConverter";
 import { LightAdjuster } from "@/components/tools/LightAdjuster";
 import { Sharpener } from "@/components/tools/Sharpener";
 import { GrayscaleConverter } from "@/components/tools/GrayscaleConverter";
+import { ImageAnnotator } from "@/components/tools/ImageAnnotator";
 import { ImageMagnifier } from "@/components/tools/ImageMagnifier";
 import { ImageOverlay } from "@/components/tools/ImageOverlay";
 import { TextOverlay } from "@/components/tools/TextOverlay";
@@ -64,6 +65,7 @@ export const TOOL_COMPONENTS: Partial<Record<ToolId, ComponentType>> = {
   "image-collage": ImageCollageMaker,
   "meme-generator": MemeGenerator,
   magnifier: ImageMagnifier,
+  "image-annotator": ImageAnnotator,
 };
 
 export function buildToolPageMetadata(tool: Tool): Metadata {

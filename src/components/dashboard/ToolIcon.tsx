@@ -13,6 +13,7 @@ import {
   LayoutGrid,
   Layers,
   Globe,
+  MapPin,
   Maximize,
   Maximize2,
   Palette,
@@ -61,6 +62,7 @@ const TOOL_ICONS: Record<ToolId, LucideIcon> = {
   "image-collage": LayoutGrid,
   "meme-generator": Laugh,
   magnifier: ZoomIn,
+  "image-annotator": MapPin,
 };
 
 interface ToolIconProps {

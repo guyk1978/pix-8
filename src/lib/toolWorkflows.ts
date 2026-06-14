@@ -92,6 +92,7 @@ const TOOLS_WITH_CONFIGURE: Set<ToolId> = new Set([
   "favicon-generator",
   "bg-remover",
   "magnifier",
+  "image-annotator",
 ]);
 
 function buildSteps(toolId: ToolId): WorkflowStepId[] {

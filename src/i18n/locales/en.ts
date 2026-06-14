@@ -946,6 +946,9 @@ export const en = {
         hint: "Refinement is non-destructive — the original file is never modified. Adjustments render on the preview canvas only.",
         showOriginal: "Show Original",
         showingOriginal: "Showing original…",
+        compareOriginal: "Compare Original",
+        comparingOriginal: "Showing Original Image",
+        activeComparison: "ACTIVE COMPARISON: Sharpening toggled",
         active: "Sharpened",
         processing: "Refining…",
         failed: "Image refinement failed.",
@@ -978,6 +981,25 @@ export const en = {
         copyView: "Copy view",
         dimensions: "Export size: {width} × {height}px",
       },
+    },
+    imageAnnotator: {
+      uploadHint: "Screenshots · feedback · tutorials · QA",
+      previewHint: "Click anywhere on the image to place a tag.",
+      dragHint: "{count} tags placed — drag markers to reposition.",
+      tagLabel: "Tag label",
+      tagPlaceholder: "Enter a name or note…",
+      addTag: "Add tag",
+      defaultLabel: "Untitled tag",
+      editLabel: "Edit tag label",
+      deleteTag: "Delete tag",
+      inspector: "Inspector",
+      inspectorEmpty:
+        "No tags yet. Tap or click the image to place your first label.",
+      coordinates: "x: {x}px · y: {y}px",
+      flattenDownload: "Flatten & Download",
+      flattenCopy: "Flatten & Copy",
+      footer:
+        "Tags are rendered on the client-side canvas only — your image never leaves the browser.",
     },
     watermark: {
       couldNotLoad: "Could not load the watermark image.",
@@ -1121,6 +1143,11 @@ export const en = {
       name: "Image Magnifier",
       description:
         "Zoom and pan images up to 32× to inspect fine details. Mouse-wheel zoom, drag to pan, with a mini-map overview.",
+    },
+    "image-annotator": {
+      name: "Image Annotator",
+      description:
+        "Place labeled tags on images for feedback and tutorials. Click to tag, drag to move, flatten locally.",
     },
   },
 } as const;

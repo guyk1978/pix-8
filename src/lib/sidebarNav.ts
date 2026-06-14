@@ -26,6 +26,7 @@ export const SIDEBAR_NAV_CATEGORIES: SidebarNavCategory[] = [
       "watermark",
       "image-filters",
       "magnifier",
+      "image-annotator",
     ],
   },
   {

@@ -9,6 +9,7 @@
 /tools/watermark /tools/editor-studio/watermark 301
 /tools/image-filters /tools/editor-studio/image-filters 301
 /tools/magnifier /tools/editor-studio/magnifier 301
+/tools/image-annotator /tools/editor-studio/image-annotator 301
 /tools/compressor /tools/optimization/compressor 301
 /tools/converter /tools/optimization/converter 301
 /tools/metadata-remover /tools/optimization/metadata-remover 301

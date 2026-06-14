@@ -89,7 +89,7 @@ export function ImageMagnifier() {
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
   const [isRefining, setIsRefining] = useState(false);
-  const [showOriginal, setShowOriginal] = useState(false);
+  const [isComparing, setIsComparing] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [viewState, setViewState] = useState<MagnifierViewState>({
     fitScale: 1,
@@ -148,6 +148,7 @@ export function ImageMagnifier() {
         pendingProjectRestoreRef.current = null;
         skipViewResetRef.current = false;
         restoredCanvasGenerationRef.current = 0;
+        setIsComparing(false);
         setRefinement(DEFAULT_REFINEMENT_SETTINGS);
         setIsResultMarked(false);
         setLockedSnapshot(null);
@@ -157,27 +158,37 @@ export function ImageMagnifier() {
     [loadFile],
   );
 
-  const applySharpeningToDisplay = useCallback(
-    (sharpenSettings: RefinementSettings) => {
+  const renderPreviewCanvas = useCallback(
+    (comparing: boolean, sharpenSettings: RefinementSettings) => {
       if (!sourceCanvasRef.current || !displayCanvasRef.current) {
         return;
       }
 
-      const shouldSharpen =
-        sharpenSettings.enabled && sharpenSettings.intensity > 0;
+      const shouldShowOriginal =
+        comparing ||
+        !sharpenSettings.enabled ||
+        sharpenSettings.intensity <= 0;
 
-      if (shouldSharpen) {
+      if (shouldShowOriginal) {
+        copyCanvasToCanvas(sourceCanvasRef.current, displayCanvasRef.current);
+      } else {
         renderRefinedCanvasFromSource(
           sourceCanvasRef.current,
           sharpenSettings,
           displayCanvasRef.current,
         );
-      } else {
-        copyCanvasToCanvas(sourceCanvasRef.current, displayCanvasRef.current);
       }
     },
     [],
   );
+
+  const handleCompareToggle = useCallback(() => {
+    const next = !isComparing;
+    setIsComparing(next);
+    if (sourceCanvasReady) {
+      renderPreviewCanvas(next, refinement);
+    }
+  }, [isComparing, refinement, renderPreviewCanvas, sourceCanvasReady]);
 
   const resetView = useCallback(() => {
     if (!source || !viewportRef.current) return;
@@ -338,7 +349,7 @@ export function ImageMagnifier() {
         setStripMetadata(settings.stripMetadata);
       }
 
-      applySharpeningToDisplay(settings.sharpenSettings);
+      renderPreviewCanvas(false, settings.sharpenSettings);
       setSettingsRevision((current) => current + 1);
 
       restoredCanvasGenerationRef.current = generation;
@@ -362,7 +373,7 @@ export function ImageMagnifier() {
     sourceCanvasReady,
     viewportSize.width,
     viewportSize.height,
-    applySharpeningToDisplay,
+    renderPreviewCanvas,
     setIsResultMarked,
   ]);
 
@@ -377,6 +388,29 @@ export function ImageMagnifier() {
     }
 
     if (pendingProjectRestoreRef.current) {
+      return;
+    }
+
+    if (isComparing) {
+      renderPreviewCanvas(true, refinement);
+    }
+  }, [isComparing, source, sourceCanvasReady, refinement, renderPreviewCanvas]);
+
+  useEffect(() => {
+    if (
+      !source ||
+      !sourceCanvasReady ||
+      !sourceCanvasRef.current ||
+      !displayCanvasRef.current
+    ) {
+      return;
+    }
+
+    if (pendingProjectRestoreRef.current) {
+      return;
+    }
+
+    if (isComparing) {
       return;
     }
 
@@ -396,21 +430,7 @@ export function ImageMagnifier() {
     const timer = window.setTimeout(() => {
       try {
         if (cancelled) return;
-
-        const shouldShowOriginal =
-          showOriginal ||
-          !debouncedRefinement.enabled ||
-          debouncedRefinement.intensity <= 0;
-
-        if (shouldShowOriginal) {
-          copyCanvasToCanvas(sourceCanvasRef.current!, displayCanvasRef.current);
-        } else {
-          renderRefinedCanvasFromSource(
-            sourceCanvasRef.current!,
-            debouncedRefinement,
-            displayCanvasRef.current,
-          );
-        }
+        renderPreviewCanvas(false, debouncedRefinement);
       } catch (cause) {
         if (!cancelled) {
           setError(
@@ -435,9 +455,10 @@ export function ImageMagnifier() {
     sourceCanvasReady,
     debouncedRefinement,
     refinement,
-    showOriginal,
+    isComparing,
     language,
     setError,
+    renderPreviewCanvas,
   ]);
 
   const displayScale = getDisplayScale(viewState);
@@ -729,7 +750,7 @@ export function ImageMagnifier() {
       : "cursor-default";
 
   const refinementActive =
-    refinement.enabled && refinement.intensity > 0 && !showOriginal;
+    refinement.enabled && refinement.intensity > 0 && !isComparing;
 
   return (
     <ToolWorkspace
@@ -810,6 +831,12 @@ export function ImageMagnifier() {
                 onNavigate={handleMiniMapNavigate}
               />
 
+              {isComparing ? (
+                <div className="pointer-events-none absolute end-3 top-3 z-10 rounded-sm border border-accent/40 bg-card/95 px-2.5 py-1 font-mono text-[10px] text-accent shadow-[var(--shadow-elevated)] backdrop-blur-sm">
+                  {t("toolUi.magnifier.refinement.activeComparison")}
+                </div>
+              ) : null}
+
               {isResultMarked && !resultStale ? (
                 <div className="pointer-events-none absolute start-3 top-3 z-10 rounded-sm border border-accent/40 bg-card/95 px-2.5 py-1 font-mono text-[10px] text-accent shadow-[var(--shadow-elevated)] backdrop-blur-sm">
                   {t("toolUi.magnifier.export.resultLocked")}
@@ -822,32 +849,37 @@ export function ImageMagnifier() {
             </div>
           </ToolWorkspacePreview>
 
-          <div className="mt-2 flex justify-center">
-            <button
-              type="button"
-              disabled={!source}
-              className="font-label text-xs text-accent underline-offset-2 transition-colors hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-              onPointerDown={() => setShowOriginal(true)}
-              onPointerUp={() => setShowOriginal(false)}
-              onPointerLeave={() => setShowOriginal(false)}
-              onPointerCancel={() => setShowOriginal(false)}
-              onKeyDown={(event) => {
-                if (event.key === " " || event.key === "Enter") {
-                  event.preventDefault();
-                  setShowOriginal(true);
-                }
-              }}
-              onKeyUp={(event) => {
-                if (event.key === " " || event.key === "Enter") {
-                  event.preventDefault();
-                  setShowOriginal(false);
-                }
-              }}
-            >
-              {showOriginal
-                ? t("toolUi.magnifier.refinement.showingOriginal")
-                : t("toolUi.magnifier.refinement.showOriginal")}
-            </button>
+          <div className="mt-2 flex flex-col items-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                disabled={!source}
+                aria-pressed={isComparing}
+                onClick={handleCompareToggle}
+                className={`tool-chip-button disabled:cursor-not-allowed disabled:opacity-40 ${
+                  isComparing
+                    ? "border-accent/50 bg-accent-muted text-accent shadow-[0_0_14px_color-mix(in_srgb,var(--accent)_35%,transparent)] ring-2 ring-accent/30"
+                    : ""
+                }`}
+              >
+                {t("toolUi.magnifier.refinement.compareOriginal")}
+              </button>
+
+              <button
+                type="button"
+                disabled={!source}
+                onClick={resetView}
+                className="tool-chip-button disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {t("toolUi.magnifier.resetView")}
+              </button>
+            </div>
+
+            {isComparing ? (
+              <p className="font-mono text-[10px] text-accent">
+                {t("toolUi.magnifier.refinement.activeComparison")}
+              </p>
+            ) : null}
           </div>
         </>
       )}

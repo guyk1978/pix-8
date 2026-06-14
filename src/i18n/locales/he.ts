@@ -943,6 +943,9 @@ export const he: TranslationDictionary = {
         hint: "השיפור אינו הרסני — קובץ המקור לא משתנה. ההתאמות מוצגות רק על קנבס התצוגה המקדימה.",
         showOriginal: "הצג מקור",
         showingOriginal: "מציג מקור…",
+        compareOriginal: "השוואת מקור",
+        comparingOriginal: "מציג תמונת מקור",
+        activeComparison: "השוואה פעילה: החידוד כבוי",
         active: "מחודד",
         processing: "משפר…",
         failed: "שיפור התמונה נכשל.",
@@ -975,6 +978,23 @@ export const he: TranslationDictionary = {
         copyView: "העתק תצוגה",
         dimensions: "גודל ייצוא: {width} × {height}px",
       },
+    },
+    imageAnnotator: {
+      uploadHint: "צילומי מסך · משוב · מדריכים · QA",
+      previewHint: "לחצו בכל מקום על התמונה כדי להוסיף תג.",
+      dragHint: "{count} תגיות — גררו סמנים לשינוי מיקום.",
+      tagLabel: "תווית תג",
+      tagPlaceholder: "הזינו שם או הערה…",
+      addTag: "הוסף תג",
+      defaultLabel: "תג ללא שם",
+      editLabel: "עריכת תווית",
+      deleteTag: "מחק תג",
+      inspector: "Inspector",
+      inspectorEmpty: "אין תגיות עדיין. הקישו או לחצו על התמונה להוספת תג ראשון.",
+      coordinates: "x: {x}px · y: {y}px",
+      flattenDownload: "שטח והורד",
+      flattenCopy: "שטח והעתק",
+      footer: "התגיות מרונדרות בקנבס מקומי בלבד — התמונה לא עוזבת את הדפדפן.",
     },
     watermark: {
       couldNotLoad: "לא ניתן לטעון את תמונת סימן המים.",
@@ -1109,6 +1129,11 @@ export const he: TranslationDictionary = {
       name: "מגדיל תמונה (Zoom & Pan)",
       description:
         "זום והזזה עד פי 32 לבדיקת פרטים דקים. זום בגלגלת, גרירה להזזה, עם מפת מיני.",
+    },
+    "image-annotator": {
+      name: "מסמן תמונות (Annotator)",
+      description:
+        "הוספת תגיות מתויגות לתמונות למשוב ומדריכים. לחיצה לתיוג, גרירה להזזה, שטיחה מקומית.",
     },
   },
 };

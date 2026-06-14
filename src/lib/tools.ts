@@ -28,7 +28,8 @@ export type ToolId =
   | "image-to-svg"
   | "image-collage"
   | "meme-generator"
-  | "magnifier";
+  | "magnifier"
+  | "image-annotator";
 
 export interface Tool {
   id: ToolId;
@@ -296,6 +297,16 @@ export const tools: Tool[] = [
       "Zoom and pan images up to 32× to inspect fine details. Mouse-wheel zoom, drag to pan, with a mini-map overview.",
     href: "/tools/editor-studio/magnifier",
     tag: "ZOOM",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "image-annotator",
+    name: "Image Annotator",
+    description:
+      "Place labeled tags on images for feedback, tutorials, and QA. Click to tag, drag to reposition, flatten locally.",
+    href: "/tools/editor-studio/image-annotator",
+    tag: "ANNOTATE",
     category: "basic-editing",
     status: "ready",
   },

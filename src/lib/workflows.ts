@@ -30,6 +30,7 @@ const WORKFLOW_MAP: Record<ToolId, ToolId[]> = {
   "image-collage": ["compressor", "border-generator", "image-filters"],
   "meme-generator": ["compressor", "cropper", "text-overlay"],
   magnifier: ["color-picker", "sharpener", "cropper"],
+  "image-annotator": ["text-overlay", "cropper", "compressor"],
 };
 
 export function getWorkflowSuggestions(toolId: ToolId): WorkflowLink[] {
