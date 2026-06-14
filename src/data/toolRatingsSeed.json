@@ -1,0 +1,38 @@
+{
+  "default": {
+    "ratingValue": 4.6,
+    "ratingCount": 38
+  },
+  "resizer": {
+    "ratingValue": 4.8,
+    "ratingCount": 142
+  },
+  "compressor": {
+    "ratingValue": 4.7,
+    "ratingCount": 96
+  },
+  "converter": {
+    "ratingValue": 4.7,
+    "ratingCount": 74
+  },
+  "cropper": {
+    "ratingValue": 4.8,
+    "ratingCount": 118
+  },
+  "bg-remover": {
+    "ratingValue": 4.5,
+    "ratingCount": 67
+  },
+  "metadata-remover": {
+    "ratingValue": 4.9,
+    "ratingCount": 88
+  },
+  "magnifier": {
+    "ratingValue": 4.7,
+    "ratingCount": 52
+  },
+  "image-annotator": {
+    "ratingValue": 4.6,
+    "ratingCount": 21
+  }
+}

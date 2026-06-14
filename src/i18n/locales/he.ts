@@ -220,6 +220,14 @@ export const he: TranslationDictionary = {
     addLabel: "הוסף למועדפים",
     removeLabel: "הסר מהמועדפים",
   },
+  toolRating: {
+    sectionLabel: "דירוג כלי",
+    prompt: "דרגו את הכלי",
+    thankYou: "תודה על הדירוג!",
+    ratingsLabel: "דירוגים",
+    starsLabel: "דירוג כוכבים",
+    rateStars: "דרגו {count} מתוך 5 כוכבים",
+  },
   projects: {
     eyebrow: "סביבת עבודה מקומית",
     title: "הפרויקטים שלי",

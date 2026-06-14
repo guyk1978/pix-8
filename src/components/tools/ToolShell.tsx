@@ -4,6 +4,7 @@ import { Suspense, useEffect, type ReactNode } from "react";
 import { RelatedArticles } from "@/components/articles/RelatedArticles";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { ToolProjectProvider } from "@/components/projects/ToolProjectContext";
+import { ToolStarRating } from "@/components/tools/ToolStarRating";
 import { ToolHeaderHero } from "@/components/tools/ToolHeaderHero";
 import { WorkflowPanel } from "@/components/tools/workflow/WorkflowPanel";
 import { WorkflowProvider } from "@/components/tools/workflow/WorkflowContext";
@@ -62,6 +63,8 @@ export function ToolShell({
                 </div>
               </WorkflowPanel>
             </div>
+
+            <ToolStarRating toolId={tool.id} toolName={toolName} />
 
             <RelatedArticles
               articlesEn={relatedArticlesEn}

@@ -219,6 +219,14 @@ export const en = {
     addLabel: "Add to favorites",
     removeLabel: "Remove from favorites",
   },
+  toolRating: {
+    sectionLabel: "Tool rating",
+    prompt: "Rate this tool",
+    thankYou: "Thank you for your rating!",
+    ratingsLabel: "ratings",
+    starsLabel: "Star rating",
+    rateStars: "Rate {count} out of 5 stars",
+  },
   projects: {
     eyebrow: "Local workspace",
     title: "My Projects",
