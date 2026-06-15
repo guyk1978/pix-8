@@ -9,10 +9,12 @@ import { IMAGE_ANNOTATOR_LANDINGS } from "./imageAnnotatorLandings";
 import { IMAGE_ANNOTATOR_LANDINGS_HE } from "./imageAnnotatorLandings.he";
 import { BACKGROUND_REMOVER_LANDINGS } from "./backgroundRemoverLandings";
 import { RESIZER_LANDINGS } from "./resizerLandings";
+import { CROPPER_ARTICLE, CROPPER_LANDINGS } from "./cropperLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
 const RESIZER_TOOL_PATH = "/tools/editor-studio/resizer";
+const CROPPER_TOOL_PATH = "/tools/editor-studio/cropper";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -46,6 +48,154 @@ describe("resolveFooterResourceCategory", () => {
 
   it("returns resizer for Resizer tool URL", () => {
     assert.equal(resolveFooterResourceCategory(RESIZER_TOOL_PATH), "resizer");
+  });
+
+  it("returns cropper for Cropper tool URL", () => {
+    assert.equal(resolveFooterResourceCategory(CROPPER_TOOL_PATH), "cropper");
+  });
+
+  it("returns cropper for crop image online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["crop-image-online"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for free image cropper landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["free-image-cropper"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for crop photos to size landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["crop-photos-to-size"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for image cutter online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["image-cutter-online"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for crop image to square landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["crop-image-to-square"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for crop image to 16:9 landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["crop-image-to-16-9"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for crop image to 4:3 landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["crop-image-to-4-3"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for free aspect ratio image cropper landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["free-aspect-ratio-image-cropper"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for crop image without quality loss landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["crop-image-without-quality-loss"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for precision image cropper landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["precision-image-cropper"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for crop image for ecommerce product photos landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["crop-image-for-ecommerce-product-photos"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for professional photo cropper landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["professional-photo-cropper"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for client-side image cropper landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["client-side-image-cropper"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for privacy-focused image cutter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["privacy-focused-image-cutter"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for no-upload image cropper landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["no-upload-image-cropper"].path,
+      ),
+      "cropper",
+    );
+  });
+
+  it("returns cropper for browser-based image cropper tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CROPPER_LANDINGS["browser-based-image-cropper-tool"].path,
+      ),
+      "cropper",
+    );
   });
 
   it("returns resizer for resize image online landing URL", () => {
@@ -521,6 +671,76 @@ describe("getFooterResources", () => {
       RESIZER_LANDINGS["browser-based-photo-resizer"].path,
     );
     assert.equal(links[16]?.href, "/articles/privacy-and-speed-local-resizing");
+  });
+
+  it("returns cropper landing and guide links", () => {
+    const links = getFooterResources("cropper");
+    assert.equal(links.length, 17);
+    assert.equal(
+      links[0]?.href,
+      CROPPER_LANDINGS["crop-image-online"].path,
+    );
+    assert.equal(
+      links[1]?.href,
+      CROPPER_LANDINGS["free-image-cropper"].path,
+    );
+    assert.equal(
+      links[2]?.href,
+      CROPPER_LANDINGS["crop-photos-to-size"].path,
+    );
+    assert.equal(
+      links[3]?.href,
+      CROPPER_LANDINGS["image-cutter-online"].path,
+    );
+    assert.equal(
+      links[4]?.href,
+      CROPPER_LANDINGS["crop-image-to-square"].path,
+    );
+    assert.equal(
+      links[5]?.href,
+      CROPPER_LANDINGS["crop-image-to-16-9"].path,
+    );
+    assert.equal(
+      links[6]?.href,
+      CROPPER_LANDINGS["crop-image-to-4-3"].path,
+    );
+    assert.equal(
+      links[7]?.href,
+      CROPPER_LANDINGS["free-aspect-ratio-image-cropper"].path,
+    );
+    assert.equal(
+      links[8]?.href,
+      CROPPER_LANDINGS["crop-image-without-quality-loss"].path,
+    );
+    assert.equal(
+      links[9]?.href,
+      CROPPER_LANDINGS["precision-image-cropper"].path,
+    );
+    assert.equal(
+      links[10]?.href,
+      CROPPER_LANDINGS["crop-image-for-ecommerce-product-photos"].path,
+    );
+    assert.equal(
+      links[11]?.href,
+      CROPPER_LANDINGS["professional-photo-cropper"].path,
+    );
+    assert.equal(
+      links[12]?.href,
+      CROPPER_LANDINGS["client-side-image-cropper"].path,
+    );
+    assert.equal(
+      links[13]?.href,
+      CROPPER_LANDINGS["privacy-focused-image-cutter"].path,
+    );
+    assert.equal(
+      links[14]?.href,
+      CROPPER_LANDINGS["no-upload-image-cropper"].path,
+    );
+    assert.equal(
+      links[15]?.href,
+      CROPPER_LANDINGS["browser-based-image-cropper-tool"].path,
+    );
+    assert.equal(links[16]?.href, CROPPER_ARTICLE.href);
   });
 
   it("returns remover landing and guide links", () => {

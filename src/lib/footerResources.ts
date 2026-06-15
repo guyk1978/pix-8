@@ -16,6 +16,14 @@ import {
   type ImageAnnotatorLandingId,
 } from "@/lib/imageAnnotatorLandings";
 import {
+  getCropperArticle,
+  getCropperLandings,
+} from "@/lib/cropperLandingsLocale";
+import {
+  listCropperLandings,
+  type CropperLandingId,
+} from "@/lib/cropperLandings";
+import {
   getResizerArticle,
   getResizerLandings,
 } from "@/lib/resizerLandingsLocale";
@@ -32,6 +40,7 @@ export const FOOTER_RESOURCE_MAX_LINKS = 5;
 export type FooterResourceCategory =
   | "annotator"
   | "compressor"
+  | "cropper"
   | "remover"
   | "resizer";
 
@@ -78,6 +87,27 @@ const REMOVER_LANDING_PRIORITY_OVERRIDES: Partial<
   "browser-based-background-eraser": 10,
   "no-upload-image-background-remover": 11,
   "privacy-first-background-removal-tool": 12,
+};
+
+const CROPPER_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<CropperLandingId, number>
+> = {
+  "crop-image-online": 1,
+  "free-image-cropper": 2,
+  "crop-photos-to-size": 3,
+  "image-cutter-online": 4,
+  "crop-image-to-square": 5,
+  "crop-image-to-16-9": 6,
+  "crop-image-to-4-3": 7,
+  "free-aspect-ratio-image-cropper": 8,
+  "crop-image-without-quality-loss": 9,
+  "precision-image-cropper": 10,
+  "crop-image-for-ecommerce-product-photos": 11,
+  "professional-photo-cropper": 12,
+  "client-side-image-cropper": 13,
+  "privacy-focused-image-cutter": 14,
+  "no-upload-image-cropper": 15,
+  "browser-based-image-cropper-tool": 16,
 };
 
 const RESIZER_LANDING_PRIORITY_OVERRIDES: Partial<
@@ -128,6 +158,19 @@ function buildRemoverLandingResources(
   }));
 }
 
+function buildCropperLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getCropperLandings(language);
+
+  return listCropperLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "cropper" as const,
+    priority: CROPPER_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildResizerLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -163,6 +206,17 @@ function buildRemoverGuideResource(language: Language): FooterResourceEntry {
   };
 }
 
+function buildCropperGuideResource(language: Language): FooterResourceEntry {
+  const article = getCropperArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "cropper",
+    priority: 17,
+  };
+}
+
 function buildResizerGuideResource(language: Language): FooterResourceEntry {
   const article = getResizerArticle(language);
 
@@ -184,6 +238,8 @@ export function buildFooterResourceRegistry(
     buildRemoverGuideResource(language),
     ...buildResizerLandingResources(language),
     buildResizerGuideResource(language),
+    ...buildCropperLandingResources(language),
+    buildCropperGuideResource(language),
   ];
 }
 
@@ -199,6 +255,7 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
     (entry) => [entry.path, "remover"] as const,
   ),
   ...listResizerLandings().map((entry) => [entry.path, "resizer"] as const),
+  ...listCropperLandings().map((entry) => [entry.path, "cropper"] as const),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -209,6 +266,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   compressor: "compressor",
   "bg-remover": "remover",
   resizer: "resizer",
+  cropper: "cropper",
 };
 
 export interface GetFooterResourcesOptions {

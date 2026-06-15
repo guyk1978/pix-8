@@ -9,6 +9,11 @@ import {
   type ImageAnnotatorLandingId,
 } from "@/lib/imageAnnotatorLandings";
 import {
+  getCropperLandingBySlug,
+  listCropperLandings,
+  type CropperLandingId,
+} from "@/lib/cropperLandings";
+import {
   getResizerLandingBySlug,
   listResizerLandings,
   type ResizerLandingId,
@@ -17,11 +22,13 @@ import {
 export type LandingPageFamily =
   | "image-annotator"
   | "background-remover"
+  | "cropper"
   | "resizer";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
   | { family: "background-remover"; id: BackgroundRemoverLandingId }
+  | { family: "cropper"; id: CropperLandingId }
   | { family: "resizer"; id: ResizerLandingId };
 
 export function resolveLandingPageBySlug(
@@ -42,6 +49,11 @@ export function resolveLandingPageBySlug(
     return { family: "resizer", id: resizerLanding.id };
   }
 
+  const cropperLanding = getCropperLandingBySlug(slug);
+  if (cropperLanding) {
+    return { family: "cropper", id: cropperLanding.id };
+  }
+
   return undefined;
 }
 
@@ -60,6 +72,8 @@ export function getLandingSeoBySlug(slug: string) {
       );
     case "resizer":
       return listResizerLandings().find((entry) => entry.id === resolved.id);
+    case "cropper":
+      return listCropperLandings().find((entry) => entry.id === resolved.id);
   }
 }
 
@@ -78,5 +92,9 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
-  return [...annotatorParams, ...removerParams, ...resizerParams];
+  const cropperParams = listCropperLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
+  return [...annotatorParams, ...removerParams, ...resizerParams, ...cropperParams];
 }
