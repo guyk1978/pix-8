@@ -8,9 +8,11 @@ import {
 import { IMAGE_ANNOTATOR_LANDINGS } from "./imageAnnotatorLandings";
 import { IMAGE_ANNOTATOR_LANDINGS_HE } from "./imageAnnotatorLandings.he";
 import { BACKGROUND_REMOVER_LANDINGS } from "./backgroundRemoverLandings";
+import { RESIZER_LANDINGS } from "./resizerLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
+const RESIZER_TOOL_PATH = "/tools/editor-studio/resizer";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -40,6 +42,154 @@ describe("resolveFooterResourceCategory", () => {
 
   it("returns remover for Background Remover tool URL", () => {
     assert.equal(resolveFooterResourceCategory(BG_REMOVER_TOOL_PATH), "remover");
+  });
+
+  it("returns resizer for Resizer tool URL", () => {
+    assert.equal(resolveFooterResourceCategory(RESIZER_TOOL_PATH), "resizer");
+  });
+
+  it("returns resizer for resize image online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["resize-image-online"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for change image dimensions landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["change-image-dimensions"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for image resizer free landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["image-resizer-free"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for batch image resizer landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["batch-image-resizer"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for resize image for Instagram landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["resize-image-for-instagram"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for LinkedIn profile image resizer landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["image-resizer-for-linkedin-profile"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for Facebook cover resize landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["resize-photos-for-facebook-covers"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for social media image dimensions landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["image-dimensions-for-social-media"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for resize image to pixels landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["resize-image-to-pixels"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for maintain aspect ratio image resizer landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["maintain-aspect-ratio-image-resizer"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for resize image without quality loss landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["resize-image-without-quality-loss"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for web developers image resizer landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["image-resizer-for-web-developers"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for client-side image resizer landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["client-side-image-resizer"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for privacy-focused photo resizer landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["privacy-focused-photo-resizer"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for no-upload image resizer landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["no-upload-image-resizer"].path,
+      ),
+      "resizer",
+    );
+  });
+
+  it("returns resizer for browser-based photo resizer landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        RESIZER_LANDINGS["browser-based-photo-resizer"].path,
+      ),
+      "resizer",
+    );
   });
 
   it("returns null for unknown URLs", () => {
@@ -301,6 +451,76 @@ describe("getFooterResources", () => {
 
   it("returns an empty array for categories with no registry entries", () => {
     assert.deepEqual(getFooterResources("compressor"), []);
+  });
+
+  it("returns resizer landing and guide links", () => {
+    const links = getFooterResources("resizer");
+    assert.equal(links.length, 17);
+    assert.equal(
+      links[0]?.href,
+      RESIZER_LANDINGS["resize-image-online"].path,
+    );
+    assert.equal(
+      links[1]?.href,
+      RESIZER_LANDINGS["change-image-dimensions"].path,
+    );
+    assert.equal(
+      links[2]?.href,
+      RESIZER_LANDINGS["image-resizer-free"].path,
+    );
+    assert.equal(
+      links[3]?.href,
+      RESIZER_LANDINGS["batch-image-resizer"].path,
+    );
+    assert.equal(
+      links[4]?.href,
+      RESIZER_LANDINGS["resize-image-for-instagram"].path,
+    );
+    assert.equal(
+      links[5]?.href,
+      RESIZER_LANDINGS["image-resizer-for-linkedin-profile"].path,
+    );
+    assert.equal(
+      links[6]?.href,
+      RESIZER_LANDINGS["resize-photos-for-facebook-covers"].path,
+    );
+    assert.equal(
+      links[7]?.href,
+      RESIZER_LANDINGS["image-dimensions-for-social-media"].path,
+    );
+    assert.equal(
+      links[8]?.href,
+      RESIZER_LANDINGS["resize-image-to-pixels"].path,
+    );
+    assert.equal(
+      links[9]?.href,
+      RESIZER_LANDINGS["maintain-aspect-ratio-image-resizer"].path,
+    );
+    assert.equal(
+      links[10]?.href,
+      RESIZER_LANDINGS["resize-image-without-quality-loss"].path,
+    );
+    assert.equal(
+      links[11]?.href,
+      RESIZER_LANDINGS["image-resizer-for-web-developers"].path,
+    );
+    assert.equal(
+      links[12]?.href,
+      RESIZER_LANDINGS["client-side-image-resizer"].path,
+    );
+    assert.equal(
+      links[13]?.href,
+      RESIZER_LANDINGS["privacy-focused-photo-resizer"].path,
+    );
+    assert.equal(
+      links[14]?.href,
+      RESIZER_LANDINGS["no-upload-image-resizer"].path,
+    );
+    assert.equal(
+      links[15]?.href,
+      RESIZER_LANDINGS["browser-based-photo-resizer"].path,
+    );
+    assert.equal(links[16]?.href, "/articles/privacy-and-speed-local-resizing");
   });
 
   it("returns remover landing and guide links", () => {

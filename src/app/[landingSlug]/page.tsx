@@ -3,15 +3,11 @@ import { BackgroundRemoverLandingJsonLd } from "@/components/landing/BackgroundR
 import { BackgroundRemoverLandingView } from "@/components/landing/BackgroundRemoverLandingView";
 import { ImageAnnotatorLandingJsonLd } from "@/components/landing/ImageAnnotatorLandingJsonLd";
 import { ImageAnnotatorLandingView } from "@/components/landing/ImageAnnotatorLandingView";
-import {
-  getBackgroundRemoverLandingBySlug,
-} from "@/lib/backgroundRemoverLandings";
-import {
-  getLandingBySlug,
-  IMAGE_ANNOTATOR_LANDINGS,
-} from "@/lib/imageAnnotatorLandings";
+import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd";
+import { ResizerLandingView } from "@/components/landing/ResizerLandingView";
 import {
   getAllLandingStaticParams,
+  getLandingSeoBySlug,
   resolveLandingPageBySlug,
 } from "@/lib/landingPages";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -29,9 +25,7 @@ export async function generateMetadata({
   params,
 }: ToolLandingPageProps): Promise<Metadata> {
   const { landingSlug } = await params;
-  const annotatorLanding = getLandingBySlug(landingSlug);
-  const removerLanding = getBackgroundRemoverLandingBySlug(landingSlug);
-  const landing = annotatorLanding ?? removerLanding;
+  const landing = getLandingSeoBySlug(landingSlug);
 
   if (!landing) {
     return { title: "Page not found" };
@@ -68,10 +62,19 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
     );
   }
 
+  if (resolved.family === "background-remover") {
+    return (
+      <>
+        <BackgroundRemoverLandingJsonLd landingId={resolved.id} />
+        <BackgroundRemoverLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
   return (
     <>
-      <BackgroundRemoverLandingJsonLd landingId={resolved.id} />
-      <BackgroundRemoverLandingView landingId={resolved.id} />
+      <ResizerLandingJsonLd landingId={resolved.id} />
+      <ResizerLandingView landingId={resolved.id} />
     </>
   );
 }

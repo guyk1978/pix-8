@@ -8,20 +8,32 @@ import {
   getBackgroundRemoverLandings,
 } from "@/lib/backgroundRemoverLandingsLocale";
 import {
+  getImageAnnotatorArticle,
+  getImageAnnotatorLandings,
+} from "@/lib/imageAnnotatorLandingsLocale";
+import {
   IMAGE_ANNOTATOR_LANDINGS,
   type ImageAnnotatorLandingId,
 } from "@/lib/imageAnnotatorLandings";
 import {
-  getImageAnnotatorArticle,
-  getImageAnnotatorLandings,
-} from "@/lib/imageAnnotatorLandingsLocale";
+  getResizerArticle,
+  getResizerLandings,
+} from "@/lib/resizerLandingsLocale";
+import {
+  listResizerLandings,
+  type ResizerLandingId,
+} from "@/lib/resizerLandings";
 import { getToolIdFromPathname, normalizePathname } from "@/lib/routes";
 import type { ToolId } from "@/lib/tools";
 
 export const FOOTER_RESOURCE_MAX_LINKS = 5;
 
 /** Resource groups shown in the footer — extend as you add landing page families. */
-export type FooterResourceCategory = "annotator" | "compressor" | "remover";
+export type FooterResourceCategory =
+  | "annotator"
+  | "compressor"
+  | "remover"
+  | "resizer";
 
 export interface FooterResourceEntry {
   href: string;
@@ -68,6 +80,27 @@ const REMOVER_LANDING_PRIORITY_OVERRIDES: Partial<
   "privacy-first-background-removal-tool": 12,
 };
 
+const RESIZER_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<ResizerLandingId, number>
+> = {
+  "resize-image-online": 1,
+  "change-image-dimensions": 2,
+  "image-resizer-free": 3,
+  "batch-image-resizer": 4,
+  "resize-image-for-instagram": 5,
+  "image-resizer-for-linkedin-profile": 6,
+  "resize-photos-for-facebook-covers": 7,
+  "image-dimensions-for-social-media": 8,
+  "resize-image-to-pixels": 9,
+  "maintain-aspect-ratio-image-resizer": 10,
+  "resize-image-without-quality-loss": 11,
+  "image-resizer-for-web-developers": 12,
+  "client-side-image-resizer": 13,
+  "privacy-focused-photo-resizer": 14,
+  "no-upload-image-resizer": 15,
+  "browser-based-photo-resizer": 16,
+};
+
 function buildAnnotatorLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -95,6 +128,19 @@ function buildRemoverLandingResources(
   }));
 }
 
+function buildResizerLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getResizerLandings(language);
+
+  return listResizerLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "resizer" as const,
+    priority: RESIZER_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildAnnotatorGuideResource(language: Language): FooterResourceEntry {
   const article = getImageAnnotatorArticle(language);
 
@@ -117,6 +163,17 @@ function buildRemoverGuideResource(language: Language): FooterResourceEntry {
   };
 }
 
+function buildResizerGuideResource(language: Language): FooterResourceEntry {
+  const article = getResizerArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "resizer",
+    priority: 17,
+  };
+}
+
 export function buildFooterResourceRegistry(
   language: Language = "en",
 ): FooterResourceEntry[] {
@@ -125,6 +182,8 @@ export function buildFooterResourceRegistry(
     buildAnnotatorGuideResource(language),
     ...buildRemoverLandingResources(language),
     buildRemoverGuideResource(language),
+    ...buildResizerLandingResources(language),
+    buildResizerGuideResource(language),
   ];
 }
 
@@ -139,6 +198,7 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listBackgroundRemoverLandings().map(
     (entry) => [entry.path, "remover"] as const,
   ),
+  ...listResizerLandings().map((entry) => [entry.path, "resizer"] as const),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -148,6 +208,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   "image-annotator": "annotator",
   compressor: "compressor",
   "bg-remover": "remover",
+  resizer: "resizer",
 };
 
 export interface GetFooterResourcesOptions {
