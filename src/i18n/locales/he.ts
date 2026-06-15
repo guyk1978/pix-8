@@ -268,6 +268,16 @@ export const he: TranslationDictionary = {
     copyright: "© {year} pix-8",
     zeroUploads: "ללא העלאות · ללא מעקב",
   },
+  siteFooter: {
+    resources: "משאבים",
+    resourcesNav: "מדריכים ודפי נחיתה של Image Annotator",
+    relatedTools: "כלים קשורים",
+    relatedToolsNav: "כלי תמונה קשורים",
+    legal: "משפטי ומידע",
+    legalNav: "מידע משפטי ואתר",
+    mission:
+      "כלי תמונה בצד הלקוח — כל פיקסל נשאר במכשיר שלך, ללא העלאה לשרת.",
+  },
   cookie: {
     title: "עוגיות עוזרות לנו לשפר את Pix-8",
     description:
@@ -478,6 +488,7 @@ export const he: TranslationDictionary = {
     sourcePreview: "תצוגה מקדימה של המקור",
     originalPreview: "תצוגה מקדימה של המקור",
     cropPreview: "תצוגה מקדימה של החיתוך",
+    customCutterPreview: "תצוגה מקדימה של חיתוך מותאם",
     transformPreview: "תצוגה מקדימה של השינוי",
     colorSamplingSource: "מקור דגימת צבע",
   },
@@ -544,6 +555,16 @@ export const he: TranslationDictionary = {
           hint: "פוסטים לאורך באינסטגרם",
         },
       },
+    },
+    customCutter: {
+      keepSelection: "שמור בחירה",
+      removeSelection: "הסר בחירה",
+      reset: "איפוס",
+      selectionSize: "{width} × {height}px",
+      selectionPlaceholder: "ציירו מלבן בחירה על התמונה",
+      hintDraw:
+        "לחצו וגררו כדי לצייר מלבן. הזיזו או שינו גודל, ואז שמרו או הסירו את הבחירה.",
+      removeRequiresPng: "חיתוך שקוף נשמר כ-PNG.",
     },
     bgRemover: {
       formatsHint: "אנשים, מוצרים, אובייקטים — PNG, JPG, WebP",
@@ -1043,6 +1064,11 @@ export const he: TranslationDictionary = {
     cropper: {
       name: "חותך",
       description: "חיתוך ומסגור תמונות בדיוק פיקסלים.",
+    },
+    "custom-cutter": {
+      name: "חיתוך מותאם",
+      description:
+        "ציירו אזור בחירה ידנית, ואז שמרו אותו או הסירו אותו עם שקיפות.",
     },
     "rotate-flip": {
       name: "סיבוב והיפוך",

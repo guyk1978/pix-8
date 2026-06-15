@@ -4,6 +4,7 @@ import { BackgroundRemover } from "@/components/tools/BackgroundRemover";
 import { Compressor } from "@/components/tools/Compressor";
 import { Converter } from "@/components/tools/Converter";
 import { Cropper } from "@/components/tools/Cropper";
+import { CustomCutter } from "@/components/tools/CustomCutter";
 import { ColorPicker } from "@/components/tools/ColorPicker";
 import { BorderGenerator } from "@/components/tools/BorderGenerator";
 import { FaviconGenerator } from "@/components/tools/FaviconGenerator";
@@ -41,6 +42,7 @@ export const TOOL_COMPONENTS: Partial<Record<ToolId, ComponentType>> = {
   converter: Converter,
   compressor: Compressor,
   cropper: Cropper,
+  "custom-cutter": CustomCutter,
   "rotate-flip": RotateFlip,
   watermark: Watermark,
   "bg-remover": BackgroundRemover,

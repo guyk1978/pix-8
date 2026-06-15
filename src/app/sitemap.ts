@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { IMAGE_ANNOTATOR_LANDINGS } from "@/lib/imageAnnotatorLandings";
 import { getAllArticles } from "@/lib/blog";
 import { SIDEBAR_CATEGORY_IDS } from "@/lib/sidebarNav";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -37,6 +38,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
     },
   ];
+
+  for (const landing of Object.values(IMAGE_ANNOTATOR_LANDINGS)) {
+    entries.push({
+      url: `${SITE_URL}${landing.path}`,
+      lastModified: now,
+    });
+  }
 
   for (const categoryId of SIDEBAR_CATEGORY_IDS) {
     entries.push({

@@ -5,6 +5,7 @@ export type ToolId =
   | "converter"
   | "compressor"
   | "cropper"
+  | "custom-cutter"
   | "rotate-flip"
   | "watermark"
   | "bg-remover"
@@ -75,6 +76,16 @@ export const tools: Tool[] = [
     description: "Crop and frame images with pixel-precise selection controls.",
     href: "/tools/editor-studio/cropper",
     tag: "CROP",
+    category: "basic-editing",
+    status: "ready",
+  },
+  {
+    id: "custom-cutter",
+    name: "Custom Cutter",
+    description:
+      "Draw a freeform rectangle, then keep or cut out the selection with transparent output — fully local.",
+    href: "/tools/editor-studio/custom-cutter",
+    tag: "CUT",
     category: "basic-editing",
     status: "ready",
   },

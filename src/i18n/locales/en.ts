@@ -267,6 +267,16 @@ export const en = {
     copyright: "© {year} pix-8",
     zeroUploads: "Zero uploads · Zero tracking",
   },
+  siteFooter: {
+    resources: "Resources",
+    resourcesNav: "Image Annotator guides and landing pages",
+    relatedTools: "Related Tools",
+    relatedToolsNav: "Related image utility tools",
+    legal: "Legal & Info",
+    legalNav: "Legal and site information",
+    mission:
+      "Client-side image tools — every pixel stays on your device, with zero server uploads.",
+  },
   cookie: {
     title: "Cookies help us improve Pix-8",
     description:
@@ -478,6 +488,7 @@ export const en = {
     sourcePreview: "Source preview",
     originalPreview: "Original preview",
     cropPreview: "Crop preview",
+    customCutterPreview: "Custom cutter preview",
     transformPreview: "Transform preview",
     colorSamplingSource: "Color sampling source",
   },
@@ -544,6 +555,16 @@ export const en = {
           hint: "Instagram portrait feed posts",
         },
       },
+    },
+    customCutter: {
+      keepSelection: "Keep Selection",
+      removeSelection: "Remove Selection",
+      reset: "Reset",
+      selectionSize: "{width} × {height}px",
+      selectionPlaceholder: "Draw a selection on the image",
+      hintDraw:
+        "Click and drag to draw a rectangle. Move or resize it, then keep or remove the selection.",
+      removeRequiresPng: "Cut-out exports as PNG to preserve transparency.",
     },
     bgRemover: {
       formatsHint: "People, products, objects — PNG, JPG, WebP",
@@ -1053,6 +1074,11 @@ export const en = {
     cropper: {
       name: "Cropper",
       description: "Crop and frame images with pixel-precise selection controls.",
+    },
+    "custom-cutter": {
+      name: "Custom Cutter",
+      description:
+        "Draw a selection manually, then keep the area or cut it out with transparency.",
     },
     "rotate-flip": {
       name: "Rotate & Flip",

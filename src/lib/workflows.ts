@@ -6,6 +6,7 @@ const WORKFLOW_MAP: Record<ToolId, ToolId[]> = {
   converter: ["compressor", "resizer", "base64-encoder"],
   compressor: ["metadata-remover", "converter", "favicon-generator"],
   cropper: ["resizer", "compressor", "border-generator"],
+  "custom-cutter": ["cropper", "bg-remover", "compressor"],
   "rotate-flip": ["cropper", "resizer", "lens-corrector"],
   watermark: ["compressor", "metadata-remover", "border-generator"],
   "bg-remover": ["resizer", "compressor", "border-generator"],

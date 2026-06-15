@@ -1,0 +1,6 @@
+export {
+  DRAW_ARROWS_FAQ,
+  DRAW_ARROWS_LANDING_PATH,
+  DRAW_ARROWS_LANDING_SEO,
+  DRAW_ARROWS_TOOL_HREF,
+} from "@/lib/imageAnnotatorLandings";

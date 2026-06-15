@@ -10,7 +10,8 @@
     "inventory": "tsx scripts/generate-inventory.ts",
     "postinstall": "tsx scripts/setup-ml-assets.ts && npm run inventory",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:footer-resources": "node --import tsx --test src/lib/footerResources.test.ts"
   },
   "dependencies": {
     "exifr": "^7.1.3",

@@ -18,6 +18,7 @@ export const SIDEBAR_NAV_CATEGORIES: SidebarNavCategory[] = [
     toolIds: [
       "resizer",
       "cropper",
+      "custom-cutter",
       "rotate-flip",
       "text-overlay",
       "image-overlay",
