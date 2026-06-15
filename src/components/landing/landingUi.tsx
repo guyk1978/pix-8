@@ -9,17 +9,19 @@ import type { ReactNode } from "react";
 interface LandingCtaButtonProps {
   children: ReactNode;
   href?: string;
+  accent?: string;
 }
 
 export function LandingCtaButton({
   children,
   href = IMAGE_ANNOTATOR_TOOL_HREF,
+  accent = LANDING_ACCENT,
 }: LandingCtaButtonProps) {
   return (
     <AppLink
       href={href}
       className="inline-flex min-h-11 items-center justify-center rounded-sm px-6 py-3 text-sm font-medium tracking-tight text-[#0f0f0f] transition-opacity hover:opacity-90"
-      style={{ backgroundColor: LANDING_ACCENT }}
+      style={{ backgroundColor: accent }}
     >
       {children}
     </AppLink>
@@ -29,21 +31,23 @@ export function LandingCtaButton({
 interface LandingFeatureCalloutProps {
   title: string;
   body: string;
+  accent?: string;
 }
 
-export function LandingFeatureCallout({ title, body }: LandingFeatureCalloutProps) {
+export function LandingFeatureCallout({
+  title,
+  body,
+  accent = LANDING_ACCENT,
+}: LandingFeatureCalloutProps) {
   return (
     <div
       className="rounded-sm border px-4 py-4 sm:px-5"
       style={{
-        borderColor: `color-mix(in srgb, ${LANDING_ACCENT} 35%, var(--border))`,
-        backgroundColor: `color-mix(in srgb, ${LANDING_ACCENT} 8%, var(--card))`,
+        borderColor: `color-mix(in srgb, ${accent} 35%, var(--border))`,
+        backgroundColor: `color-mix(in srgb, ${accent} 8%, var(--card))`,
       }}
     >
-      <p
-        className="font-label text-xs"
-        style={{ color: LANDING_ACCENT }}
-      >
+      <p className="font-label text-xs" style={{ color: accent }}>
         {title}
       </p>
       <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
@@ -61,8 +65,10 @@ export function LandingPrivacyNote() {
 
 export function LandingCapabilitiesList({
   capabilities = IMAGE_ANNOTATOR_CAPABILITIES,
+  accent = LANDING_ACCENT,
 }: {
   capabilities?: readonly string[];
+  accent?: string;
 }) {
   return (
     <ul className="mt-3 space-y-2">
@@ -73,7 +79,7 @@ export function LandingCapabilitiesList({
         >
           <span
             className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
-            style={{ backgroundColor: LANDING_ACCENT }}
+            style={{ backgroundColor: accent }}
             aria-hidden
           />
           {item}

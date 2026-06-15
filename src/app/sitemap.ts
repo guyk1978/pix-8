@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { listBackgroundRemoverLandings } from "@/lib/backgroundRemoverLandings";
 import { IMAGE_ANNOTATOR_LANDINGS } from "@/lib/imageAnnotatorLandings";
 import { getAllArticles } from "@/lib/blog";
 import { SIDEBAR_CATEGORY_IDS } from "@/lib/sidebarNav";
@@ -40,6 +41,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   for (const landing of Object.values(IMAGE_ANNOTATOR_LANDINGS)) {
+    entries.push({
+      url: `${SITE_URL}${landing.path}`,
+      lastModified: now,
+    });
+  }
+
+  for (const landing of listBackgroundRemoverLandings()) {
     entries.push({
       url: `${SITE_URL}${landing.path}`,
       lastModified: now,

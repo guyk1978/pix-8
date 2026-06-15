@@ -7,8 +7,10 @@ import {
 } from "./footerResources";
 import { IMAGE_ANNOTATOR_LANDINGS } from "./imageAnnotatorLandings";
 import { IMAGE_ANNOTATOR_LANDINGS_HE } from "./imageAnnotatorLandings.he";
+import { BACKGROUND_REMOVER_LANDINGS } from "./backgroundRemoverLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
+const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -34,6 +36,10 @@ describe("resolveFooterResourceCategory", () => {
 
   it("returns compressor for compressor tool URL", () => {
     assert.equal(resolveFooterResourceCategory(COMPRESSOR_TOOL_PATH), "compressor");
+  });
+
+  it("returns remover for Background Remover tool URL", () => {
+    assert.equal(resolveFooterResourceCategory(BG_REMOVER_TOOL_PATH), "remover");
   });
 
   it("returns null for unknown URLs", () => {
@@ -122,6 +128,114 @@ describe("resolveFooterResourceCategory", () => {
       "annotator",
     );
   });
+
+  it("returns remover for remove background online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["remove-background-from-image-online"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for transparent background maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["transparent-background-maker"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for remove image background free landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["remove-image-background-free"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for erase background online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["erase-background-online"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for e-commerce background remover landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["background-remover-for-ecommerce"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for marketing graphics landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["remove-background-for-marketing-graphics"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for social media photos landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["background-eraser-for-social-media-photos"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for photographers landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["professional-background-removal-for-photographers"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for client-side background remover landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["client-side-background-remover"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for browser-based background eraser landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["browser-based-background-eraser"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for no-upload image background remover landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["no-upload-image-background-remover"].path,
+      ),
+      "remover",
+    );
+  });
+
+  it("returns remover for privacy-first background removal tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        BACKGROUND_REMOVER_LANDINGS["privacy-first-background-removal-tool"].path,
+      ),
+      "remover",
+    );
+  });
 });
 
 describe("getFooterResources", () => {
@@ -187,6 +301,60 @@ describe("getFooterResources", () => {
 
   it("returns an empty array for categories with no registry entries", () => {
     assert.deepEqual(getFooterResources("compressor"), []);
+  });
+
+  it("returns remover landing and guide links", () => {
+    const links = getFooterResources("remover");
+    assert.equal(links.length, 13);
+    assert.equal(
+      links[0]?.href,
+      BACKGROUND_REMOVER_LANDINGS["remove-background-from-image-online"].path,
+    );
+    assert.equal(
+      links[1]?.href,
+      BACKGROUND_REMOVER_LANDINGS["transparent-background-maker"].path,
+    );
+    assert.equal(
+      links[2]?.href,
+      BACKGROUND_REMOVER_LANDINGS["remove-image-background-free"].path,
+    );
+    assert.equal(
+      links[3]?.href,
+      BACKGROUND_REMOVER_LANDINGS["erase-background-online"].path,
+    );
+    assert.equal(
+      links[4]?.href,
+      BACKGROUND_REMOVER_LANDINGS["background-remover-for-ecommerce"].path,
+    );
+    assert.equal(
+      links[5]?.href,
+      BACKGROUND_REMOVER_LANDINGS["remove-background-for-marketing-graphics"].path,
+    );
+    assert.equal(
+      links[6]?.href,
+      BACKGROUND_REMOVER_LANDINGS["background-eraser-for-social-media-photos"].path,
+    );
+    assert.equal(
+      links[7]?.href,
+      BACKGROUND_REMOVER_LANDINGS["professional-background-removal-for-photographers"].path,
+    );
+    assert.equal(
+      links[8]?.href,
+      BACKGROUND_REMOVER_LANDINGS["client-side-background-remover"].path,
+    );
+    assert.equal(
+      links[9]?.href,
+      BACKGROUND_REMOVER_LANDINGS["browser-based-background-eraser"].path,
+    );
+    assert.equal(links[10]?.href, "/articles/privacy-first-background-removal");
+    assert.equal(
+      links[11]?.href,
+      BACKGROUND_REMOVER_LANDINGS["no-upload-image-background-remover"].path,
+    );
+    assert.equal(
+      links[12]?.href,
+      BACKGROUND_REMOVER_LANDINGS["privacy-first-background-removal-tool"].path,
+    );
   });
 
   it("returns Hebrew labels when locale is he", () => {

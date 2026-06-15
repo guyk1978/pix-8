@@ -1,28 +1,37 @@
 import type { Metadata } from "next";
+import { BackgroundRemoverLandingJsonLd } from "@/components/landing/BackgroundRemoverLandingJsonLd";
+import { BackgroundRemoverLandingView } from "@/components/landing/BackgroundRemoverLandingView";
 import { ImageAnnotatorLandingJsonLd } from "@/components/landing/ImageAnnotatorLandingJsonLd";
 import { ImageAnnotatorLandingView } from "@/components/landing/ImageAnnotatorLandingView";
+import {
+  getBackgroundRemoverLandingBySlug,
+} from "@/lib/backgroundRemoverLandings";
 import {
   getLandingBySlug,
   IMAGE_ANNOTATOR_LANDINGS,
 } from "@/lib/imageAnnotatorLandings";
+import {
+  getAllLandingStaticParams,
+  resolveLandingPageBySlug,
+} from "@/lib/landingPages";
 import { SITE_URL } from "@/lib/siteUrl";
 import { notFound } from "next/navigation";
 
-interface ImageAnnotatorLandingPageProps {
+interface ToolLandingPageProps {
   params: Promise<{ landingSlug: string }>;
 }
 
 export function generateStaticParams() {
-  return Object.values(IMAGE_ANNOTATOR_LANDINGS).map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
+  return getAllLandingStaticParams();
 }
 
 export async function generateMetadata({
   params,
-}: ImageAnnotatorLandingPageProps): Promise<Metadata> {
+}: ToolLandingPageProps): Promise<Metadata> {
   const { landingSlug } = await params;
-  const landing = getLandingBySlug(landingSlug);
+  const annotatorLanding = getLandingBySlug(landingSlug);
+  const removerLanding = getBackgroundRemoverLandingBySlug(landingSlug);
+  const landing = annotatorLanding ?? removerLanding;
 
   if (!landing) {
     return { title: "Page not found" };
@@ -42,20 +51,27 @@ export async function generateMetadata({
   };
 }
 
-export default async function ImageAnnotatorLandingPage({
-  params,
-}: ImageAnnotatorLandingPageProps) {
+export default async function ToolLandingPage({ params }: ToolLandingPageProps) {
   const { landingSlug } = await params;
-  const landing = getLandingBySlug(landingSlug);
+  const resolved = resolveLandingPageBySlug(landingSlug);
 
-  if (!landing) {
+  if (!resolved) {
     notFound();
+  }
+
+  if (resolved.family === "image-annotator") {
+    return (
+      <>
+        <ImageAnnotatorLandingJsonLd landingId={resolved.id} />
+        <ImageAnnotatorLandingView landingId={resolved.id} />
+      </>
+    );
   }
 
   return (
     <>
-      <ImageAnnotatorLandingJsonLd landingId={landing.id} />
-      <ImageAnnotatorLandingView landingId={landing.id} />
+      <BackgroundRemoverLandingJsonLd landingId={resolved.id} />
+      <BackgroundRemoverLandingView landingId={resolved.id} />
     </>
   );
 }

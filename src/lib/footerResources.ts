@@ -1,5 +1,13 @@
 import type { Language } from "@/lib/language";
 import {
+  listBackgroundRemoverLandings,
+  type BackgroundRemoverLandingId,
+} from "@/lib/backgroundRemoverLandings";
+import {
+  getBackgroundRemoverArticle,
+  getBackgroundRemoverLandings,
+} from "@/lib/backgroundRemoverLandingsLocale";
+import {
   IMAGE_ANNOTATOR_LANDINGS,
   type ImageAnnotatorLandingId,
 } from "@/lib/imageAnnotatorLandings";
@@ -13,7 +21,7 @@ import type { ToolId } from "@/lib/tools";
 export const FOOTER_RESOURCE_MAX_LINKS = 5;
 
 /** Resource groups shown in the footer — extend as you add landing page families. */
-export type FooterResourceCategory = "annotator" | "compressor";
+export type FooterResourceCategory = "annotator" | "compressor" | "remover";
 
 export interface FooterResourceEntry {
   href: string;
@@ -43,6 +51,23 @@ const ANNOTATOR_LANDING_PRIORITY_OVERRIDES: Partial<
   "lightweight-image-markup-tool": 15,
 };
 
+const REMOVER_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<BackgroundRemoverLandingId, number>
+> = {
+  "remove-background-from-image-online": 1,
+  "transparent-background-maker": 2,
+  "remove-image-background-free": 3,
+  "erase-background-online": 4,
+  "background-remover-for-ecommerce": 5,
+  "remove-background-for-marketing-graphics": 6,
+  "background-eraser-for-social-media-photos": 7,
+  "professional-background-removal-for-photographers": 8,
+  "client-side-background-remover": 9,
+  "browser-based-background-eraser": 10,
+  "no-upload-image-background-remover": 11,
+  "privacy-first-background-removal-tool": 12,
+};
+
 function buildAnnotatorLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -57,6 +82,19 @@ function buildAnnotatorLandingResources(
   }));
 }
 
+function buildRemoverLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const landings = getBackgroundRemoverLandings(language);
+
+  return Object.values(landings).map((entry, index) => ({
+    href: entry.path,
+    label: entry.linkTitle,
+    category: "remover" as const,
+    priority: REMOVER_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildAnnotatorGuideResource(language: Language): FooterResourceEntry {
   const article = getImageAnnotatorArticle(language);
 
@@ -68,12 +106,25 @@ function buildAnnotatorGuideResource(language: Language): FooterResourceEntry {
   };
 }
 
+function buildRemoverGuideResource(language: Language): FooterResourceEntry {
+  const article = getBackgroundRemoverArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "remover",
+    priority: 10,
+  };
+}
+
 export function buildFooterResourceRegistry(
   language: Language = "en",
 ): FooterResourceEntry[] {
   return [
     ...buildAnnotatorLandingResources(language),
     buildAnnotatorGuideResource(language),
+    ...buildRemoverLandingResources(language),
+    buildRemoverGuideResource(language),
   ];
 }
 
@@ -81,12 +132,14 @@ export function buildFooterResourceRegistry(
 export const FOOTER_RESOURCE_REGISTRY: FooterResourceEntry[] =
   buildFooterResourceRegistry("en");
 
-const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>(
-  Object.values(IMAGE_ANNOTATOR_LANDINGS).map((entry) => [
-    entry.path,
-    "annotator" as FooterResourceCategory,
-  ]),
-);
+const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
+  ...Object.values(IMAGE_ANNOTATOR_LANDINGS).map(
+    (entry) => [entry.path, "annotator"] as const,
+  ),
+  ...listBackgroundRemoverLandings().map(
+    (entry) => [entry.path, "remover"] as const,
+  ),
+]);
 
 /** Maps a tool page to the footer resource category it should surface. */
 export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
@@ -94,6 +147,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
 > = {
   "image-annotator": "annotator",
   compressor: "compressor",
+  "bg-remover": "remover",
 };
 
 export interface GetFooterResourcesOptions {
