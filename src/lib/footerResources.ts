@@ -28,6 +28,10 @@ import {
   getRotateFlipLandings,
 } from "@/lib/rotateFlipLandingsLocale";
 import {
+  getTextOverlayArticle,
+  getTextOverlayLandings,
+} from "@/lib/textOverlayLandingsLocale";
+import {
   listCustomCutterLandings,
   type CustomCutterLandingId,
 } from "@/lib/customCutterLandings";
@@ -35,6 +39,10 @@ import {
   listRotateFlipLandings,
   type RotateFlipLandingId,
 } from "@/lib/rotateFlipLandings";
+import {
+  listTextOverlayLandings,
+  type TextOverlayLandingId,
+} from "@/lib/textOverlayLandings";
 import {
   listCropperLandings,
   type CropperLandingId,
@@ -60,7 +68,8 @@ export type FooterResourceCategory =
   | "custom-cutter"
   | "remover"
   | "resizer"
-  | "rotate-flip";
+  | "rotate-flip"
+  | "text-overlay";
 
 export interface FooterResourceEntry {
   href: string;
@@ -142,6 +151,23 @@ const ROTATE_FLIP_LANDING_PRIORITY_OVERRIDES: Partial<
   "no-upload-photo-flip-tool": 13,
   "private-browser-image-mirror": 14,
   "secure-image-rotation-online": 15,
+};
+
+const TEXT_OVERLAY_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<TextOverlayLandingId, number>
+> = {
+  "add-text-on-image-online": 1,
+  "write-on-photo-online": 2,
+  "add-watermark-to-image-online": 3,
+  "free-text-over-image-tool": 4,
+  "image-text-adder": 5,
+  "add-text-to-photos-for-instagram": 6,
+  "add-captions-to-images-online": 7,
+  "add-logo-or-text-to-images": 8,
+  "client-side-text-overlay-tool": 9,
+  "add-text-to-image-with-fonts": 10,
+  "custom-text-placement-on-image": 11,
+  "professional-text-overlay-editor": 12,
 };
 
 const CROPPER_LANDING_PRIORITY_OVERRIDES: Partial<
@@ -241,6 +267,20 @@ function buildRotateFlipLandingResources(
   }));
 }
 
+function buildTextOverlayLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getTextOverlayLandings(language);
+
+  return listTextOverlayLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "text-overlay" as const,
+    priority:
+      TEXT_OVERLAY_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildCropperLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -315,6 +355,19 @@ function buildRotateFlipGuideResource(
   };
 }
 
+function buildTextOverlayGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getTextOverlayArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "text-overlay",
+    priority: 11,
+  };
+}
+
 function buildCropperGuideResource(language: Language): FooterResourceEntry {
   const article = getCropperArticle(language);
 
@@ -353,6 +406,8 @@ export function buildFooterResourceRegistry(
     buildCustomCutterGuideResource(language),
     ...buildRotateFlipLandingResources(language),
     buildRotateFlipGuideResource(language),
+    ...buildTextOverlayLandingResources(language),
+    buildTextOverlayGuideResource(language),
   ];
 }
 
@@ -375,6 +430,9 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listRotateFlipLandings().map(
     (entry) => [entry.path, "rotate-flip"] as const,
   ),
+  ...listTextOverlayLandings().map(
+    (entry) => [entry.path, "text-overlay"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -388,6 +446,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   cropper: "cropper",
   "custom-cutter": "custom-cutter",
   "rotate-flip": "rotate-flip",
+  "text-overlay": "text-overlay",
 };
 
 export interface GetFooterResourcesOptions {

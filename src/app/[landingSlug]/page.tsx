@@ -7,6 +7,8 @@ import { CustomCutterLandingJsonLd } from "@/components/landing/CustomCutterLand
 import { CustomCutterLandingView } from "@/components/landing/CustomCutterLandingView";
 import { RotateFlipLandingJsonLd } from "@/components/landing/RotateFlipLandingJsonLd";
 import { RotateFlipLandingView } from "@/components/landing/RotateFlipLandingView";
+import { TextOverlayLandingJsonLd } from "@/components/landing/TextOverlayLandingJsonLd";
+import { TextOverlayLandingView } from "@/components/landing/TextOverlayLandingView";
 import { CropperLandingJsonLd } from "@/components/landing/CropperLandingJsonLd";
 import { CropperLandingView } from "@/components/landing/CropperLandingView";
 import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd";
@@ -109,6 +111,15 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
       <>
         <RotateFlipLandingJsonLd landingId={resolved.id} />
         <RotateFlipLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "text-overlay") {
+    return (
+      <>
+        <TextOverlayLandingJsonLd landingId={resolved.id} />
+        <TextOverlayLandingView landingId={resolved.id} />
       </>
     );
   }

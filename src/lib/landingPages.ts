@@ -19,6 +19,11 @@ import {
   type RotateFlipLandingId,
 } from "@/lib/rotateFlipLandings";
 import {
+  getTextOverlayLandingBySlug,
+  listTextOverlayLandings,
+  type TextOverlayLandingId,
+} from "@/lib/textOverlayLandings";
+import {
   getCropperLandingBySlug,
   listCropperLandings,
   type CropperLandingId,
@@ -35,7 +40,8 @@ export type LandingPageFamily =
   | "cropper"
   | "custom-cutter"
   | "resizer"
-  | "rotate-flip";
+  | "rotate-flip"
+  | "text-overlay";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
@@ -43,7 +49,8 @@ export type ResolvedLandingPage =
   | { family: "cropper"; id: CropperLandingId }
   | { family: "custom-cutter"; id: CustomCutterLandingId }
   | { family: "resizer"; id: ResizerLandingId }
-  | { family: "rotate-flip"; id: RotateFlipLandingId };
+  | { family: "rotate-flip"; id: RotateFlipLandingId }
+  | { family: "text-overlay"; id: TextOverlayLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -78,6 +85,11 @@ export function resolveLandingPageBySlug(
     return { family: "rotate-flip", id: rotateFlipLanding.id };
   }
 
+  const textOverlayLanding = getTextOverlayLandingBySlug(slug);
+  if (textOverlayLanding) {
+    return { family: "text-overlay", id: textOverlayLanding.id };
+  }
+
   return undefined;
 }
 
@@ -104,6 +116,10 @@ export function getLandingSeoBySlug(slug: string) {
       );
     case "rotate-flip":
       return listRotateFlipLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "text-overlay":
+      return listTextOverlayLandings().find(
         (entry) => entry.id === resolved.id,
       );
   }
@@ -136,6 +152,10 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
+  const textOverlayParams = listTextOverlayLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
   return [
     ...annotatorParams,
     ...removerParams,
@@ -143,5 +163,6 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     ...cropperParams,
     ...customCutterParams,
     ...rotateFlipParams,
+    ...textOverlayParams,
   ];
 }

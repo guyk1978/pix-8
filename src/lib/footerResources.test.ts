@@ -12,6 +12,7 @@ import { RESIZER_LANDINGS } from "./resizerLandings";
 import { CROPPER_ARTICLE, CROPPER_LANDINGS } from "./cropperLandings";
 import { CUSTOM_CUTTER_ARTICLE, CUSTOM_CUTTER_LANDINGS } from "./customCutterLandings";
 import { ROTATE_FLIP_ARTICLE } from "./rotateFlipLandings";
+import { TEXT_OVERLAY_ARTICLE } from "./textOverlayLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -19,6 +20,7 @@ const RESIZER_TOOL_PATH = "/tools/editor-studio/resizer";
 const CROPPER_TOOL_PATH = "/tools/editor-studio/cropper";
 const CUSTOM_CUTTER_TOOL_PATH = "/tools/editor-studio/custom-cutter";
 const ROTATE_FLIP_TOOL_PATH = "/tools/editor-studio/rotate-flip";
+const TEXT_OVERLAY_TOOL_PATH = "/tools/editor-studio/text-overlay";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -69,6 +71,41 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory(ROTATE_FLIP_TOOL_PATH),
       "rotate-flip",
+    );
+  });
+
+  it("returns text-overlay for Text Overlay tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(TEXT_OVERLAY_TOOL_PATH),
+      "text-overlay",
+    );
+  });
+
+  it("returns text-overlay for add text on image online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/add-text-on-image-online"),
+      "text-overlay",
+    );
+  });
+
+  it("returns text-overlay for image text adder landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/image-text-adder"),
+      "text-overlay",
+    );
+  });
+
+  it("returns text-overlay for add watermark to image online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/add-watermark-to-image-online"),
+      "text-overlay",
+    );
+  });
+
+  it("returns text-overlay for add text to photos for Instagram landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/add-text-to-photos-for-instagram"),
+      "text-overlay",
     );
   });
 
@@ -902,6 +939,24 @@ describe("getFooterResources", () => {
     assert.equal(links[13]?.href, "/private-browser-image-mirror");
     assert.equal(links[14]?.href, "/secure-image-rotation-online");
     assert.equal(links[15]?.href, ROTATE_FLIP_ARTICLE.href);
+  });
+
+  it("returns text-overlay landing and guide links", () => {
+    const links = getFooterResources("text-overlay");
+    assert.equal(links.length, 13);
+    assert.equal(links[0]?.href, "/add-text-on-image-online");
+    assert.equal(links[1]?.href, "/write-on-photo-online");
+    assert.equal(links[2]?.href, "/add-watermark-to-image-online");
+    assert.equal(links[3]?.href, "/free-text-over-image-tool");
+    assert.equal(links[4]?.href, "/image-text-adder");
+    assert.equal(links[5]?.href, "/add-text-to-photos-for-instagram");
+    assert.equal(links[6]?.href, "/add-captions-to-images-online");
+    assert.equal(links[7]?.href, "/add-logo-or-text-to-images");
+    assert.equal(links[8]?.href, "/client-side-text-overlay-tool");
+    assert.equal(links[9]?.href, "/add-text-to-image-with-fonts");
+    assert.equal(links[10]?.href, "/custom-text-placement-on-image");
+    assert.equal(links[11]?.href, TEXT_OVERLAY_ARTICLE.href);
+    assert.equal(links[12]?.href, "/professional-text-overlay-editor");
   });
 
   it("returns resizer landing and guide links", () => {
