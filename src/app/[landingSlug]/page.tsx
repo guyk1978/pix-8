@@ -3,6 +3,8 @@ import { BackgroundRemoverLandingJsonLd } from "@/components/landing/BackgroundR
 import { BackgroundRemoverLandingView } from "@/components/landing/BackgroundRemoverLandingView";
 import { ImageAnnotatorLandingJsonLd } from "@/components/landing/ImageAnnotatorLandingJsonLd";
 import { ImageAnnotatorLandingView } from "@/components/landing/ImageAnnotatorLandingView";
+import { CustomCutterLandingJsonLd } from "@/components/landing/CustomCutterLandingJsonLd";
+import { CustomCutterLandingView } from "@/components/landing/CustomCutterLandingView";
 import { CropperLandingJsonLd } from "@/components/landing/CropperLandingJsonLd";
 import { CropperLandingView } from "@/components/landing/CropperLandingView";
 import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd";
@@ -82,10 +84,19 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
     );
   }
 
+  if (resolved.family === "cropper") {
+    return (
+      <>
+        <CropperLandingJsonLd landingId={resolved.id} />
+        <CropperLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
   return (
     <>
-      <CropperLandingJsonLd landingId={resolved.id} />
-      <CropperLandingView landingId={resolved.id} />
+      <CustomCutterLandingJsonLd landingId={resolved.id} />
+      <CustomCutterLandingView landingId={resolved.id} />
     </>
   );
 }

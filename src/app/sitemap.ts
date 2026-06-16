@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { listBackgroundRemoverLandings } from "@/lib/backgroundRemoverLandings";
+import { listCustomCutterLandings } from "@/lib/customCutterLandings";
 import { listCropperLandings } from "@/lib/cropperLandings";
 import { listResizerLandings } from "@/lib/resizerLandings";
 import { IMAGE_ANNOTATOR_LANDINGS } from "@/lib/imageAnnotatorLandings";
@@ -64,6 +65,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   for (const landing of listCropperLandings()) {
+    entries.push({
+      url: `${SITE_URL}${landing.path}`,
+      lastModified: now,
+    });
+  }
+
+  for (const landing of listCustomCutterLandings()) {
     entries.push({
       url: `${SITE_URL}${landing.path}`,
       lastModified: now,

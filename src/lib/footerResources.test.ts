@@ -10,11 +10,13 @@ import { IMAGE_ANNOTATOR_LANDINGS_HE } from "./imageAnnotatorLandings.he";
 import { BACKGROUND_REMOVER_LANDINGS } from "./backgroundRemoverLandings";
 import { RESIZER_LANDINGS } from "./resizerLandings";
 import { CROPPER_ARTICLE, CROPPER_LANDINGS } from "./cropperLandings";
+import { CUSTOM_CUTTER_ARTICLE, CUSTOM_CUTTER_LANDINGS } from "./customCutterLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
 const RESIZER_TOOL_PATH = "/tools/editor-studio/resizer";
 const CROPPER_TOOL_PATH = "/tools/editor-studio/cropper";
+const CUSTOM_CUTTER_TOOL_PATH = "/tools/editor-studio/custom-cutter";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -52,6 +54,121 @@ describe("resolveFooterResourceCategory", () => {
 
   it("returns cropper for Cropper tool URL", () => {
     assert.equal(resolveFooterResourceCategory(CROPPER_TOOL_PATH), "cropper");
+  });
+
+  it("returns custom-cutter for Custom Cutter tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(CUSTOM_CUTTER_TOOL_PATH),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for custom image cutter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["custom-image-cutter"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for freeform image cropping landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["freeform-image-cropping"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for cut out shapes from images landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["cut-out-shapes-from-images"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for custom shape photo cutter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["custom-shape-photo-cutter"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for precision image cutter tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["precision-image-cutter-tool"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for client-side custom image cutter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["client-side-custom-image-cutter"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for browser-based custom cropper landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["browser-based-custom-cropper"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for no-upload custom shape cutter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["no-upload-custom-shape-cutter"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for cut image to custom size landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["cut-image-to-custom-size"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for custom crop for digital design landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["custom-crop-for-digital-design"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for easy custom photo cutter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["easy-custom-photo-cutter"].path,
+      ),
+      "custom-cutter",
+    );
+  });
+
+  it("returns custom-cutter for creative image cutting tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        CUSTOM_CUTTER_LANDINGS["creative-image-cutting-tool"].path,
+      ),
+      "custom-cutter",
+    );
   });
 
   it("returns cropper for crop image online landing URL", () => {
@@ -601,6 +718,60 @@ describe("getFooterResources", () => {
 
   it("returns an empty array for categories with no registry entries", () => {
     assert.deepEqual(getFooterResources("compressor"), []);
+  });
+
+  it("returns custom-cutter landing and guide links", () => {
+    const links = getFooterResources("custom-cutter");
+    assert.equal(links.length, 13);
+    assert.equal(
+      links[0]?.href,
+      CUSTOM_CUTTER_LANDINGS["custom-image-cutter"].path,
+    );
+    assert.equal(
+      links[1]?.href,
+      CUSTOM_CUTTER_LANDINGS["freeform-image-cropping"].path,
+    );
+    assert.equal(
+      links[2]?.href,
+      CUSTOM_CUTTER_LANDINGS["cut-out-shapes-from-images"].path,
+    );
+    assert.equal(
+      links[3]?.href,
+      CUSTOM_CUTTER_LANDINGS["custom-shape-photo-cutter"].path,
+    );
+    assert.equal(
+      links[4]?.href,
+      CUSTOM_CUTTER_LANDINGS["precision-image-cutter-tool"].path,
+    );
+    assert.equal(
+      links[5]?.href,
+      CUSTOM_CUTTER_LANDINGS["client-side-custom-image-cutter"].path,
+    );
+    assert.equal(
+      links[6]?.href,
+      CUSTOM_CUTTER_LANDINGS["browser-based-custom-cropper"].path,
+    );
+    assert.equal(
+      links[7]?.href,
+      CUSTOM_CUTTER_LANDINGS["no-upload-custom-shape-cutter"].path,
+    );
+    assert.equal(
+      links[8]?.href,
+      CUSTOM_CUTTER_LANDINGS["cut-image-to-custom-size"].path,
+    );
+    assert.equal(
+      links[9]?.href,
+      CUSTOM_CUTTER_LANDINGS["custom-crop-for-digital-design"].path,
+    );
+    assert.equal(
+      links[10]?.href,
+      CUSTOM_CUTTER_LANDINGS["easy-custom-photo-cutter"].path,
+    );
+    assert.equal(
+      links[11]?.href,
+      CUSTOM_CUTTER_LANDINGS["creative-image-cutting-tool"].path,
+    );
+    assert.equal(links[12]?.href, CUSTOM_CUTTER_ARTICLE.href);
   });
 
   it("returns resizer landing and guide links", () => {

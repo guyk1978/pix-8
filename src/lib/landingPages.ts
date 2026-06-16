@@ -9,6 +9,11 @@ import {
   type ImageAnnotatorLandingId,
 } from "@/lib/imageAnnotatorLandings";
 import {
+  getCustomCutterLandingBySlug,
+  listCustomCutterLandings,
+  type CustomCutterLandingId,
+} from "@/lib/customCutterLandings";
+import {
   getCropperLandingBySlug,
   listCropperLandings,
   type CropperLandingId,
@@ -23,12 +28,14 @@ export type LandingPageFamily =
   | "image-annotator"
   | "background-remover"
   | "cropper"
+  | "custom-cutter"
   | "resizer";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
   | { family: "background-remover"; id: BackgroundRemoverLandingId }
   | { family: "cropper"; id: CropperLandingId }
+  | { family: "custom-cutter"; id: CustomCutterLandingId }
   | { family: "resizer"; id: ResizerLandingId };
 
 export function resolveLandingPageBySlug(
@@ -54,6 +61,11 @@ export function resolveLandingPageBySlug(
     return { family: "cropper", id: cropperLanding.id };
   }
 
+  const customCutterLanding = getCustomCutterLandingBySlug(slug);
+  if (customCutterLanding) {
+    return { family: "custom-cutter", id: customCutterLanding.id };
+  }
+
   return undefined;
 }
 
@@ -74,6 +86,10 @@ export function getLandingSeoBySlug(slug: string) {
       return listResizerLandings().find((entry) => entry.id === resolved.id);
     case "cropper":
       return listCropperLandings().find((entry) => entry.id === resolved.id);
+    case "custom-cutter":
+      return listCustomCutterLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
   }
 }
 
@@ -96,5 +112,15 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
-  return [...annotatorParams, ...removerParams, ...resizerParams, ...cropperParams];
+  const customCutterParams = listCustomCutterLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
+  return [
+    ...annotatorParams,
+    ...removerParams,
+    ...resizerParams,
+    ...cropperParams,
+    ...customCutterParams,
+  ];
 }

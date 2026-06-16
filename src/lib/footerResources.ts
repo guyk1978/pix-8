@@ -20,6 +20,14 @@ import {
   getCropperLandings,
 } from "@/lib/cropperLandingsLocale";
 import {
+  getCustomCutterArticle,
+  getCustomCutterLandings,
+} from "@/lib/customCutterLandingsLocale";
+import {
+  listCustomCutterLandings,
+  type CustomCutterLandingId,
+} from "@/lib/customCutterLandings";
+import {
   listCropperLandings,
   type CropperLandingId,
 } from "@/lib/cropperLandings";
@@ -41,6 +49,7 @@ export type FooterResourceCategory =
   | "annotator"
   | "compressor"
   | "cropper"
+  | "custom-cutter"
   | "remover"
   | "resizer";
 
@@ -87,6 +96,23 @@ const REMOVER_LANDING_PRIORITY_OVERRIDES: Partial<
   "browser-based-background-eraser": 10,
   "no-upload-image-background-remover": 11,
   "privacy-first-background-removal-tool": 12,
+};
+
+const CUSTOM_CUTTER_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<CustomCutterLandingId, number>
+> = {
+  "custom-image-cutter": 1,
+  "freeform-image-cropping": 2,
+  "cut-out-shapes-from-images": 3,
+  "custom-shape-photo-cutter": 4,
+  "precision-image-cutter-tool": 5,
+  "client-side-custom-image-cutter": 6,
+  "browser-based-custom-cropper": 7,
+  "no-upload-custom-shape-cutter": 8,
+  "cut-image-to-custom-size": 9,
+  "custom-crop-for-digital-design": 10,
+  "easy-custom-photo-cutter": 11,
+  "creative-image-cutting-tool": 12,
 };
 
 const CROPPER_LANDING_PRIORITY_OVERRIDES: Partial<
@@ -158,6 +184,20 @@ function buildRemoverLandingResources(
   }));
 }
 
+function buildCustomCutterLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getCustomCutterLandings(language);
+
+  return listCustomCutterLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "custom-cutter" as const,
+    priority:
+      CUSTOM_CUTTER_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildCropperLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -206,6 +246,19 @@ function buildRemoverGuideResource(language: Language): FooterResourceEntry {
   };
 }
 
+function buildCustomCutterGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getCustomCutterArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "custom-cutter",
+    priority: 13,
+  };
+}
+
 function buildCropperGuideResource(language: Language): FooterResourceEntry {
   const article = getCropperArticle(language);
 
@@ -240,6 +293,8 @@ export function buildFooterResourceRegistry(
     buildResizerGuideResource(language),
     ...buildCropperLandingResources(language),
     buildCropperGuideResource(language),
+    ...buildCustomCutterLandingResources(language),
+    buildCustomCutterGuideResource(language),
   ];
 }
 
@@ -256,6 +311,9 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ),
   ...listResizerLandings().map((entry) => [entry.path, "resizer"] as const),
   ...listCropperLandings().map((entry) => [entry.path, "cropper"] as const),
+  ...listCustomCutterLandings().map(
+    (entry) => [entry.path, "custom-cutter"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -267,6 +325,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   "bg-remover": "remover",
   resizer: "resizer",
   cropper: "cropper",
+  "custom-cutter": "custom-cutter",
 };
 
 export interface GetFooterResourcesOptions {
