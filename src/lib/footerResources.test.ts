@@ -11,12 +11,14 @@ import { BACKGROUND_REMOVER_LANDINGS } from "./backgroundRemoverLandings";
 import { RESIZER_LANDINGS } from "./resizerLandings";
 import { CROPPER_ARTICLE, CROPPER_LANDINGS } from "./cropperLandings";
 import { CUSTOM_CUTTER_ARTICLE, CUSTOM_CUTTER_LANDINGS } from "./customCutterLandings";
+import { ROTATE_FLIP_ARTICLE } from "./rotateFlipLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
 const RESIZER_TOOL_PATH = "/tools/editor-studio/resizer";
 const CROPPER_TOOL_PATH = "/tools/editor-studio/cropper";
 const CUSTOM_CUTTER_TOOL_PATH = "/tools/editor-studio/custom-cutter";
+const ROTATE_FLIP_TOOL_PATH = "/tools/editor-studio/rotate-flip";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -60,6 +62,113 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory(CUSTOM_CUTTER_TOOL_PATH),
       "custom-cutter",
+    );
+  });
+
+  it("returns rotate-flip for Rotate & Flip tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(ROTATE_FLIP_TOOL_PATH),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for rotate image online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/rotate-image-online"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for mirror image online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/mirror-image-online"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for free photo rotator and flipper landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/free-photo-rotator-and-flipper"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for flip photo horizontally and vertically landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        "/flip-photo-horizontally-and-vertically",
+      ),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for rotate image 90 degrees landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/rotate-image-90-degrees"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for fix upside down pictures online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/fix-upside-down-pictures-online"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for mirror selfie online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/mirror-selfie-online"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for batch rotate images online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/batch-rotate-images-online"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for lossless image rotation tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/lossless-image-rotation-tool"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for batch flip photos tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/batch-flip-photos-tool"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for client-side image rotator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-image-rotator"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for no-upload photo flip tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-photo-flip-tool"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for private browser image mirror landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/private-browser-image-mirror"),
+      "rotate-flip",
+    );
+  });
+
+  it("returns rotate-flip for secure image rotation online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/secure-image-rotation-online"),
+      "rotate-flip",
     );
   });
 
@@ -772,6 +881,27 @@ describe("getFooterResources", () => {
       CUSTOM_CUTTER_LANDINGS["creative-image-cutting-tool"].path,
     );
     assert.equal(links[12]?.href, CUSTOM_CUTTER_ARTICLE.href);
+  });
+
+  it("returns rotate-flip landing and guide links", () => {
+    const links = getFooterResources("rotate-flip");
+    assert.equal(links.length, 16);
+    assert.equal(links[0]?.href, "/rotate-image-online");
+    assert.equal(links[1]?.href, "/flip-image-online");
+    assert.equal(links[2]?.href, "/mirror-image-online");
+    assert.equal(links[3]?.href, "/free-photo-rotator-and-flipper");
+    assert.equal(links[4]?.href, "/flip-photo-horizontally-and-vertically");
+    assert.equal(links[5]?.href, "/rotate-image-90-degrees");
+    assert.equal(links[6]?.href, "/fix-upside-down-pictures-online");
+    assert.equal(links[7]?.href, "/mirror-selfie-online");
+    assert.equal(links[8]?.href, "/batch-rotate-images-online");
+    assert.equal(links[9]?.href, "/lossless-image-rotation-tool");
+    assert.equal(links[10]?.href, "/batch-flip-photos-tool");
+    assert.equal(links[11]?.href, "/client-side-image-rotator");
+    assert.equal(links[12]?.href, "/no-upload-photo-flip-tool");
+    assert.equal(links[13]?.href, "/private-browser-image-mirror");
+    assert.equal(links[14]?.href, "/secure-image-rotation-online");
+    assert.equal(links[15]?.href, ROTATE_FLIP_ARTICLE.href);
   });
 
   it("returns resizer landing and guide links", () => {

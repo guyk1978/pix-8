@@ -5,6 +5,8 @@ import { ImageAnnotatorLandingJsonLd } from "@/components/landing/ImageAnnotator
 import { ImageAnnotatorLandingView } from "@/components/landing/ImageAnnotatorLandingView";
 import { CustomCutterLandingJsonLd } from "@/components/landing/CustomCutterLandingJsonLd";
 import { CustomCutterLandingView } from "@/components/landing/CustomCutterLandingView";
+import { RotateFlipLandingJsonLd } from "@/components/landing/RotateFlipLandingJsonLd";
+import { RotateFlipLandingView } from "@/components/landing/RotateFlipLandingView";
 import { CropperLandingJsonLd } from "@/components/landing/CropperLandingJsonLd";
 import { CropperLandingView } from "@/components/landing/CropperLandingView";
 import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd";
@@ -93,10 +95,23 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
     );
   }
 
-  return (
-    <>
-      <CustomCutterLandingJsonLd landingId={resolved.id} />
-      <CustomCutterLandingView landingId={resolved.id} />
-    </>
-  );
+  if (resolved.family === "custom-cutter") {
+    return (
+      <>
+        <CustomCutterLandingJsonLd landingId={resolved.id} />
+        <CustomCutterLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "rotate-flip") {
+    return (
+      <>
+        <RotateFlipLandingJsonLd landingId={resolved.id} />
+        <RotateFlipLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  notFound();
 }

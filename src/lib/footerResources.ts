@@ -24,9 +24,17 @@ import {
   getCustomCutterLandings,
 } from "@/lib/customCutterLandingsLocale";
 import {
+  getRotateFlipArticle,
+  getRotateFlipLandings,
+} from "@/lib/rotateFlipLandingsLocale";
+import {
   listCustomCutterLandings,
   type CustomCutterLandingId,
 } from "@/lib/customCutterLandings";
+import {
+  listRotateFlipLandings,
+  type RotateFlipLandingId,
+} from "@/lib/rotateFlipLandings";
 import {
   listCropperLandings,
   type CropperLandingId,
@@ -51,7 +59,8 @@ export type FooterResourceCategory =
   | "cropper"
   | "custom-cutter"
   | "remover"
-  | "resizer";
+  | "resizer"
+  | "rotate-flip";
 
 export interface FooterResourceEntry {
   href: string;
@@ -113,6 +122,26 @@ const CUSTOM_CUTTER_LANDING_PRIORITY_OVERRIDES: Partial<
   "custom-crop-for-digital-design": 10,
   "easy-custom-photo-cutter": 11,
   "creative-image-cutting-tool": 12,
+};
+
+const ROTATE_FLIP_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<RotateFlipLandingId, number>
+> = {
+  "rotate-image-online": 1,
+  "flip-image-online": 2,
+  "mirror-image-online": 3,
+  "free-photo-rotator-and-flipper": 4,
+  "flip-photo-horizontally-and-vertically": 5,
+  "rotate-image-90-degrees": 6,
+  "fix-upside-down-pictures-online": 7,
+  "mirror-selfie-online": 8,
+  "batch-rotate-images-online": 9,
+  "lossless-image-rotation-tool": 10,
+  "batch-flip-photos-tool": 11,
+  "client-side-image-rotator": 12,
+  "no-upload-photo-flip-tool": 13,
+  "private-browser-image-mirror": 14,
+  "secure-image-rotation-online": 15,
 };
 
 const CROPPER_LANDING_PRIORITY_OVERRIDES: Partial<
@@ -198,6 +227,20 @@ function buildCustomCutterLandingResources(
   }));
 }
 
+function buildRotateFlipLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getRotateFlipLandings(language);
+
+  return listRotateFlipLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "rotate-flip" as const,
+    priority:
+      ROTATE_FLIP_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildCropperLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -259,6 +302,19 @@ function buildCustomCutterGuideResource(
   };
 }
 
+function buildRotateFlipGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getRotateFlipArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "rotate-flip",
+    priority: 16,
+  };
+}
+
 function buildCropperGuideResource(language: Language): FooterResourceEntry {
   const article = getCropperArticle(language);
 
@@ -295,6 +351,8 @@ export function buildFooterResourceRegistry(
     buildCropperGuideResource(language),
     ...buildCustomCutterLandingResources(language),
     buildCustomCutterGuideResource(language),
+    ...buildRotateFlipLandingResources(language),
+    buildRotateFlipGuideResource(language),
   ];
 }
 
@@ -314,6 +372,9 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listCustomCutterLandings().map(
     (entry) => [entry.path, "custom-cutter"] as const,
   ),
+  ...listRotateFlipLandings().map(
+    (entry) => [entry.path, "rotate-flip"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -326,6 +387,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   resizer: "resizer",
   cropper: "cropper",
   "custom-cutter": "custom-cutter",
+  "rotate-flip": "rotate-flip",
 };
 
 export interface GetFooterResourcesOptions {

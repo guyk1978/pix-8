@@ -14,6 +14,11 @@ import {
   type CustomCutterLandingId,
 } from "@/lib/customCutterLandings";
 import {
+  getRotateFlipLandingBySlug,
+  listRotateFlipLandings,
+  type RotateFlipLandingId,
+} from "@/lib/rotateFlipLandings";
+import {
   getCropperLandingBySlug,
   listCropperLandings,
   type CropperLandingId,
@@ -29,14 +34,16 @@ export type LandingPageFamily =
   | "background-remover"
   | "cropper"
   | "custom-cutter"
-  | "resizer";
+  | "resizer"
+  | "rotate-flip";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
   | { family: "background-remover"; id: BackgroundRemoverLandingId }
   | { family: "cropper"; id: CropperLandingId }
   | { family: "custom-cutter"; id: CustomCutterLandingId }
-  | { family: "resizer"; id: ResizerLandingId };
+  | { family: "resizer"; id: ResizerLandingId }
+  | { family: "rotate-flip"; id: RotateFlipLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -66,6 +73,11 @@ export function resolveLandingPageBySlug(
     return { family: "custom-cutter", id: customCutterLanding.id };
   }
 
+  const rotateFlipLanding = getRotateFlipLandingBySlug(slug);
+  if (rotateFlipLanding) {
+    return { family: "rotate-flip", id: rotateFlipLanding.id };
+  }
+
   return undefined;
 }
 
@@ -88,6 +100,10 @@ export function getLandingSeoBySlug(slug: string) {
       return listCropperLandings().find((entry) => entry.id === resolved.id);
     case "custom-cutter":
       return listCustomCutterLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "rotate-flip":
+      return listRotateFlipLandings().find(
         (entry) => entry.id === resolved.id,
       );
   }
@@ -116,11 +132,16 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
+  const rotateFlipParams = listRotateFlipLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
   return [
     ...annotatorParams,
     ...removerParams,
     ...resizerParams,
     ...cropperParams,
     ...customCutterParams,
+    ...rotateFlipParams,
   ];
 }
