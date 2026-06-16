@@ -34,6 +34,11 @@ import {
   type WatermarkLandingId,
 } from "@/lib/watermarkLandings";
 import {
+  getMemeGeneratorLandingBySlug,
+  listMemeGeneratorLandings,
+  type MemeGeneratorLandingId,
+} from "@/lib/memeGeneratorLandings";
+import {
   getCropperLandingBySlug,
   listCropperLandings,
   type CropperLandingId,
@@ -53,7 +58,8 @@ export type LandingPageFamily =
   | "rotate-flip"
   | "text-overlay"
   | "image-overlay"
-  | "watermark";
+  | "watermark"
+  | "meme-generator";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
@@ -64,7 +70,8 @@ export type ResolvedLandingPage =
   | { family: "rotate-flip"; id: RotateFlipLandingId }
   | { family: "text-overlay"; id: TextOverlayLandingId }
   | { family: "image-overlay"; id: ImageOverlayLandingId }
-  | { family: "watermark"; id: WatermarkLandingId };
+  | { family: "watermark"; id: WatermarkLandingId }
+  | { family: "meme-generator"; id: MemeGeneratorLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -114,6 +121,11 @@ export function resolveLandingPageBySlug(
     return { family: "watermark", id: watermarkLanding.id };
   }
 
+  const memeGeneratorLanding = getMemeGeneratorLandingBySlug(slug);
+  if (memeGeneratorLanding) {
+    return { family: "meme-generator", id: memeGeneratorLanding.id };
+  }
+
   return undefined;
 }
 
@@ -152,6 +164,10 @@ export function getLandingSeoBySlug(slug: string) {
       );
     case "watermark":
       return listWatermarkLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "meme-generator":
+      return listMemeGeneratorLandings().find(
         (entry) => entry.id === resolved.id,
       );
   }
@@ -196,6 +212,10 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
+  const memeGeneratorParams = listMemeGeneratorLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
   return [
     ...annotatorParams,
     ...removerParams,
@@ -206,5 +226,6 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     ...textOverlayParams,
     ...imageOverlayParams,
     ...watermarkParams,
+    ...memeGeneratorParams,
   ];
 }

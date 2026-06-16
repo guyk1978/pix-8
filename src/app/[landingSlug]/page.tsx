@@ -13,6 +13,8 @@ import { ImageOverlayLandingJsonLd } from "@/components/landing/ImageOverlayLand
 import { ImageOverlayLandingView } from "@/components/landing/ImageOverlayLandingView";
 import { WatermarkLandingJsonLd } from "@/components/landing/WatermarkLandingJsonLd";
 import { WatermarkLandingView } from "@/components/landing/WatermarkLandingView";
+import { MemeGeneratorLandingJsonLd } from "@/components/landing/MemeGeneratorLandingJsonLd";
+import { MemeGeneratorLandingView } from "@/components/landing/MemeGeneratorLandingView";
 import { CropperLandingJsonLd } from "@/components/landing/CropperLandingJsonLd";
 import { CropperLandingView } from "@/components/landing/CropperLandingView";
 import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd";
@@ -142,6 +144,15 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
       <>
         <WatermarkLandingJsonLd landingId={resolved.id} />
         <WatermarkLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "meme-generator") {
+    return (
+      <>
+        <MemeGeneratorLandingJsonLd landingId={resolved.id} />
+        <MemeGeneratorLandingView landingId={resolved.id} />
       </>
     );
   }

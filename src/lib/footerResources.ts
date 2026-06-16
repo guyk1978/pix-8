@@ -40,6 +40,10 @@ import {
   getWatermarkLandings,
 } from "@/lib/watermarkLandingsLocale";
 import {
+  getMemeGeneratorArticle,
+  getMemeGeneratorLandings,
+} from "@/lib/memeGeneratorLandingsLocale";
+import {
   listCustomCutterLandings,
   type CustomCutterLandingId,
 } from "@/lib/customCutterLandings";
@@ -59,6 +63,10 @@ import {
   listWatermarkLandings,
   type WatermarkLandingId,
 } from "@/lib/watermarkLandings";
+import {
+  listMemeGeneratorLandings,
+  type MemeGeneratorLandingId,
+} from "@/lib/memeGeneratorLandings";
 import {
   listCropperLandings,
   type CropperLandingId,
@@ -87,7 +95,8 @@ export type FooterResourceCategory =
   | "rotate-flip"
   | "text-overlay"
   | "image-overlay"
-  | "watermark";
+  | "watermark"
+  | "meme-generator";
 
 export interface FooterResourceEntry {
   href: string;
@@ -212,6 +221,27 @@ const WATERMARK_LANDING_PRIORITY_OVERRIDES: Partial<
   "brand-photos-with-logo": 3,
   "no-upload-watermark-maker": 4,
   "professional-image-watermarking-tool": 5,
+};
+
+const MEME_GENERATOR_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<MemeGeneratorLandingId, number>
+> = {
+  "meme-generator-online": 1,
+  "make-a-meme-online": 2,
+  "free-meme-maker": 3,
+  "create-memes-from-photos": 4,
+  "add-text-to-memes-online": 5,
+  "make-memes-for-social-media": 6,
+  "fast-meme-creator": 7,
+  "custom-meme-maker": 8,
+  "client-side-meme-generator": 9,
+  "privacy-first-meme-maker": 10,
+  "browser-based-meme-generator": 11,
+  "no-upload-meme-creator": 12,
+  "upload-and-meme-your-photos": 13,
+  "easy-meme-editor-for-images": 14,
+  "professional-meme-creation-tool": 15,
+  "funny-meme-generator-online": 16,
 };
 
 const CROPPER_LANDING_PRIORITY_OVERRIDES: Partial<
@@ -353,6 +383,20 @@ function buildWatermarkLandingResources(
   }));
 }
 
+function buildMemeGeneratorLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getMemeGeneratorLandings(language);
+
+  return listMemeGeneratorLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "meme-generator" as const,
+    priority:
+      MEME_GENERATOR_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildCropperLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -466,6 +510,19 @@ function buildWatermarkGuideResource(
   };
 }
 
+function buildMemeGeneratorGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getMemeGeneratorArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "meme-generator",
+    priority: 17,
+  };
+}
+
 function buildCropperGuideResource(language: Language): FooterResourceEntry {
   const article = getCropperArticle(language);
 
@@ -510,6 +567,8 @@ export function buildFooterResourceRegistry(
     buildImageOverlayGuideResource(language),
     ...buildWatermarkLandingResources(language),
     buildWatermarkGuideResource(language),
+    ...buildMemeGeneratorLandingResources(language),
+    buildMemeGeneratorGuideResource(language),
   ];
 }
 
@@ -541,6 +600,9 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listWatermarkLandings().map(
     (entry) => [entry.path, "watermark"] as const,
   ),
+  ...listMemeGeneratorLandings().map(
+    (entry) => [entry.path, "meme-generator"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -557,6 +619,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   "text-overlay": "text-overlay",
   "image-overlay": "image-overlay",
   watermark: "watermark",
+  "meme-generator": "meme-generator",
 };
 
 export interface GetFooterResourcesOptions {

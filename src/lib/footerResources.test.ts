@@ -15,6 +15,7 @@ import { ROTATE_FLIP_ARTICLE } from "./rotateFlipLandings";
 import { TEXT_OVERLAY_ARTICLE } from "./textOverlayLandings";
 import { IMAGE_OVERLAY_ARTICLE } from "./imageOverlayLandings";
 import { WATERMARK_ARTICLE } from "./watermarkLandings";
+import { MEME_GENERATOR_ARTICLE } from "./memeGeneratorLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -25,6 +26,7 @@ const ROTATE_FLIP_TOOL_PATH = "/tools/editor-studio/rotate-flip";
 const TEXT_OVERLAY_TOOL_PATH = "/tools/editor-studio/text-overlay";
 const IMAGE_OVERLAY_TOOL_PATH = "/tools/editor-studio/image-overlay";
 const WATERMARK_TOOL_PATH = "/tools/editor-studio/watermark";
+const MEME_GENERATOR_TOOL_PATH = "/tools/editor-studio/meme-generator";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -96,6 +98,125 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory(WATERMARK_TOOL_PATH),
       "watermark",
+    );
+  });
+
+  it("returns meme-generator for Meme Generator tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(MEME_GENERATOR_TOOL_PATH),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for meme generator online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/meme-generator-online"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for make a meme online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/make-a-meme-online"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for free meme maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/free-meme-maker"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for create memes from photos landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/create-memes-from-photos"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for add text to memes online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/add-text-to-memes-online"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for make memes for social media landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/make-memes-for-social-media"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for fast meme creator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/fast-meme-creator"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for custom meme maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/custom-meme-maker"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for client-side meme generator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-meme-generator"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for privacy-first meme maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/privacy-first-meme-maker"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for browser-based meme generator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/browser-based-meme-generator"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for no-upload meme creator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-meme-creator"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for upload and meme your photos landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/upload-and-meme-your-photos"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for easy meme editor for images landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/easy-meme-editor-for-images"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for professional meme creation tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/professional-meme-creation-tool"),
+      "meme-generator",
+    );
+  });
+
+  it("returns meme-generator for funny meme generator online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/funny-meme-generator-online"),
+      "meme-generator",
     );
   });
 
@@ -1115,6 +1236,28 @@ describe("getFooterResources", () => {
     assert.equal(links[3]?.href, "/no-upload-watermark-maker");
     assert.equal(links[4]?.href, "/professional-image-watermarking-tool");
     assert.equal(links[5]?.href, WATERMARK_ARTICLE.href);
+  });
+
+  it("returns meme-generator landing and guide links", () => {
+    const links = getFooterResources("meme-generator");
+    assert.equal(links.length, 17);
+    assert.equal(links[0]?.href, "/meme-generator-online");
+    assert.equal(links[1]?.href, "/make-a-meme-online");
+    assert.equal(links[2]?.href, "/free-meme-maker");
+    assert.equal(links[3]?.href, "/create-memes-from-photos");
+    assert.equal(links[4]?.href, "/add-text-to-memes-online");
+    assert.equal(links[5]?.href, "/make-memes-for-social-media");
+    assert.equal(links[6]?.href, "/fast-meme-creator");
+    assert.equal(links[7]?.href, "/custom-meme-maker");
+    assert.equal(links[8]?.href, "/client-side-meme-generator");
+    assert.equal(links[9]?.href, "/privacy-first-meme-maker");
+    assert.equal(links[10]?.href, "/browser-based-meme-generator");
+    assert.equal(links[11]?.href, "/no-upload-meme-creator");
+    assert.equal(links[12]?.href, "/upload-and-meme-your-photos");
+    assert.equal(links[13]?.href, "/easy-meme-editor-for-images");
+    assert.equal(links[14]?.href, "/professional-meme-creation-tool");
+    assert.equal(links[15]?.href, "/funny-meme-generator-online");
+    assert.equal(links[16]?.href, MEME_GENERATOR_ARTICLE.href);
   });
 
   it("returns resizer landing and guide links", () => {

@@ -5,6 +5,7 @@ import { listRotateFlipLandings } from "@/lib/rotateFlipLandings";
 import { listTextOverlayLandings } from "@/lib/textOverlayLandings";
 import { listImageOverlayLandings } from "@/lib/imageOverlayLandings";
 import { listWatermarkLandings } from "@/lib/watermarkLandings";
+import { listMemeGeneratorLandings } from "@/lib/memeGeneratorLandings";
 import { listCropperLandings } from "@/lib/cropperLandings";
 import { listResizerLandings } from "@/lib/resizerLandings";
 import { IMAGE_ANNOTATOR_LANDINGS } from "@/lib/imageAnnotatorLandings";
@@ -104,6 +105,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   for (const landing of listWatermarkLandings()) {
+    entries.push({
+      url: `${SITE_URL}${landing.path}`,
+      lastModified: now,
+    });
+  }
+
+  for (const landing of listMemeGeneratorLandings()) {
     entries.push({
       url: `${SITE_URL}${landing.path}`,
       lastModified: now,
