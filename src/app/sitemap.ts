@@ -3,6 +3,8 @@ import { listBackgroundRemoverLandings } from "@/lib/backgroundRemoverLandings";
 import { listCustomCutterLandings } from "@/lib/customCutterLandings";
 import { listRotateFlipLandings } from "@/lib/rotateFlipLandings";
 import { listTextOverlayLandings } from "@/lib/textOverlayLandings";
+import { listImageOverlayLandings } from "@/lib/imageOverlayLandings";
+import { listWatermarkLandings } from "@/lib/watermarkLandings";
 import { listCropperLandings } from "@/lib/cropperLandings";
 import { listResizerLandings } from "@/lib/resizerLandings";
 import { IMAGE_ANNOTATOR_LANDINGS } from "@/lib/imageAnnotatorLandings";
@@ -88,6 +90,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   for (const landing of listTextOverlayLandings()) {
+    entries.push({
+      url: `${SITE_URL}${landing.path}`,
+      lastModified: now,
+    });
+  }
+
+  for (const landing of listImageOverlayLandings()) {
+    entries.push({
+      url: `${SITE_URL}${landing.path}`,
+      lastModified: now,
+    });
+  }
+
+  for (const landing of listWatermarkLandings()) {
     entries.push({
       url: `${SITE_URL}${landing.path}`,
       lastModified: now,

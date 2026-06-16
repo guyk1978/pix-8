@@ -9,6 +9,10 @@ import { RotateFlipLandingJsonLd } from "@/components/landing/RotateFlipLandingJ
 import { RotateFlipLandingView } from "@/components/landing/RotateFlipLandingView";
 import { TextOverlayLandingJsonLd } from "@/components/landing/TextOverlayLandingJsonLd";
 import { TextOverlayLandingView } from "@/components/landing/TextOverlayLandingView";
+import { ImageOverlayLandingJsonLd } from "@/components/landing/ImageOverlayLandingJsonLd";
+import { ImageOverlayLandingView } from "@/components/landing/ImageOverlayLandingView";
+import { WatermarkLandingJsonLd } from "@/components/landing/WatermarkLandingJsonLd";
+import { WatermarkLandingView } from "@/components/landing/WatermarkLandingView";
 import { CropperLandingJsonLd } from "@/components/landing/CropperLandingJsonLd";
 import { CropperLandingView } from "@/components/landing/CropperLandingView";
 import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd";
@@ -120,6 +124,24 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
       <>
         <TextOverlayLandingJsonLd landingId={resolved.id} />
         <TextOverlayLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "image-overlay") {
+    return (
+      <>
+        <ImageOverlayLandingJsonLd landingId={resolved.id} />
+        <ImageOverlayLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "watermark") {
+    return (
+      <>
+        <WatermarkLandingJsonLd landingId={resolved.id} />
+        <WatermarkLandingView landingId={resolved.id} />
       </>
     );
   }

@@ -19,10 +19,20 @@ import {
   type RotateFlipLandingId,
 } from "@/lib/rotateFlipLandings";
 import {
+  getImageOverlayLandingBySlug,
+  listImageOverlayLandings,
+  type ImageOverlayLandingId,
+} from "@/lib/imageOverlayLandings";
+import {
   getTextOverlayLandingBySlug,
   listTextOverlayLandings,
   type TextOverlayLandingId,
 } from "@/lib/textOverlayLandings";
+import {
+  getWatermarkLandingBySlug,
+  listWatermarkLandings,
+  type WatermarkLandingId,
+} from "@/lib/watermarkLandings";
 import {
   getCropperLandingBySlug,
   listCropperLandings,
@@ -41,7 +51,9 @@ export type LandingPageFamily =
   | "custom-cutter"
   | "resizer"
   | "rotate-flip"
-  | "text-overlay";
+  | "text-overlay"
+  | "image-overlay"
+  | "watermark";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
@@ -50,7 +62,9 @@ export type ResolvedLandingPage =
   | { family: "custom-cutter"; id: CustomCutterLandingId }
   | { family: "resizer"; id: ResizerLandingId }
   | { family: "rotate-flip"; id: RotateFlipLandingId }
-  | { family: "text-overlay"; id: TextOverlayLandingId };
+  | { family: "text-overlay"; id: TextOverlayLandingId }
+  | { family: "image-overlay"; id: ImageOverlayLandingId }
+  | { family: "watermark"; id: WatermarkLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -90,6 +104,16 @@ export function resolveLandingPageBySlug(
     return { family: "text-overlay", id: textOverlayLanding.id };
   }
 
+  const imageOverlayLanding = getImageOverlayLandingBySlug(slug);
+  if (imageOverlayLanding) {
+    return { family: "image-overlay", id: imageOverlayLanding.id };
+  }
+
+  const watermarkLanding = getWatermarkLandingBySlug(slug);
+  if (watermarkLanding) {
+    return { family: "watermark", id: watermarkLanding.id };
+  }
+
   return undefined;
 }
 
@@ -120,6 +144,14 @@ export function getLandingSeoBySlug(slug: string) {
       );
     case "text-overlay":
       return listTextOverlayLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "image-overlay":
+      return listImageOverlayLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "watermark":
+      return listWatermarkLandings().find(
         (entry) => entry.id === resolved.id,
       );
   }
@@ -156,6 +188,14 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
+  const imageOverlayParams = listImageOverlayLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
+  const watermarkParams = listWatermarkLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
   return [
     ...annotatorParams,
     ...removerParams,
@@ -164,5 +204,7 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     ...customCutterParams,
     ...rotateFlipParams,
     ...textOverlayParams,
+    ...imageOverlayParams,
+    ...watermarkParams,
   ];
 }

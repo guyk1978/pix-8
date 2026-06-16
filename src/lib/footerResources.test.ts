@@ -13,6 +13,8 @@ import { CROPPER_ARTICLE, CROPPER_LANDINGS } from "./cropperLandings";
 import { CUSTOM_CUTTER_ARTICLE, CUSTOM_CUTTER_LANDINGS } from "./customCutterLandings";
 import { ROTATE_FLIP_ARTICLE } from "./rotateFlipLandings";
 import { TEXT_OVERLAY_ARTICLE } from "./textOverlayLandings";
+import { IMAGE_OVERLAY_ARTICLE } from "./imageOverlayLandings";
+import { WATERMARK_ARTICLE } from "./watermarkLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -21,6 +23,8 @@ const CROPPER_TOOL_PATH = "/tools/editor-studio/cropper";
 const CUSTOM_CUTTER_TOOL_PATH = "/tools/editor-studio/custom-cutter";
 const ROTATE_FLIP_TOOL_PATH = "/tools/editor-studio/rotate-flip";
 const TEXT_OVERLAY_TOOL_PATH = "/tools/editor-studio/text-overlay";
+const IMAGE_OVERLAY_TOOL_PATH = "/tools/editor-studio/image-overlay";
+const WATERMARK_TOOL_PATH = "/tools/editor-studio/watermark";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -78,6 +82,132 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory(TEXT_OVERLAY_TOOL_PATH),
       "text-overlay",
+    );
+  });
+
+  it("returns image-overlay for Image Overlay tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(IMAGE_OVERLAY_TOOL_PATH),
+      "image-overlay",
+    );
+  });
+
+  it("returns watermark for Watermark tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(WATERMARK_TOOL_PATH),
+      "watermark",
+    );
+  });
+
+  it("returns watermark for professional image watermarking tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/professional-image-watermarking-tool"),
+      "watermark",
+    );
+  });
+
+  it("returns watermark for no-upload watermark maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-watermark-maker"),
+      "watermark",
+    );
+  });
+
+  it("returns watermark for brand photos with logo landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/brand-photos-with-logo"),
+      "watermark",
+    );
+  });
+
+  it("returns watermark for add watermark to photos online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/add-watermark-to-photos-online"),
+      "watermark",
+    );
+  });
+
+  it("returns watermark for add logo to image online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/add-logo-to-image-online"),
+      "watermark",
+    );
+  });
+
+  it("returns image-overlay for image layer editor online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/image-layer-editor-online"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for overlay images with transparency landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/overlay-images-with-transparency"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for combine two images online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/combine-two-images-online"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for privacy-focused image compositor landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/privacy-focused-image-compositor"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for browser-based image overlay landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/browser-based-image-overlay"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for client-side image overlay tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-image-overlay-tool"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for add transparent image overlay landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/add-transparent-image-overlay"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for add image overlay online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/add-image-overlay-online"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for overlay images online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/overlay-images-online"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for put one image over another landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/put-one-image-over-another"),
+      "image-overlay",
+    );
+  });
+
+  it("returns image-overlay for image merger tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/image-merger-tool"),
+      "image-overlay",
     );
   });
 
@@ -957,6 +1087,34 @@ describe("getFooterResources", () => {
     assert.equal(links[10]?.href, "/custom-text-placement-on-image");
     assert.equal(links[11]?.href, TEXT_OVERLAY_ARTICLE.href);
     assert.equal(links[12]?.href, "/professional-text-overlay-editor");
+  });
+
+  it("returns image-overlay landing and guide links", () => {
+    const links = getFooterResources("image-overlay");
+    assert.equal(links.length, 12);
+    assert.equal(links[0]?.href, "/add-image-overlay-online");
+    assert.equal(links[1]?.href, "/overlay-images-online");
+    assert.equal(links[2]?.href, "/put-one-image-over-another");
+    assert.equal(links[3]?.href, "/image-merger-tool");
+    assert.equal(links[4]?.href, "/add-transparent-image-overlay");
+    assert.equal(links[5]?.href, "/client-side-image-overlay-tool");
+    assert.equal(links[6]?.href, "/browser-based-image-overlay");
+    assert.equal(links[7]?.href, "/privacy-focused-image-compositor");
+    assert.equal(links[8]?.href, "/combine-two-images-online");
+    assert.equal(links[9]?.href, "/overlay-images-with-transparency");
+    assert.equal(links[10]?.href, "/image-layer-editor-online");
+    assert.equal(links[11]?.href, IMAGE_OVERLAY_ARTICLE.href);
+  });
+
+  it("returns watermark landing and guide links", () => {
+    const links = getFooterResources("watermark");
+    assert.equal(links.length, 6);
+    assert.equal(links[0]?.href, "/add-logo-to-image-online");
+    assert.equal(links[1]?.href, "/add-watermark-to-photos-online");
+    assert.equal(links[2]?.href, "/brand-photos-with-logo");
+    assert.equal(links[3]?.href, "/no-upload-watermark-maker");
+    assert.equal(links[4]?.href, "/professional-image-watermarking-tool");
+    assert.equal(links[5]?.href, WATERMARK_ARTICLE.href);
   });
 
   it("returns resizer landing and guide links", () => {

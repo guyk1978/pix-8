@@ -32,6 +32,14 @@ import {
   getTextOverlayLandings,
 } from "@/lib/textOverlayLandingsLocale";
 import {
+  getImageOverlayArticle,
+  getImageOverlayLandings,
+} from "@/lib/imageOverlayLandingsLocale";
+import {
+  getWatermarkArticle,
+  getWatermarkLandings,
+} from "@/lib/watermarkLandingsLocale";
+import {
   listCustomCutterLandings,
   type CustomCutterLandingId,
 } from "@/lib/customCutterLandings";
@@ -43,6 +51,14 @@ import {
   listTextOverlayLandings,
   type TextOverlayLandingId,
 } from "@/lib/textOverlayLandings";
+import {
+  listImageOverlayLandings,
+  type ImageOverlayLandingId,
+} from "@/lib/imageOverlayLandings";
+import {
+  listWatermarkLandings,
+  type WatermarkLandingId,
+} from "@/lib/watermarkLandings";
 import {
   listCropperLandings,
   type CropperLandingId,
@@ -69,7 +85,9 @@ export type FooterResourceCategory =
   | "remover"
   | "resizer"
   | "rotate-flip"
-  | "text-overlay";
+  | "text-overlay"
+  | "image-overlay"
+  | "watermark";
 
 export interface FooterResourceEntry {
   href: string;
@@ -168,6 +186,32 @@ const TEXT_OVERLAY_LANDING_PRIORITY_OVERRIDES: Partial<
   "add-text-to-image-with-fonts": 10,
   "custom-text-placement-on-image": 11,
   "professional-text-overlay-editor": 12,
+};
+
+const IMAGE_OVERLAY_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<ImageOverlayLandingId, number>
+> = {
+  "add-image-overlay-online": 1,
+  "overlay-images-online": 2,
+  "put-one-image-over-another": 3,
+  "image-merger-tool": 4,
+  "add-transparent-image-overlay": 5,
+  "client-side-image-overlay-tool": 6,
+  "browser-based-image-overlay": 7,
+  "privacy-focused-image-compositor": 8,
+  "combine-two-images-online": 9,
+  "overlay-images-with-transparency": 10,
+  "image-layer-editor-online": 11,
+};
+
+const WATERMARK_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<WatermarkLandingId, number>
+> = {
+  "add-logo-to-image-online": 1,
+  "add-watermark-to-photos-online": 2,
+  "brand-photos-with-logo": 3,
+  "no-upload-watermark-maker": 4,
+  "professional-image-watermarking-tool": 5,
 };
 
 const CROPPER_LANDING_PRIORITY_OVERRIDES: Partial<
@@ -281,6 +325,34 @@ function buildTextOverlayLandingResources(
   }));
 }
 
+function buildImageOverlayLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getImageOverlayLandings(language);
+
+  return listImageOverlayLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "image-overlay" as const,
+    priority:
+      IMAGE_OVERLAY_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
+function buildWatermarkLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getWatermarkLandings(language);
+
+  return listWatermarkLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "watermark" as const,
+    priority:
+      WATERMARK_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildCropperLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -368,6 +440,32 @@ function buildTextOverlayGuideResource(
   };
 }
 
+function buildImageOverlayGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getImageOverlayArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "image-overlay",
+    priority: 11,
+  };
+}
+
+function buildWatermarkGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getWatermarkArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "watermark",
+    priority: 11,
+  };
+}
+
 function buildCropperGuideResource(language: Language): FooterResourceEntry {
   const article = getCropperArticle(language);
 
@@ -408,6 +506,10 @@ export function buildFooterResourceRegistry(
     buildRotateFlipGuideResource(language),
     ...buildTextOverlayLandingResources(language),
     buildTextOverlayGuideResource(language),
+    ...buildImageOverlayLandingResources(language),
+    buildImageOverlayGuideResource(language),
+    ...buildWatermarkLandingResources(language),
+    buildWatermarkGuideResource(language),
   ];
 }
 
@@ -433,6 +535,12 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listTextOverlayLandings().map(
     (entry) => [entry.path, "text-overlay"] as const,
   ),
+  ...listImageOverlayLandings().map(
+    (entry) => [entry.path, "image-overlay"] as const,
+  ),
+  ...listWatermarkLandings().map(
+    (entry) => [entry.path, "watermark"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -447,6 +555,8 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   "custom-cutter": "custom-cutter",
   "rotate-flip": "rotate-flip",
   "text-overlay": "text-overlay",
+  "image-overlay": "image-overlay",
+  watermark: "watermark",
 };
 
 export interface GetFooterResourcesOptions {
