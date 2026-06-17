@@ -44,6 +44,11 @@ import {
   type ImageCollageLandingId,
 } from "@/lib/imageCollageLandings";
 import {
+  getImageFiltersLandingBySlug,
+  listImageFiltersLandings,
+  type ImageFiltersLandingId,
+} from "@/lib/imagefiltersLandings";
+import {
   getCropperLandingBySlug,
   listCropperLandings,
   type CropperLandingId,
@@ -65,7 +70,8 @@ export type LandingPageFamily =
   | "image-overlay"
   | "watermark"
   | "meme-generator"
-  | "image-collage";
+  | "image-collage"
+  | "image-filters";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
@@ -78,7 +84,8 @@ export type ResolvedLandingPage =
   | { family: "image-overlay"; id: ImageOverlayLandingId }
   | { family: "watermark"; id: WatermarkLandingId }
   | { family: "meme-generator"; id: MemeGeneratorLandingId }
-  | { family: "image-collage"; id: ImageCollageLandingId };
+  | { family: "image-collage"; id: ImageCollageLandingId }
+  | { family: "image-filters"; id: ImageFiltersLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -138,6 +145,11 @@ export function resolveLandingPageBySlug(
     return { family: "image-collage", id: imageCollageLanding.id };
   }
 
+  const imageFiltersLanding = getImageFiltersLandingBySlug(slug);
+  if (imageFiltersLanding) {
+    return { family: "image-filters", id: imageFiltersLanding.id };
+  }
+
   return undefined;
 }
 
@@ -184,6 +196,10 @@ export function getLandingSeoBySlug(slug: string) {
       );
     case "image-collage":
       return listImageCollageLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "image-filters":
+      return listImageFiltersLandings().find(
         (entry) => entry.id === resolved.id,
       );
   }
@@ -236,6 +252,10 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
+  const imageFiltersParams = listImageFiltersLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
   return [
     ...annotatorParams,
     ...removerParams,
@@ -248,5 +268,6 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     ...watermarkParams,
     ...memeGeneratorParams,
     ...imageCollageParams,
+    ...imageFiltersParams,
   ];
 }

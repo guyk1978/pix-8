@@ -17,6 +17,7 @@ import { IMAGE_OVERLAY_ARTICLE } from "./imageOverlayLandings";
 import { WATERMARK_ARTICLE } from "./watermarkLandings";
 import { MEME_GENERATOR_ARTICLE } from "./memeGeneratorLandings";
 import { IMAGE_COLLAGE_ARTICLE } from "./imageCollageLandings";
+import { IMAGE_FILTERS_ARTICLE } from "./imagefiltersLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -29,6 +30,7 @@ const IMAGE_OVERLAY_TOOL_PATH = "/tools/editor-studio/image-overlay";
 const WATERMARK_TOOL_PATH = "/tools/editor-studio/watermark";
 const MEME_GENERATOR_TOOL_PATH = "/tools/editor-studio/meme-generator";
 const IMAGE_COLLAGE_TOOL_PATH = "/tools/editor-studio/image-collage";
+const IMAGE_FILTERS_TOOL_PATH = "/tools/editor-studio/image-filters";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -338,6 +340,120 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory("/easy-image-grid-maker"),
       "image-collage",
+    );
+  });
+
+  it("returns image-filters for Image Filters & Effects tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(IMAGE_FILTERS_TOOL_PATH),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for add image filters online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/add-image-filters-online"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for photo effects online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/photo-effects-online"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for free image filter tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/free-image-filter-tool"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for apply filters to photos landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/apply-filters-to-photos"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for vintage photo filters online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/vintage-photo-filters-online"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for black and white photo effect landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/black-and-white-photo-effect"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for apply artistic effects to photos landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/apply-artistic-effects-to-photos"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for enhance photo colors online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/enhance-photo-colors-online"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for client-side image filters landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-image-filters"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for no-upload photo effects editor landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-photo-effects-editor"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for privacy-first photo filter tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/privacy-first-photo-filter-tool"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for browser-based image processor landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/browser-based-image-processor"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for professional photo filters for social media landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        "/professional-photo-filters-for-social-media",
+      ),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for apply stunning effects to images landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/apply-stunning-effects-to-images"),
+      "image-filters",
+    );
+  });
+
+  it("returns image-filters for quick photo styler online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/quick-photo-styler-online"),
+      "image-filters",
     );
   });
 
@@ -1401,6 +1517,42 @@ describe("getFooterResources", () => {
     assert.equal(links[14]?.href, "/high-resolution-photo-collage-creator");
     assert.equal(links[15]?.href, "/easy-image-grid-maker");
     assert.equal(links[16]?.href, IMAGE_COLLAGE_ARTICLE.href);
+  });
+
+  it("returns image-filters landing and guide links", () => {
+    const links = getFooterResources("image-filters");
+    assert.equal(links.length, 16);
+    assert.equal(links[0]?.href, "/add-image-filters-online");
+    assert.equal(links[0]?.label, "Add image filters online");
+    assert.equal(links[1]?.href, "/photo-effects-online");
+    assert.equal(links[1]?.label, "Photo effects online");
+    assert.equal(links[2]?.href, "/free-image-filter-tool");
+    assert.equal(links[2]?.label, "Free image filter tool");
+    assert.equal(links[3]?.href, "/apply-filters-to-photos");
+    assert.equal(links[3]?.label, "Apply filters to photos");
+    assert.equal(links[4]?.href, "/vintage-photo-filters-online");
+    assert.equal(links[4]?.label, "Vintage photo filters online");
+    assert.equal(links[5]?.href, "/black-and-white-photo-effect");
+    assert.equal(links[5]?.label, "Black & white photo effect");
+    assert.equal(links[6]?.href, "/apply-artistic-effects-to-photos");
+    assert.equal(links[6]?.label, "Artistic photo effects");
+    assert.equal(links[7]?.href, "/enhance-photo-colors-online");
+    assert.equal(links[7]?.label, "Enhance photo colors online");
+    assert.equal(links[8]?.href, "/client-side-image-filters");
+    assert.equal(links[8]?.label, "Client-side image filters");
+    assert.equal(links[9]?.href, "/no-upload-photo-effects-editor");
+    assert.equal(links[9]?.label, "No-upload photo effects");
+    assert.equal(links[10]?.href, "/privacy-first-photo-filter-tool");
+    assert.equal(links[10]?.label, "Privacy-first photo filters");
+    assert.equal(links[11]?.href, "/browser-based-image-processor");
+    assert.equal(links[11]?.label, "Browser-based image processor");
+    assert.equal(links[12]?.href, "/professional-photo-filters-for-social-media");
+    assert.equal(links[12]?.label, "Social media photo filters");
+    assert.equal(links[13]?.href, "/apply-stunning-effects-to-images");
+    assert.equal(links[13]?.label, "Stunning image effects");
+    assert.equal(links[14]?.href, "/quick-photo-styler-online");
+    assert.equal(links[14]?.label, "Quick photo styler");
+    assert.equal(links[15]?.href, IMAGE_FILTERS_ARTICLE.href);
   });
 
   it("returns resizer landing and guide links", () => {
