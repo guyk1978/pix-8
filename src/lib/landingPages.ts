@@ -63,6 +63,11 @@ import {
   listMagnifierLandings,
   type MagnifierLandingId,
 } from "@/lib/magnifierLandings";
+import {
+  getBase64EncoderLandingBySlug,
+  listBase64EncoderLandings,
+  type Base64EncoderLandingId,
+} from "@/lib/base64encoderLandings";
 
 export type LandingPageFamily =
   | "image-annotator"
@@ -77,7 +82,8 @@ export type LandingPageFamily =
   | "meme-generator"
   | "image-collage"
   | "image-filters"
-  | "image-magnifier";
+  | "image-magnifier"
+  | "base64-encoder";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
@@ -92,7 +98,8 @@ export type ResolvedLandingPage =
   | { family: "meme-generator"; id: MemeGeneratorLandingId }
   | { family: "image-collage"; id: ImageCollageLandingId }
   | { family: "image-filters"; id: ImageFiltersLandingId }
-  | { family: "image-magnifier"; id: MagnifierLandingId };
+  | { family: "image-magnifier"; id: MagnifierLandingId }
+  | { family: "base64-encoder"; id: Base64EncoderLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -162,6 +169,11 @@ export function resolveLandingPageBySlug(
     return { family: "image-magnifier", id: magnifierLanding.id };
   }
 
+  const base64EncoderLanding = getBase64EncoderLandingBySlug(slug);
+  if (base64EncoderLanding) {
+    return { family: "base64-encoder", id: base64EncoderLanding.id };
+  }
+
   return undefined;
 }
 
@@ -216,6 +228,10 @@ export function getLandingSeoBySlug(slug: string) {
       );
     case "image-magnifier":
       return listMagnifierLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "base64-encoder":
+      return listBase64EncoderLandings().find(
         (entry) => entry.id === resolved.id,
       );
   }
@@ -276,6 +292,10 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
+  const base64EncoderParams = listBase64EncoderLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
   return [
     ...annotatorParams,
     ...removerParams,
@@ -290,5 +310,6 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     ...imageCollageParams,
     ...imageFiltersParams,
     ...magnifierParams,
+    ...base64EncoderParams,
   ];
 }

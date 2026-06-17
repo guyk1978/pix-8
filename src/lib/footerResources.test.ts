@@ -19,6 +19,7 @@ import { MEME_GENERATOR_ARTICLE } from "./memeGeneratorLandings";
 import { IMAGE_COLLAGE_ARTICLE } from "./imageCollageLandings";
 import { IMAGE_FILTERS_ARTICLE } from "./imagefiltersLandings";
 import { MAGNIFIER_ARTICLE } from "./magnifierLandings";
+import { BASE64_ENCODER_ARTICLE } from "./base64encoderLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -33,6 +34,7 @@ const MEME_GENERATOR_TOOL_PATH = "/tools/editor-studio/meme-generator";
 const IMAGE_COLLAGE_TOOL_PATH = "/tools/editor-studio/image-collage";
 const IMAGE_FILTERS_TOOL_PATH = "/tools/editor-studio/image-filters";
 const MAGNIFIER_TOOL_PATH = "/tools/editor-studio/magnifier";
+const BASE64_ENCODER_TOOL_PATH = "/tools/dev-tools/base64-encoder";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -561,6 +563,125 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory("/magnify-small-text-on-images"),
       "image-magnifier",
+    );
+  });
+
+  it("returns base64-encoder for Base64 Encoder tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(BASE64_ENCODER_TOOL_PATH),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for base64 encoder online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/base64-encoder-online"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for base64 decoder online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/base64-decoder-online"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for convert text to base64 landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/convert-text-to-base64"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for decode base64 to text landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/decode-base64-to-text"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for base64 encode image landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/base64-encode-image"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for base64 file encoder landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/base64-file-encoder"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for online base64 tool for developers landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/online-base64-tool-for-developers"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for instant base64 conversion landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/instant-base64-conversion"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for client-side base64 encoder landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-base64-encoder"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for secure base64 decoder landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/secure-base64-decoder"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for no-upload base64 tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-base64-tool"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for private base64 converter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/private-base64-converter"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for base64 string to image converter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/base64-string-to-image-converter"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for batch base64 encoder landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/batch-base64-encoder"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for human-readable to base64 converter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/human-readable-to-base64-converter"),
+      "base64-encoder",
+    );
+  });
+
+  it("returns base64-encoder for base64 url-safe encoder landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/base64-url-safe-encoder"),
+      "base64-encoder",
     );
   });
 
@@ -1698,6 +1819,45 @@ describe("getFooterResources", () => {
       links[14]?.label,
       "Online Image Magnifier: Zoom, Pan, and Sharpen to Discover Hidden Details",
     );
+  });
+
+  it("returns base64-encoder landing and guide links", () => {
+    const links = getFooterResources("base64-encoder");
+    assert.equal(links.length, 17);
+    assert.equal(links[0]?.href, "/base64-encoder-online");
+    assert.equal(links[0]?.label, "Base64 encoder online");
+    assert.equal(links[1]?.href, "/base64-decoder-online");
+    assert.equal(links[1]?.label, "Base64 decoder online");
+    assert.equal(links[2]?.href, "/convert-text-to-base64");
+    assert.equal(links[2]?.label, "Text to Base64");
+    assert.equal(links[3]?.href, "/decode-base64-to-text");
+    assert.equal(links[3]?.label, "Base64 to text");
+    assert.equal(links[4]?.href, "/base64-encode-image");
+    assert.equal(links[4]?.label, "Base64 encode image");
+    assert.equal(links[5]?.href, "/base64-file-encoder");
+    assert.equal(links[5]?.label, "Base64 file encoder");
+    assert.equal(links[6]?.href, "/online-base64-tool-for-developers");
+    assert.equal(links[6]?.label, "Base64 for developers");
+    assert.equal(links[7]?.href, "/instant-base64-conversion");
+    assert.equal(links[7]?.label, "Instant Base64 conversion");
+    assert.equal(links[8]?.href, "/client-side-base64-encoder");
+    assert.equal(links[8]?.label, "Client-side Base64 encoder");
+    assert.equal(links[9]?.href, "/secure-base64-decoder");
+    assert.equal(links[9]?.label, "Secure Base64 decoder");
+    assert.equal(links[10]?.href, "/no-upload-base64-tool");
+    assert.equal(links[10]?.label, "No-upload Base64 tool");
+    assert.equal(links[11]?.href, "/private-base64-converter");
+    assert.equal(links[11]?.label, "Private Base64 converter");
+    assert.equal(links[12]?.href, "/base64-string-to-image-converter");
+    assert.equal(links[12]?.label, "Base64 string to image");
+    assert.equal(links[13]?.href, "/batch-base64-encoder");
+    assert.equal(links[13]?.label, "Batch Base64 encoder");
+    assert.equal(links[14]?.href, "/human-readable-to-base64-converter");
+    assert.equal(links[14]?.label, "Human-readable to Base64");
+    assert.equal(links[15]?.href, "/base64-url-safe-encoder");
+    assert.equal(links[15]?.label, "URL-safe Base64 encoder");
+    assert.equal(links[16]?.href, BASE64_ENCODER_ARTICLE.href);
+    assert.equal(links[16]?.label, BASE64_ENCODER_ARTICLE.title);
   });
 
   it("returns resizer landing and guide links", () => {

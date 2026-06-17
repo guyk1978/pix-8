@@ -103,6 +103,14 @@ import {
   listResizerLandings,
   type ResizerLandingId,
 } from "@/lib/resizerLandings";
+import {
+  getBase64EncoderArticle,
+  getBase64EncoderLandings,
+} from "@/lib/base64encoderLandingsLocale";
+import {
+  listBase64EncoderLandings,
+  type Base64EncoderLandingId,
+} from "@/lib/base64encoderLandings";
 import { getToolIdFromPathname, normalizePathname } from "@/lib/routes";
 import type { ToolId } from "@/lib/tools";
 
@@ -123,7 +131,8 @@ export type FooterResourceCategory =
   | "meme-generator"
   | "image-collage"
   | "image-filters"
-  | "image-magnifier";
+  | "image-magnifier"
+  | "base64-encoder";
 
 export interface FooterResourceEntry {
   href: string;
@@ -352,6 +361,27 @@ const MAGNIFIER_LANDING_PRIORITY_OVERRIDES: Partial<
   "magnify-small-text-on-images": 14,
 };
 
+const BASE64_ENCODER_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<Base64EncoderLandingId, number>
+> = {
+  "base64-encoder-online": 1,
+  "base64-decoder-online": 2,
+  "convert-text-to-base64": 3,
+  "decode-base64-to-text": 4,
+  "base64-encode-image": 5,
+  "base64-file-encoder": 6,
+  "online-base64-tool-for-developers": 7,
+  "instant-base64-conversion": 8,
+  "client-side-base64-encoder": 9,
+  "secure-base64-decoder": 10,
+  "no-upload-base64-tool": 11,
+  "private-base64-converter": 12,
+  "base64-string-to-image-converter": 13,
+  "batch-base64-encoder": 14,
+  "human-readable-to-base64-converter": 15,
+  "base64-url-safe-encoder": 16,
+};
+
 const RESIZER_LANDING_PRIORITY_OVERRIDES: Partial<
   Record<ResizerLandingId, number>
 > = {
@@ -539,6 +569,20 @@ function buildMagnifierLandingResources(
   }));
 }
 
+function buildBase64EncoderLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getBase64EncoderLandings(language);
+
+  return listBase64EncoderLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "base64-encoder" as const,
+    priority:
+      BASE64_ENCODER_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildResizerLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -713,6 +757,19 @@ function buildMagnifierGuideResource(
   };
 }
 
+function buildBase64EncoderGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getBase64EncoderArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "base64-encoder",
+    priority: 17,
+  };
+}
+
 export function buildFooterResourceRegistry(
   language: Language = "en",
 ): FooterResourceEntry[] {
@@ -743,6 +800,8 @@ export function buildFooterResourceRegistry(
     buildImageFiltersGuideResource(language),
     ...buildMagnifierLandingResources(language),
     buildMagnifierGuideResource(language),
+    ...buildBase64EncoderLandingResources(language),
+    buildBase64EncoderGuideResource(language),
   ];
 }
 
@@ -786,6 +845,9 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listMagnifierLandings().map(
     (entry) => [entry.path, "image-magnifier"] as const,
   ),
+  ...listBase64EncoderLandings().map(
+    (entry) => [entry.path, "base64-encoder"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -806,6 +868,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   "image-collage": "image-collage",
   "image-filters": "image-filters",
   magnifier: "image-magnifier",
+  "base64-encoder": "base64-encoder",
 };
 
 export interface GetFooterResourcesOptions {

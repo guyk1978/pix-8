@@ -25,6 +25,8 @@ import { CropperLandingJsonLd } from "@/components/landing/CropperLandingJsonLd"
 import { CropperLandingView } from "@/components/landing/CropperLandingView";
 import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd";
 import { ResizerLandingView } from "@/components/landing/ResizerLandingView";
+import { Base64EncoderLandingJsonLd } from "@/components/landing/Base64EncoderLandingJsonLd";
+import { Base64EncoderLandingView } from "@/components/landing/Base64EncoderLandingView";
 import {
   getAllLandingStaticParams,
   getLandingSeoBySlug,
@@ -186,6 +188,15 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
       <>
         <MagnifierLandingJsonLd landingId={resolved.id} />
         <MagnifierLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "base64-encoder") {
+    return (
+      <>
+        <Base64EncoderLandingJsonLd landingId={resolved.id} />
+        <Base64EncoderLandingView landingId={resolved.id} />
       </>
     );
   }
