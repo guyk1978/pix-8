@@ -58,6 +58,11 @@ import {
   listResizerLandings,
   type ResizerLandingId,
 } from "@/lib/resizerLandings";
+import {
+  getMagnifierLandingBySlug,
+  listMagnifierLandings,
+  type MagnifierLandingId,
+} from "@/lib/magnifierLandings";
 
 export type LandingPageFamily =
   | "image-annotator"
@@ -71,7 +76,8 @@ export type LandingPageFamily =
   | "watermark"
   | "meme-generator"
   | "image-collage"
-  | "image-filters";
+  | "image-filters"
+  | "image-magnifier";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
@@ -85,7 +91,8 @@ export type ResolvedLandingPage =
   | { family: "watermark"; id: WatermarkLandingId }
   | { family: "meme-generator"; id: MemeGeneratorLandingId }
   | { family: "image-collage"; id: ImageCollageLandingId }
-  | { family: "image-filters"; id: ImageFiltersLandingId };
+  | { family: "image-filters"; id: ImageFiltersLandingId }
+  | { family: "image-magnifier"; id: MagnifierLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -150,6 +157,11 @@ export function resolveLandingPageBySlug(
     return { family: "image-filters", id: imageFiltersLanding.id };
   }
 
+  const magnifierLanding = getMagnifierLandingBySlug(slug);
+  if (magnifierLanding) {
+    return { family: "image-magnifier", id: magnifierLanding.id };
+  }
+
   return undefined;
 }
 
@@ -200,6 +212,10 @@ export function getLandingSeoBySlug(slug: string) {
       );
     case "image-filters":
       return listImageFiltersLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "image-magnifier":
+      return listMagnifierLandings().find(
         (entry) => entry.id === resolved.id,
       );
   }
@@ -256,6 +272,10 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
+  const magnifierParams = listMagnifierLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
   return [
     ...annotatorParams,
     ...removerParams,
@@ -269,5 +289,6 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     ...memeGeneratorParams,
     ...imageCollageParams,
     ...imageFiltersParams,
+    ...magnifierParams,
   ];
 }

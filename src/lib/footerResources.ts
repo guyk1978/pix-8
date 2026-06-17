@@ -84,6 +84,14 @@ import {
   type ImageFiltersLandingId,
 } from "@/lib/imagefiltersLandings";
 import {
+  getMagnifierArticle,
+  getMagnifierLandings,
+} from "@/lib/magnifierLandingsLocale";
+import {
+  listMagnifierLandings,
+  type MagnifierLandingId,
+} from "@/lib/magnifierLandings";
+import {
   listCropperLandings,
   type CropperLandingId,
 } from "@/lib/cropperLandings";
@@ -114,7 +122,8 @@ export type FooterResourceCategory =
   | "watermark"
   | "meme-generator"
   | "image-collage"
-  | "image-filters";
+  | "image-filters"
+  | "image-magnifier";
 
 export interface FooterResourceEntry {
   href: string;
@@ -324,6 +333,25 @@ const CROPPER_LANDING_PRIORITY_OVERRIDES: Partial<
   "browser-based-image-cropper-tool": 16,
 };
 
+const MAGNIFIER_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<MagnifierLandingId, number>
+> = {
+  "free-image-magnifier": 1,
+  "photo-zoom-tool": 2,
+  "inspect-image-details-online": 3,
+  "high-resolution-image-inspector": 4,
+  "pixel-perfect-image-viewer": 5,
+  "examine-photo-details-online": 6,
+  "magnify-image-for-design-review": 7,
+  "client-side-image-magnifier": 8,
+  "privacy-first-photo-zoom-tool": 9,
+  "no-upload-image-inspector": 10,
+  "browser-magnifying-glass-for-photos": 11,
+  "zoom-into-photo-online": 12,
+  "detailed-image-viewer-tool": 13,
+  "magnify-small-text-on-images": 14,
+};
+
 const RESIZER_LANDING_PRIORITY_OVERRIDES: Partial<
   Record<ResizerLandingId, number>
 > = {
@@ -497,6 +525,20 @@ function buildCropperLandingResources(
   }));
 }
 
+function buildMagnifierLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getMagnifierLandings(language);
+
+  return listMagnifierLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "image-magnifier" as const,
+    priority:
+      MAGNIFIER_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildResizerLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -658,6 +700,19 @@ function buildResizerGuideResource(language: Language): FooterResourceEntry {
   };
 }
 
+function buildMagnifierGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getMagnifierArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "image-magnifier",
+    priority: 17,
+  };
+}
+
 export function buildFooterResourceRegistry(
   language: Language = "en",
 ): FooterResourceEntry[] {
@@ -686,6 +741,8 @@ export function buildFooterResourceRegistry(
     buildImageCollageGuideResource(language),
     ...buildImageFiltersLandingResources(language),
     buildImageFiltersGuideResource(language),
+    ...buildMagnifierLandingResources(language),
+    buildMagnifierGuideResource(language),
   ];
 }
 
@@ -726,6 +783,9 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listImageFiltersLandings().map(
     (entry) => [entry.path, "image-filters"] as const,
   ),
+  ...listMagnifierLandings().map(
+    (entry) => [entry.path, "image-magnifier"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -745,6 +805,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   "meme-generator": "meme-generator",
   "image-collage": "image-collage",
   "image-filters": "image-filters",
+  magnifier: "image-magnifier",
 };
 
 export interface GetFooterResourcesOptions {

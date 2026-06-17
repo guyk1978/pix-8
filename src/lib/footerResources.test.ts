@@ -18,6 +18,7 @@ import { WATERMARK_ARTICLE } from "./watermarkLandings";
 import { MEME_GENERATOR_ARTICLE } from "./memeGeneratorLandings";
 import { IMAGE_COLLAGE_ARTICLE } from "./imageCollageLandings";
 import { IMAGE_FILTERS_ARTICLE } from "./imagefiltersLandings";
+import { MAGNIFIER_ARTICLE } from "./magnifierLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -31,6 +32,7 @@ const WATERMARK_TOOL_PATH = "/tools/editor-studio/watermark";
 const MEME_GENERATOR_TOOL_PATH = "/tools/editor-studio/meme-generator";
 const IMAGE_COLLAGE_TOOL_PATH = "/tools/editor-studio/image-collage";
 const IMAGE_FILTERS_TOOL_PATH = "/tools/editor-studio/image-filters";
+const MAGNIFIER_TOOL_PATH = "/tools/editor-studio/magnifier";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -454,6 +456,111 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory("/quick-photo-styler-online"),
       "image-filters",
+    );
+  });
+
+  it("returns image-magnifier for Image Magnifier tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(MAGNIFIER_TOOL_PATH),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for photo zoom tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/photo-zoom-tool"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for inspect image details online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/inspect-image-details-online"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for free image magnifier landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/free-image-magnifier"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for high-resolution image inspector landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/high-resolution-image-inspector"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for pixel-perfect image viewer landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/pixel-perfect-image-viewer"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for examine photo details online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/examine-photo-details-online"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for magnify image for design review landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/magnify-image-for-design-review"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for client-side image magnifier landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-image-magnifier"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for privacy-first photo zoom tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/privacy-first-photo-zoom-tool"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for no-upload image inspector landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-image-inspector"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for browser magnifying glass for photos landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/browser-magnifying-glass-for-photos"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for zoom into photo online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/zoom-into-photo-online"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for detailed image viewer tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/detailed-image-viewer-tool"),
+      "image-magnifier",
+    );
+  });
+
+  it("returns image-magnifier for magnify small text on images landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/magnify-small-text-on-images"),
+      "image-magnifier",
     );
   });
 
@@ -1553,6 +1660,44 @@ describe("getFooterResources", () => {
     assert.equal(links[14]?.href, "/quick-photo-styler-online");
     assert.equal(links[14]?.label, "Quick photo styler");
     assert.equal(links[15]?.href, IMAGE_FILTERS_ARTICLE.href);
+  });
+
+  it("returns image-magnifier landing and guide links", () => {
+    const links = getFooterResources("image-magnifier");
+    assert.equal(links.length, 15);
+    assert.equal(links[0]?.href, "/free-image-magnifier");
+    assert.equal(links[0]?.label, "Free image magnifier");
+    assert.equal(links[1]?.href, "/photo-zoom-tool");
+    assert.equal(links[1]?.label, "Photo zoom tool");
+    assert.equal(links[2]?.href, "/inspect-image-details-online");
+    assert.equal(links[2]?.label, "Inspect image details");
+    assert.equal(links[3]?.href, "/high-resolution-image-inspector");
+    assert.equal(links[3]?.label, "Hi-res image inspector");
+    assert.equal(links[4]?.href, "/pixel-perfect-image-viewer");
+    assert.equal(links[4]?.label, "Pixel-perfect viewer");
+    assert.equal(links[5]?.href, "/examine-photo-details-online");
+    assert.equal(links[5]?.label, "Examine photo details");
+    assert.equal(links[6]?.href, "/magnify-image-for-design-review");
+    assert.equal(links[6]?.label, "Magnify for design review");
+    assert.equal(links[7]?.href, "/client-side-image-magnifier");
+    assert.equal(links[7]?.label, "Client-side magnifier");
+    assert.equal(links[8]?.href, "/privacy-first-photo-zoom-tool");
+    assert.equal(links[8]?.label, "Privacy-first zoom");
+    assert.equal(links[9]?.href, "/no-upload-image-inspector");
+    assert.equal(links[9]?.label, "No-upload inspector");
+    assert.equal(links[10]?.href, "/browser-magnifying-glass-for-photos");
+    assert.equal(links[10]?.label, "Browser magnifying glass");
+    assert.equal(links[11]?.href, "/zoom-into-photo-online");
+    assert.equal(links[11]?.label, "Zoom into photo");
+    assert.equal(links[12]?.href, "/detailed-image-viewer-tool");
+    assert.equal(links[12]?.label, "Detailed image viewer");
+    assert.equal(links[13]?.href, "/magnify-small-text-on-images");
+    assert.equal(links[13]?.label, "Magnify small text");
+    assert.equal(links[14]?.href, MAGNIFIER_ARTICLE.href);
+    assert.equal(
+      links[14]?.label,
+      "Online Image Magnifier: Zoom, Pan, and Sharpen to Discover Hidden Details",
+    );
   });
 
   it("returns resizer landing and guide links", () => {

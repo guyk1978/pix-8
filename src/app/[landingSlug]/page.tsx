@@ -19,6 +19,8 @@ import { ImageCollageLandingJsonLd } from "@/components/landing/ImageCollageLand
 import { ImageCollageLandingView } from "@/components/landing/ImageCollageLandingView";
 import { ImageFiltersLandingJsonLd } from "@/components/landing/ImageFiltersLandingJsonLd";
 import { ImageFiltersLandingView } from "@/components/landing/ImageFiltersLandingView";
+import { MagnifierLandingJsonLd } from "@/components/landing/MagnifierLandingJsonLd";
+import { MagnifierLandingView } from "@/components/landing/MagnifierLandingView";
 import { CropperLandingJsonLd } from "@/components/landing/CropperLandingJsonLd";
 import { CropperLandingView } from "@/components/landing/CropperLandingView";
 import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd";
@@ -175,6 +177,15 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
       <>
         <ImageFiltersLandingJsonLd landingId={resolved.id} />
         <ImageFiltersLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "image-magnifier") {
+    return (
+      <>
+        <MagnifierLandingJsonLd landingId={resolved.id} />
+        <MagnifierLandingView landingId={resolved.id} />
       </>
     );
   }
