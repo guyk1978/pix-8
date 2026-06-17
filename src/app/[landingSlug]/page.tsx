@@ -15,6 +15,8 @@ import { WatermarkLandingJsonLd } from "@/components/landing/WatermarkLandingJso
 import { WatermarkLandingView } from "@/components/landing/WatermarkLandingView";
 import { MemeGeneratorLandingJsonLd } from "@/components/landing/MemeGeneratorLandingJsonLd";
 import { MemeGeneratorLandingView } from "@/components/landing/MemeGeneratorLandingView";
+import { ImageCollageLandingJsonLd } from "@/components/landing/ImageCollageLandingJsonLd";
+import { ImageCollageLandingView } from "@/components/landing/ImageCollageLandingView";
 import { CropperLandingJsonLd } from "@/components/landing/CropperLandingJsonLd";
 import { CropperLandingView } from "@/components/landing/CropperLandingView";
 import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd";
@@ -153,6 +155,15 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
       <>
         <MemeGeneratorLandingJsonLd landingId={resolved.id} />
         <MemeGeneratorLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "image-collage") {
+    return (
+      <>
+        <ImageCollageLandingJsonLd landingId={resolved.id} />
+        <ImageCollageLandingView landingId={resolved.id} />
       </>
     );
   }

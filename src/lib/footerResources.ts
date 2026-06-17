@@ -44,6 +44,10 @@ import {
   getMemeGeneratorLandings,
 } from "@/lib/memeGeneratorLandingsLocale";
 import {
+  getImageCollageArticle,
+  getImageCollageLandings,
+} from "@/lib/imageCollageLandingsLocale";
+import {
   listCustomCutterLandings,
   type CustomCutterLandingId,
 } from "@/lib/customCutterLandings";
@@ -67,6 +71,10 @@ import {
   listMemeGeneratorLandings,
   type MemeGeneratorLandingId,
 } from "@/lib/memeGeneratorLandings";
+import {
+  listImageCollageLandings,
+  type ImageCollageLandingId,
+} from "@/lib/imageCollageLandings";
 import {
   listCropperLandings,
   type CropperLandingId,
@@ -96,7 +104,8 @@ export type FooterResourceCategory =
   | "text-overlay"
   | "image-overlay"
   | "watermark"
-  | "meme-generator";
+  | "meme-generator"
+  | "image-collage";
 
 export interface FooterResourceEntry {
   href: string;
@@ -242,6 +251,27 @@ const MEME_GENERATOR_LANDING_PRIORITY_OVERRIDES: Partial<
   "easy-meme-editor-for-images": 14,
   "professional-meme-creation-tool": 15,
   "funny-meme-generator-online": 16,
+};
+
+const IMAGE_COLLAGE_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<ImageCollageLandingId, number>
+> = {
+  "image-collage-maker-online": 1,
+  "photo-collage-creator": 2,
+  "make-a-photo-collage-free": 3,
+  "online-collage-tool": 4,
+  "create-photo-collage-for-instagram": 5,
+  "combine-photos-into-one-image": 6,
+  "layout-photo-collage-tool": 7,
+  "grid-photo-collage-maker": 8,
+  "client-side-photo-collage-maker": 9,
+  "no-upload-collage-maker": 10,
+  "browser-based-photo-layout-tool": 11,
+  "privacy-focused-image-combiner": 12,
+  "custom-photo-collage-layout": 13,
+  "professional-collage-maker-online": 14,
+  "high-resolution-photo-collage-creator": 15,
+  "easy-image-grid-maker": 16,
 };
 
 const CROPPER_LANDING_PRIORITY_OVERRIDES: Partial<
@@ -397,6 +427,20 @@ function buildMemeGeneratorLandingResources(
   }));
 }
 
+function buildImageCollageLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getImageCollageLandings(language);
+
+  return listImageCollageLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "image-collage" as const,
+    priority:
+      IMAGE_COLLAGE_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildCropperLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -523,6 +567,19 @@ function buildMemeGeneratorGuideResource(
   };
 }
 
+function buildImageCollageGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getImageCollageArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "image-collage",
+    priority: 17,
+  };
+}
+
 function buildCropperGuideResource(language: Language): FooterResourceEntry {
   const article = getCropperArticle(language);
 
@@ -569,6 +626,8 @@ export function buildFooterResourceRegistry(
     buildWatermarkGuideResource(language),
     ...buildMemeGeneratorLandingResources(language),
     buildMemeGeneratorGuideResource(language),
+    ...buildImageCollageLandingResources(language),
+    buildImageCollageGuideResource(language),
   ];
 }
 
@@ -603,6 +662,9 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listMemeGeneratorLandings().map(
     (entry) => [entry.path, "meme-generator"] as const,
   ),
+  ...listImageCollageLandings().map(
+    (entry) => [entry.path, "image-collage"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -620,6 +682,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   "image-overlay": "image-overlay",
   watermark: "watermark",
   "meme-generator": "meme-generator",
+  "image-collage": "image-collage",
 };
 
 export interface GetFooterResourcesOptions {

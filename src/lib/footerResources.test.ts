@@ -16,6 +16,7 @@ import { TEXT_OVERLAY_ARTICLE } from "./textOverlayLandings";
 import { IMAGE_OVERLAY_ARTICLE } from "./imageOverlayLandings";
 import { WATERMARK_ARTICLE } from "./watermarkLandings";
 import { MEME_GENERATOR_ARTICLE } from "./memeGeneratorLandings";
+import { IMAGE_COLLAGE_ARTICLE } from "./imageCollageLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -27,6 +28,7 @@ const TEXT_OVERLAY_TOOL_PATH = "/tools/editor-studio/text-overlay";
 const IMAGE_OVERLAY_TOOL_PATH = "/tools/editor-studio/image-overlay";
 const WATERMARK_TOOL_PATH = "/tools/editor-studio/watermark";
 const MEME_GENERATOR_TOOL_PATH = "/tools/editor-studio/meme-generator";
+const IMAGE_COLLAGE_TOOL_PATH = "/tools/editor-studio/image-collage";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -217,6 +219,125 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory("/funny-meme-generator-online"),
       "meme-generator",
+    );
+  });
+
+  it("returns image-collage for Image Collage Maker tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(IMAGE_COLLAGE_TOOL_PATH),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for image collage maker online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/image-collage-maker-online"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for photo collage creator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/photo-collage-creator"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for make a photo collage free landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/make-a-photo-collage-free"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for online collage tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/online-collage-tool"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for create photo collage for Instagram landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/create-photo-collage-for-instagram"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for combine photos into one image landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/combine-photos-into-one-image"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for layout photo collage tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/layout-photo-collage-tool"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for grid photo collage maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/grid-photo-collage-maker"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for client-side photo collage maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-photo-collage-maker"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for no-upload collage maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-collage-maker"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for browser-based photo layout tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/browser-based-photo-layout-tool"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for privacy-focused image combiner landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/privacy-focused-image-combiner"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for custom photo collage layout landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/custom-photo-collage-layout"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for professional collage maker online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/professional-collage-maker-online"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for high-resolution photo collage creator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/high-resolution-photo-collage-creator"),
+      "image-collage",
+    );
+  });
+
+  it("returns image-collage for easy image grid maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/easy-image-grid-maker"),
+      "image-collage",
     );
   });
 
@@ -1258,6 +1379,28 @@ describe("getFooterResources", () => {
     assert.equal(links[14]?.href, "/professional-meme-creation-tool");
     assert.equal(links[15]?.href, "/funny-meme-generator-online");
     assert.equal(links[16]?.href, MEME_GENERATOR_ARTICLE.href);
+  });
+
+  it("returns image-collage landing and guide links", () => {
+    const links = getFooterResources("image-collage");
+    assert.equal(links.length, 17);
+    assert.equal(links[0]?.href, "/image-collage-maker-online");
+    assert.equal(links[1]?.href, "/photo-collage-creator");
+    assert.equal(links[2]?.href, "/make-a-photo-collage-free");
+    assert.equal(links[3]?.href, "/online-collage-tool");
+    assert.equal(links[4]?.href, "/create-photo-collage-for-instagram");
+    assert.equal(links[5]?.href, "/combine-photos-into-one-image");
+    assert.equal(links[6]?.href, "/layout-photo-collage-tool");
+    assert.equal(links[7]?.href, "/grid-photo-collage-maker");
+    assert.equal(links[8]?.href, "/client-side-photo-collage-maker");
+    assert.equal(links[9]?.href, "/no-upload-collage-maker");
+    assert.equal(links[10]?.href, "/browser-based-photo-layout-tool");
+    assert.equal(links[11]?.href, "/privacy-focused-image-combiner");
+    assert.equal(links[12]?.href, "/custom-photo-collage-layout");
+    assert.equal(links[13]?.href, "/professional-collage-maker-online");
+    assert.equal(links[14]?.href, "/high-resolution-photo-collage-creator");
+    assert.equal(links[15]?.href, "/easy-image-grid-maker");
+    assert.equal(links[16]?.href, IMAGE_COLLAGE_ARTICLE.href);
   });
 
   it("returns resizer landing and guide links", () => {
