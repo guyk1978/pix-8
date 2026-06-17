@@ -27,6 +27,8 @@ import { ResizerLandingJsonLd } from "@/components/landing/ResizerLandingJsonLd"
 import { ResizerLandingView } from "@/components/landing/ResizerLandingView";
 import { Base64EncoderLandingJsonLd } from "@/components/landing/Base64EncoderLandingJsonLd";
 import { Base64EncoderLandingView } from "@/components/landing/Base64EncoderLandingView";
+import { ImageToSvgLandingJsonLd } from "@/components/landing/ImageToSvgLandingJsonLd";
+import { ImageToSvgLandingView } from "@/components/landing/ImageToSvgLandingView";
 import {
   getAllLandingStaticParams,
   getLandingSeoBySlug,
@@ -197,6 +199,15 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
       <>
         <Base64EncoderLandingJsonLd landingId={resolved.id} />
         <Base64EncoderLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "image-to-svg") {
+    return (
+      <>
+        <ImageToSvgLandingJsonLd landingId={resolved.id} />
+        <ImageToSvgLandingView landingId={resolved.id} />
       </>
     );
   }

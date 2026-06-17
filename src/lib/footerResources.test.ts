@@ -20,6 +20,7 @@ import { IMAGE_COLLAGE_ARTICLE } from "./imageCollageLandings";
 import { IMAGE_FILTERS_ARTICLE } from "./imagefiltersLandings";
 import { MAGNIFIER_ARTICLE } from "./magnifierLandings";
 import { BASE64_ENCODER_ARTICLE } from "./base64encoderLandings";
+import { IMAGE_TO_SVG_ARTICLE } from "./imagetosvgLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -35,6 +36,7 @@ const IMAGE_COLLAGE_TOOL_PATH = "/tools/editor-studio/image-collage";
 const IMAGE_FILTERS_TOOL_PATH = "/tools/editor-studio/image-filters";
 const MAGNIFIER_TOOL_PATH = "/tools/editor-studio/magnifier";
 const BASE64_ENCODER_TOOL_PATH = "/tools/dev-tools/base64-encoder";
+const IMAGE_TO_SVG_TOOL_PATH = "/tools/dev-tools/image-to-svg";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -682,6 +684,125 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory("/base64-url-safe-encoder"),
       "base64-encoder",
+    );
+  });
+
+  it("returns image-to-svg for Image to SVG Converter tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(IMAGE_TO_SVG_TOOL_PATH),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for image to svg converter online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/image-to-svg-converter-online"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for convert image to vector landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/convert-image-to-vector"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for png to svg converter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/png-to-svg-converter"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for jpg to svg online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/jpg-to-svg-online"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for vectorize image online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/vectorize-image-online"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for free image to vector converter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/free-image-to-vector-converter"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for svg trace online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/svg-trace-online"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for high-quality vector converter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/high-quality-vector-converter"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for client-side image to svg converter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-image-to-svg-converter"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for no-upload vector converter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-vector-converter"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for privacy-first svg generator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/privacy-first-svg-generator"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for browser-based vectorization tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/browser-based-vectorization-tool"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for turn logo to svg landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/turn-logo-to-svg"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for convert pixel art to svg landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/convert-pixel-art-to-svg"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for smooth image to vector converter landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/smooth-image-to-vector-converter"),
+      "image-to-svg",
+    );
+  });
+
+  it("returns image-to-svg for svg path converter online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/svg-path-converter-online"),
+      "image-to-svg",
     );
   });
 
@@ -1858,6 +1979,45 @@ describe("getFooterResources", () => {
     assert.equal(links[15]?.label, "URL-safe Base64 encoder");
     assert.equal(links[16]?.href, BASE64_ENCODER_ARTICLE.href);
     assert.equal(links[16]?.label, BASE64_ENCODER_ARTICLE.title);
+  });
+
+  it("returns image-to-svg landing and guide links", () => {
+    const links = getFooterResources("image-to-svg");
+    assert.equal(links.length, 17);
+    assert.equal(links[0]?.href, "/image-to-svg-converter-online");
+    assert.equal(links[0]?.label, "Image to SVG converter online");
+    assert.equal(links[1]?.href, "/convert-image-to-vector");
+    assert.equal(links[1]?.label, "Convert image to vector");
+    assert.equal(links[2]?.href, "/png-to-svg-converter");
+    assert.equal(links[2]?.label, "PNG to SVG converter");
+    assert.equal(links[3]?.href, "/jpg-to-svg-online");
+    assert.equal(links[3]?.label, "JPG to SVG online");
+    assert.equal(links[4]?.href, "/vectorize-image-online");
+    assert.equal(links[4]?.label, "Vectorize image online");
+    assert.equal(links[5]?.href, "/free-image-to-vector-converter");
+    assert.equal(links[5]?.label, "Free image to vector converter");
+    assert.equal(links[6]?.href, "/svg-trace-online");
+    assert.equal(links[6]?.label, "SVG trace online");
+    assert.equal(links[7]?.href, "/high-quality-vector-converter");
+    assert.equal(links[7]?.label, "High-quality vector converter");
+    assert.equal(links[8]?.href, "/client-side-image-to-svg-converter");
+    assert.equal(links[8]?.label, "Client-side image to SVG");
+    assert.equal(links[9]?.href, "/no-upload-vector-converter");
+    assert.equal(links[9]?.label, "No-upload vector converter");
+    assert.equal(links[10]?.href, "/privacy-first-svg-generator");
+    assert.equal(links[10]?.label, "Privacy-first SVG generator");
+    assert.equal(links[11]?.href, "/browser-based-vectorization-tool");
+    assert.equal(links[11]?.label, "Browser vectorization tool");
+    assert.equal(links[12]?.href, "/turn-logo-to-svg");
+    assert.equal(links[12]?.label, "Turn logo to SVG");
+    assert.equal(links[13]?.href, "/convert-pixel-art-to-svg");
+    assert.equal(links[13]?.label, "Pixel art to SVG");
+    assert.equal(links[14]?.href, "/smooth-image-to-vector-converter");
+    assert.equal(links[14]?.label, "Smooth image to vector");
+    assert.equal(links[15]?.href, "/svg-path-converter-online");
+    assert.equal(links[15]?.label, "SVG path converter online");
+    assert.equal(links[16]?.href, IMAGE_TO_SVG_ARTICLE.href);
+    assert.equal(links[16]?.label, IMAGE_TO_SVG_ARTICLE.title);
   });
 
   it("returns resizer landing and guide links", () => {

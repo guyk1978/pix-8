@@ -68,6 +68,11 @@ import {
   listBase64EncoderLandings,
   type Base64EncoderLandingId,
 } from "@/lib/base64encoderLandings";
+import {
+  getImageToSvgLandingBySlug,
+  listImageToSvgLandings,
+  type ImageToSvgLandingId,
+} from "@/lib/imagetosvgLandings";
 
 export type LandingPageFamily =
   | "image-annotator"
@@ -83,7 +88,8 @@ export type LandingPageFamily =
   | "image-collage"
   | "image-filters"
   | "image-magnifier"
-  | "base64-encoder";
+  | "base64-encoder"
+  | "image-to-svg";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
@@ -99,7 +105,8 @@ export type ResolvedLandingPage =
   | { family: "image-collage"; id: ImageCollageLandingId }
   | { family: "image-filters"; id: ImageFiltersLandingId }
   | { family: "image-magnifier"; id: MagnifierLandingId }
-  | { family: "base64-encoder"; id: Base64EncoderLandingId };
+  | { family: "base64-encoder"; id: Base64EncoderLandingId }
+  | { family: "image-to-svg"; id: ImageToSvgLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -174,6 +181,11 @@ export function resolveLandingPageBySlug(
     return { family: "base64-encoder", id: base64EncoderLanding.id };
   }
 
+  const imageToSvgLanding = getImageToSvgLandingBySlug(slug);
+  if (imageToSvgLanding) {
+    return { family: "image-to-svg", id: imageToSvgLanding.id };
+  }
+
   return undefined;
 }
 
@@ -232,6 +244,10 @@ export function getLandingSeoBySlug(slug: string) {
       );
     case "base64-encoder":
       return listBase64EncoderLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "image-to-svg":
+      return listImageToSvgLandings().find(
         (entry) => entry.id === resolved.id,
       );
   }
@@ -296,6 +312,10 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     landingSlug: entry.path.slice(1),
   }));
 
+  const imageToSvgParams = listImageToSvgLandings().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
+
   return [
     ...annotatorParams,
     ...removerParams,
@@ -311,5 +331,6 @@ export function getAllLandingStaticParams(): { landingSlug: string }[] {
     ...imageFiltersParams,
     ...magnifierParams,
     ...base64EncoderParams,
+    ...imageToSvgParams,
   ];
 }

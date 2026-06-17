@@ -111,6 +111,14 @@ import {
   listBase64EncoderLandings,
   type Base64EncoderLandingId,
 } from "@/lib/base64encoderLandings";
+import {
+  getImageToSvgArticle,
+  getImageToSvgLandings,
+} from "@/lib/imagetosvgLandingsLocale";
+import {
+  listImageToSvgLandings,
+  type ImageToSvgLandingId,
+} from "@/lib/imagetosvgLandings";
 import { getToolIdFromPathname, normalizePathname } from "@/lib/routes";
 import type { ToolId } from "@/lib/tools";
 
@@ -132,7 +140,8 @@ export type FooterResourceCategory =
   | "image-collage"
   | "image-filters"
   | "image-magnifier"
-  | "base64-encoder";
+  | "base64-encoder"
+  | "image-to-svg";
 
 export interface FooterResourceEntry {
   href: string;
@@ -382,6 +391,27 @@ const BASE64_ENCODER_LANDING_PRIORITY_OVERRIDES: Partial<
   "base64-url-safe-encoder": 16,
 };
 
+const IMAGE_TO_SVG_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<ImageToSvgLandingId, number>
+> = {
+  "image-to-svg-converter-online": 1,
+  "convert-image-to-vector": 2,
+  "png-to-svg-converter": 3,
+  "jpg-to-svg-online": 4,
+  "vectorize-image-online": 5,
+  "free-image-to-vector-converter": 6,
+  "svg-trace-online": 7,
+  "high-quality-vector-converter": 8,
+  "client-side-image-to-svg-converter": 9,
+  "no-upload-vector-converter": 10,
+  "privacy-first-svg-generator": 11,
+  "browser-based-vectorization-tool": 12,
+  "turn-logo-to-svg": 13,
+  "convert-pixel-art-to-svg": 14,
+  "smooth-image-to-vector-converter": 15,
+  "svg-path-converter-online": 16,
+};
+
 const RESIZER_LANDING_PRIORITY_OVERRIDES: Partial<
   Record<ResizerLandingId, number>
 > = {
@@ -583,6 +613,20 @@ function buildBase64EncoderLandingResources(
   }));
 }
 
+function buildImageToSvgLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getImageToSvgLandings(language);
+
+  return listImageToSvgLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "image-to-svg" as const,
+    priority:
+      IMAGE_TO_SVG_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildResizerLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -770,6 +814,19 @@ function buildBase64EncoderGuideResource(
   };
 }
 
+function buildImageToSvgGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getImageToSvgArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "image-to-svg",
+    priority: 17,
+  };
+}
+
 export function buildFooterResourceRegistry(
   language: Language = "en",
 ): FooterResourceEntry[] {
@@ -802,6 +859,8 @@ export function buildFooterResourceRegistry(
     buildMagnifierGuideResource(language),
     ...buildBase64EncoderLandingResources(language),
     buildBase64EncoderGuideResource(language),
+    ...buildImageToSvgLandingResources(language),
+    buildImageToSvgGuideResource(language),
   ];
 }
 
@@ -848,6 +907,9 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listBase64EncoderLandings().map(
     (entry) => [entry.path, "base64-encoder"] as const,
   ),
+  ...listImageToSvgLandings().map(
+    (entry) => [entry.path, "image-to-svg"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -869,6 +931,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   "image-filters": "image-filters",
   magnifier: "image-magnifier",
   "base64-encoder": "base64-encoder",
+  "image-to-svg": "image-to-svg",
 };
 
 export interface GetFooterResourcesOptions {
