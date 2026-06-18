@@ -29,6 +29,12 @@ import { Base64EncoderLandingJsonLd } from "@/components/landing/Base64EncoderLa
 import { Base64EncoderLandingView } from "@/components/landing/Base64EncoderLandingView";
 import { ImageToSvgLandingJsonLd } from "@/components/landing/ImageToSvgLandingJsonLd";
 import { ImageToSvgLandingView } from "@/components/landing/ImageToSvgLandingView";
+import { PaletteExtractorLandingJsonLd } from "@/components/landing/PaletteExtractorLandingJsonLd";
+import { PaletteExtractorLandingView } from "@/components/landing/PaletteExtractorLandingView";
+import { ColorPickerLandingJsonLd } from "@/components/landing/ColorPickerLandingJsonLd";
+import { ColorPickerLandingView } from "@/components/landing/ColorPickerLandingView";
+import { CssPaletteGenLandingJsonLd } from "@/components/landing/CssPaletteGenLandingJsonLd";
+import { CssPaletteGenLandingView } from "@/components/landing/CssPaletteGenLandingView";
 import {
   getAllLandingStaticParams,
   getLandingSeoBySlug,
@@ -208,6 +214,33 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
       <>
         <ImageToSvgLandingJsonLd landingId={resolved.id} />
         <ImageToSvgLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "palette-extractor") {
+    return (
+      <>
+        <PaletteExtractorLandingJsonLd landingId={resolved.id} />
+        <PaletteExtractorLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "color-picker") {
+    return (
+      <>
+        <ColorPickerLandingJsonLd landingId={resolved.id} />
+        <ColorPickerLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "css-palette-gen") {
+    return (
+      <>
+        <CssPaletteGenLandingJsonLd landingId={resolved.id} />
+        <CssPaletteGenLandingView landingId={resolved.id} />
       </>
     );
   }

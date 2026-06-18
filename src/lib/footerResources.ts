@@ -119,6 +119,30 @@ import {
   listImageToSvgLandings,
   type ImageToSvgLandingId,
 } from "@/lib/imagetosvgLandings";
+import {
+  getPaletteExtractorArticle,
+  getPaletteExtractorLandings,
+} from "@/lib/paletteextractorLandingsLocale";
+import {
+  listPaletteExtractorLandings,
+  type PaletteExtractorLandingId,
+} from "@/lib/paletteextractorLandings";
+import {
+  getColorPickerArticle,
+  getColorPickerLandings,
+} from "@/lib/colorpickerLandingsLocale";
+import {
+  listColorPickerLandings,
+  type ColorPickerLandingId,
+} from "@/lib/colorpickerLandings";
+import {
+  getCssPaletteGenArticle,
+  getCssPaletteGenLandings,
+} from "@/lib/csspalettegenLandingsLocale";
+import {
+  listCssPaletteGenLandings,
+  type CssPaletteGenLandingId,
+} from "@/lib/csspalettegenLandings";
 import { getToolIdFromPathname, normalizePathname } from "@/lib/routes";
 import type { ToolId } from "@/lib/tools";
 
@@ -141,7 +165,10 @@ export type FooterResourceCategory =
   | "image-filters"
   | "image-magnifier"
   | "base64-encoder"
-  | "image-to-svg";
+  | "image-to-svg"
+  | "palette-extractor"
+  | "color-picker"
+  | "css-palette-gen";
 
 export interface FooterResourceEntry {
   href: string;
@@ -412,6 +439,37 @@ const IMAGE_TO_SVG_LANDING_PRIORITY_OVERRIDES: Partial<
   "svg-path-converter-online": 16,
 };
 
+const PALETTE_EXTRACTOR_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<PaletteExtractorLandingId, number>
+> = {
+  "free-image-color-extractor": 1,
+  "get-hex-codes-from-image": 2,
+  "extract-brand-colors-from-image": 3,
+  "private-image-color-extractor": 4,
+  "extract-dominant-colors-from-image": 5,
+  "client-side-color-palette-extractor": 6,
+  "no-upload-color-scheme-generator": 7,
+  "auto-color-palette-generator": 8,
+  "find-color-palette-for-design-project": 9,
+  "generate-color-scheme-from-image": 10,
+  "color-palette-generator-from-image": 11,
+  "extract-color-palette-from-image": 12,
+  "browser-based-palette-builder": 13,
+  "palette-extractor-online": 14,
+};
+
+const COLOR_PICKER_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<ColorPickerLandingId, number>
+> = {
+  "image-color-picker-online": 1,
+};
+
+const CSS_PALETTE_GEN_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<CssPaletteGenLandingId, number>
+> = {
+  "css-color-palette-from-photo": 1,
+};
+
 const RESIZER_LANDING_PRIORITY_OVERRIDES: Partial<
   Record<ResizerLandingId, number>
 > = {
@@ -627,6 +685,48 @@ function buildImageToSvgLandingResources(
   }));
 }
 
+function buildPaletteExtractorLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getPaletteExtractorLandings(language);
+
+  return listPaletteExtractorLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "palette-extractor" as const,
+    priority:
+      PALETTE_EXTRACTOR_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
+function buildColorPickerLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getColorPickerLandings(language);
+
+  return listColorPickerLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "color-picker" as const,
+    priority:
+      COLOR_PICKER_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
+function buildCssPaletteGenLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getCssPaletteGenLandings(language);
+
+  return listCssPaletteGenLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "css-palette-gen" as const,
+    priority:
+      CSS_PALETTE_GEN_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildResizerLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -827,6 +927,45 @@ function buildImageToSvgGuideResource(
   };
 }
 
+function buildPaletteExtractorGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getPaletteExtractorArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "palette-extractor",
+    priority: 17,
+  };
+}
+
+function buildColorPickerGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getColorPickerArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "color-picker",
+    priority: 17,
+  };
+}
+
+function buildCssPaletteGenGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getCssPaletteGenArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "css-palette-gen",
+    priority: 17,
+  };
+}
+
 export function buildFooterResourceRegistry(
   language: Language = "en",
 ): FooterResourceEntry[] {
@@ -861,6 +1000,12 @@ export function buildFooterResourceRegistry(
     buildBase64EncoderGuideResource(language),
     ...buildImageToSvgLandingResources(language),
     buildImageToSvgGuideResource(language),
+    ...buildPaletteExtractorLandingResources(language),
+    buildPaletteExtractorGuideResource(language),
+    ...buildColorPickerLandingResources(language),
+    buildColorPickerGuideResource(language),
+    ...buildCssPaletteGenLandingResources(language),
+    buildCssPaletteGenGuideResource(language),
   ];
 }
 
@@ -910,6 +1055,15 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listImageToSvgLandings().map(
     (entry) => [entry.path, "image-to-svg"] as const,
   ),
+  ...listPaletteExtractorLandings().map(
+    (entry) => [entry.path, "palette-extractor"] as const,
+  ),
+  ...listColorPickerLandings().map(
+    (entry) => [entry.path, "color-picker"] as const,
+  ),
+  ...listCssPaletteGenLandings().map(
+    (entry) => [entry.path, "css-palette-gen"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -932,6 +1086,9 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   magnifier: "image-magnifier",
   "base64-encoder": "base64-encoder",
   "image-to-svg": "image-to-svg",
+  "palette-extractor": "palette-extractor",
+  "color-picker": "color-picker",
+  "css-palette-gen": "css-palette-gen",
 };
 
 export interface GetFooterResourcesOptions {

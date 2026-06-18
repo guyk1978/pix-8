@@ -21,6 +21,12 @@ import { IMAGE_FILTERS_ARTICLE } from "./imagefiltersLandings";
 import { MAGNIFIER_ARTICLE } from "./magnifierLandings";
 import { BASE64_ENCODER_ARTICLE } from "./base64encoderLandings";
 import { IMAGE_TO_SVG_ARTICLE } from "./imagetosvgLandings";
+import { PALETTE_EXTRACTOR_ARTICLE } from "./paletteextractorLandings";
+import { PALETTE_EXTRACTOR_LANDINGS } from "./paletteextractorLandings";
+import { COLOR_PICKER_ARTICLE } from "./colorpickerLandings";
+import { COLOR_PICKER_LANDINGS } from "./colorpickerLandings";
+import { CSS_PALETTE_GEN_ARTICLE } from "./csspalettegenLandings";
+import { CSS_PALETTE_GEN_LANDINGS } from "./csspalettegenLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -37,6 +43,9 @@ const IMAGE_FILTERS_TOOL_PATH = "/tools/editor-studio/image-filters";
 const MAGNIFIER_TOOL_PATH = "/tools/editor-studio/magnifier";
 const BASE64_ENCODER_TOOL_PATH = "/tools/dev-tools/base64-encoder";
 const IMAGE_TO_SVG_TOOL_PATH = "/tools/dev-tools/image-to-svg";
+const PALETTE_EXTRACTOR_TOOL_PATH = "/tools/dev-tools/palette-extractor";
+const COLOR_PICKER_TOOL_PATH = "/tools/dev-tools/color-picker";
+const CSS_PALETTE_GEN_TOOL_PATH = "/tools/dev-tools/css-palette-gen";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -803,6 +812,139 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory("/svg-path-converter-online"),
       "image-to-svg",
+    );
+  });
+
+  it("returns palette-extractor for Palette Extractor tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(PALETTE_EXTRACTOR_TOOL_PATH),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for palette extractor online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/palette-extractor-online"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for extract color palette from image landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/extract-color-palette-from-image"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for extract dominant colors from image landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/extract-dominant-colors-from-image"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for client-side color palette extractor landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-color-palette-extractor"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for color palette generator from image landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/color-palette-generator-from-image"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for free image color extractor landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/free-image-color-extractor"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for private image color extractor landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/private-image-color-extractor"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for generate color scheme from image landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/generate-color-scheme-from-image"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for no-upload color scheme generator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-color-scheme-generator"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for browser-based palette builder landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/browser-based-palette-builder"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for get hex codes from image landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/get-hex-codes-from-image"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for extract brand colors from image landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/extract-brand-colors-from-image"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for auto color palette generator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/auto-color-palette-generator"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns palette-extractor for find color palette for design project landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/find-color-palette-for-design-project"),
+      "palette-extractor",
+    );
+  });
+
+  it("returns color-picker for Color Picker tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(COLOR_PICKER_TOOL_PATH),
+      "color-picker",
+    );
+  });
+
+  it("returns color-picker for image color picker online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/image-color-picker-online"),
+      "color-picker",
+    );
+  });
+
+  it("returns css-palette-gen for CSS Palette Generator tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(CSS_PALETTE_GEN_TOOL_PATH),
+      "css-palette-gen",
+    );
+  });
+
+  it("returns css-palette-gen for css color palette from photo landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/css-color-palette-from-photo"),
+      "css-palette-gen",
     );
   });
 
@@ -2018,6 +2160,107 @@ describe("getFooterResources", () => {
     assert.equal(links[15]?.label, "SVG path converter online");
     assert.equal(links[16]?.href, IMAGE_TO_SVG_ARTICLE.href);
     assert.equal(links[16]?.label, IMAGE_TO_SVG_ARTICLE.title);
+  });
+
+  it("returns palette-extractor landing and guide links", () => {
+    const links = getFooterResources("palette-extractor");
+    assert.equal(links.length, 15);
+    assert.equal(
+      links[0]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["free-image-color-extractor"].path,
+    );
+    assert.equal(links[0]?.label, "Free image color extractor");
+    assert.equal(
+      links[1]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["get-hex-codes-from-image"].path,
+    );
+    assert.equal(links[1]?.label, "HEX codes from image");
+    assert.equal(
+      links[2]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["extract-brand-colors-from-image"].path,
+    );
+    assert.equal(links[2]?.label, "Brand colors from image");
+    assert.equal(
+      links[3]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["private-image-color-extractor"].path,
+    );
+    assert.equal(links[3]?.label, "Private color extractor");
+    assert.equal(
+      links[4]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["extract-dominant-colors-from-image"].path,
+    );
+    assert.equal(links[4]?.label, "Dominant colors from image");
+    assert.equal(
+      links[5]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["client-side-color-palette-extractor"].path,
+    );
+    assert.equal(links[5]?.label, "Client-side palette extractor");
+    assert.equal(
+      links[6]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["no-upload-color-scheme-generator"].path,
+    );
+    assert.equal(links[6]?.label, "No-upload scheme generator");
+    assert.equal(
+      links[7]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["auto-color-palette-generator"].path,
+    );
+    assert.equal(links[7]?.label, "Auto palette generator");
+    assert.equal(
+      links[8]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["find-color-palette-for-design-project"].path,
+    );
+    assert.equal(links[8]?.label, "Palette for design project");
+    assert.equal(
+      links[9]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["generate-color-scheme-from-image"].path,
+    );
+    assert.equal(links[9]?.label, "Color scheme from image");
+    assert.equal(
+      links[10]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["color-palette-generator-from-image"].path,
+    );
+    assert.equal(links[10]?.label, "Palette generator from image");
+    assert.equal(
+      links[11]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["extract-color-palette-from-image"].path,
+    );
+    assert.equal(links[11]?.label, "Extract palette from image");
+    assert.equal(
+      links[12]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["browser-based-palette-builder"].path,
+    );
+    assert.equal(links[12]?.label, "Browser palette builder");
+    assert.equal(
+      links[13]?.href,
+      PALETTE_EXTRACTOR_LANDINGS["palette-extractor-online"].path,
+    );
+    assert.equal(links[13]?.label, "Palette extractor online");
+    assert.equal(links[14]?.href, PALETTE_EXTRACTOR_ARTICLE.href);
+    assert.equal(links[14]?.label, PALETTE_EXTRACTOR_ARTICLE.title);
+  });
+
+  it("returns color-picker landing and guide links", () => {
+    const links = getFooterResources("color-picker");
+    assert.equal(links.length, 2);
+    assert.equal(
+      links[0]?.href,
+      COLOR_PICKER_LANDINGS["image-color-picker-online"].path,
+    );
+    assert.equal(links[0]?.label, "Image color picker online");
+    assert.equal(links[1]?.href, COLOR_PICKER_ARTICLE.href);
+    assert.equal(links[1]?.label, COLOR_PICKER_ARTICLE.title);
+  });
+
+  it("returns css-palette-gen landing and guide links", () => {
+    const links = getFooterResources("css-palette-gen");
+    assert.equal(links.length, 2);
+    assert.equal(
+      links[0]?.href,
+      CSS_PALETTE_GEN_LANDINGS["css-color-palette-from-photo"].path,
+    );
+    assert.equal(links[0]?.label, "CSS palette from photo");
+    assert.equal(links[1]?.href, CSS_PALETTE_GEN_ARTICLE.href);
+    assert.equal(links[1]?.label, CSS_PALETTE_GEN_ARTICLE.title);
   });
 
   it("returns resizer landing and guide links", () => {

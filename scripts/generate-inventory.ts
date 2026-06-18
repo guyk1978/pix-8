@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { getAllArticles } from "../src/lib/blog";
-import { SIDEBAR_CATEGORY_IDS } from "../src/lib/sidebarNav";
+import { buildSiteSitemapEntries } from "../src/lib/siteSitemap";
 import { SITE_URL } from "../src/lib/siteUrl";
 import { dashboardSections, tools, type ToolCategory } from "../src/lib/tools";
 
@@ -10,47 +10,7 @@ const OUTPUT_FILE = join(OUTPUT_DIR, "inventory.html");
 const DEV_BASE = "http://localhost:3000";
 const PROD_BASE = SITE_URL;
 
-interface SitemapEntry {
-  path: string;
-  label: string;
-  group: string;
-}
-
-function buildSitemapEntries(): SitemapEntry[] {
-  const entries: SitemapEntry[] = [
-    { path: "/", label: "Home", group: "Core" },
-    { path: "/blog", label: "Blog", group: "Core" },
-    { path: "/settings", label: "Settings", group: "Core" },
-    { path: "/favorites", label: "Favorites", group: "Core" },
-    { path: "/projects", label: "Projects", group: "Core" },
-  ];
-
-  for (const categoryId of SIDEBAR_CATEGORY_IDS) {
-    entries.push({
-      path: `/tools/category/${categoryId}`,
-      label: `Category: ${categoryId}`,
-      group: "Tool categories",
-    });
-  }
-
-  for (const tool of tools) {
-    entries.push({
-      path: tool.href,
-      label: tool.name,
-      group: "Tools",
-    });
-  }
-
-  for (const article of getAllArticles("en")) {
-    entries.push({
-      path: `/articles/${article.slug}`,
-      label: article.title,
-      group: "Articles",
-    });
-  }
-
-  return entries;
-}
+type SitemapEntry = ReturnType<typeof buildSiteSitemapEntries>[number];
 
 const categoryLabels: Record<ToolCategory, string> = {
   "basic-editing": "Basic Editing",
@@ -224,7 +184,7 @@ function renderSitemapSection(entries: SitemapEntry[]): string {
           "Copy sitemap URLs",
         )}
       </h2>
-      <p class="desc" style="margin-bottom: 1rem;">Mirrors <code>src/app/sitemap.ts</code> — canonical production URLs included at build time.</p>
+      <p class="desc" style="margin-bottom: 1rem;">Mirrors <code>src/lib/siteSitemap.ts</code> (used by <code>src/app/sitemap.ts</code>) — canonical production URLs included at build time.</p>
       ${sections}
     </section>`;
 }
@@ -232,7 +192,7 @@ function renderSitemapSection(entries: SitemapEntry[]): string {
 export function generateInventory(): string {
   const articlesEn = getAllArticles("en");
   const articlesHe = getAllArticles("he");
-  const sitemapEntries = buildSitemapEntries();
+  const sitemapEntries = buildSiteSitemapEntries();
 
   const html = `<!DOCTYPE html>
 <html lang="en">

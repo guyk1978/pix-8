@@ -73,6 +73,21 @@ import {
   listImageToSvgLandings,
   type ImageToSvgLandingId,
 } from "@/lib/imagetosvgLandings";
+import {
+  getPaletteExtractorLandingBySlug,
+  listPaletteExtractorLandings,
+  type PaletteExtractorLandingId,
+} from "@/lib/paletteextractorLandings";
+import {
+  getColorPickerLandingBySlug,
+  listColorPickerLandings,
+  type ColorPickerLandingId,
+} from "@/lib/colorpickerLandings";
+import {
+  getCssPaletteGenLandingBySlug,
+  listCssPaletteGenLandings,
+  type CssPaletteGenLandingId,
+} from "@/lib/csspalettegenLandings";
 
 export type LandingPageFamily =
   | "image-annotator"
@@ -89,7 +104,10 @@ export type LandingPageFamily =
   | "image-filters"
   | "image-magnifier"
   | "base64-encoder"
-  | "image-to-svg";
+  | "image-to-svg"
+  | "palette-extractor"
+  | "color-picker"
+  | "css-palette-gen";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
@@ -106,7 +124,10 @@ export type ResolvedLandingPage =
   | { family: "image-filters"; id: ImageFiltersLandingId }
   | { family: "image-magnifier"; id: MagnifierLandingId }
   | { family: "base64-encoder"; id: Base64EncoderLandingId }
-  | { family: "image-to-svg"; id: ImageToSvgLandingId };
+  | { family: "image-to-svg"; id: ImageToSvgLandingId }
+  | { family: "palette-extractor"; id: PaletteExtractorLandingId }
+  | { family: "color-picker"; id: ColorPickerLandingId }
+  | { family: "css-palette-gen"; id: CssPaletteGenLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -186,6 +207,21 @@ export function resolveLandingPageBySlug(
     return { family: "image-to-svg", id: imageToSvgLanding.id };
   }
 
+  const paletteExtractorLanding = getPaletteExtractorLandingBySlug(slug);
+  if (paletteExtractorLanding) {
+    return { family: "palette-extractor", id: paletteExtractorLanding.id };
+  }
+
+  const colorPickerLanding = getColorPickerLandingBySlug(slug);
+  if (colorPickerLanding) {
+    return { family: "color-picker", id: colorPickerLanding.id };
+  }
+
+  const cssPaletteGenLanding = getCssPaletteGenLandingBySlug(slug);
+  if (cssPaletteGenLanding) {
+    return { family: "css-palette-gen", id: cssPaletteGenLanding.id };
+  }
+
   return undefined;
 }
 
@@ -250,87 +286,52 @@ export function getLandingSeoBySlug(slug: string) {
       return listImageToSvgLandings().find(
         (entry) => entry.id === resolved.id,
       );
+    case "palette-extractor":
+      return listPaletteExtractorLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "color-picker":
+      return listColorPickerLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
+    case "css-palette-gen":
+      return listCssPaletteGenLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
   }
 }
 
-export function getAllLandingStaticParams(): { landingSlug: string }[] {
-  const annotatorParams = Object.values(IMAGE_ANNOTATOR_LANDINGS).map(
-    (entry) => ({
-      landingSlug: entry.path.slice(1),
-    }),
-  );
+export interface LandingPageRef {
+  path: string;
+  linkTitle: string;
+}
 
-  const removerParams = listBackgroundRemoverLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const resizerParams = listResizerLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const cropperParams = listCropperLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const customCutterParams = listCustomCutterLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const rotateFlipParams = listRotateFlipLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const textOverlayParams = listTextOverlayLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const imageOverlayParams = listImageOverlayLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const watermarkParams = listWatermarkLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const memeGeneratorParams = listMemeGeneratorLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const imageCollageParams = listImageCollageLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const imageFiltersParams = listImageFiltersLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const magnifierParams = listMagnifierLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const base64EncoderParams = listBase64EncoderLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
-  const imageToSvgParams = listImageToSvgLandings().map((entry) => ({
-    landingSlug: entry.path.slice(1),
-  }));
-
+/** All SEO landing pages across every tool family — single source for sitemap and static params. */
+export function listAllLandingPages(): LandingPageRef[] {
   return [
-    ...annotatorParams,
-    ...removerParams,
-    ...resizerParams,
-    ...cropperParams,
-    ...customCutterParams,
-    ...rotateFlipParams,
-    ...textOverlayParams,
-    ...imageOverlayParams,
-    ...watermarkParams,
-    ...memeGeneratorParams,
-    ...imageCollageParams,
-    ...imageFiltersParams,
-    ...magnifierParams,
-    ...base64EncoderParams,
-    ...imageToSvgParams,
+    ...Object.values(IMAGE_ANNOTATOR_LANDINGS),
+    ...listBackgroundRemoverLandings(),
+    ...listResizerLandings(),
+    ...listCropperLandings(),
+    ...listCustomCutterLandings(),
+    ...listRotateFlipLandings(),
+    ...listTextOverlayLandings(),
+    ...listImageOverlayLandings(),
+    ...listWatermarkLandings(),
+    ...listMemeGeneratorLandings(),
+    ...listImageCollageLandings(),
+    ...listImageFiltersLandings(),
+    ...listMagnifierLandings(),
+    ...listBase64EncoderLandings(),
+    ...listImageToSvgLandings(),
+    ...listPaletteExtractorLandings(),
+    ...listColorPickerLandings(),
+    ...listCssPaletteGenLandings(),
   ];
+}
+
+export function getAllLandingStaticParams(): { landingSlug: string }[] {
+  return listAllLandingPages().map((entry) => ({
+    landingSlug: entry.path.slice(1),
+  }));
 }
