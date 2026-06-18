@@ -88,6 +88,11 @@ import {
   listCssPaletteGenLandings,
   type CssPaletteGenLandingId,
 } from "@/lib/csspalettegenLandings";
+import {
+  getFaviconGeneratorLandingBySlug,
+  listFaviconGeneratorLandings,
+  type FaviconGeneratorLandingId,
+} from "@/lib/favicongeneratorLandings";
 
 export type LandingPageFamily =
   | "image-annotator"
@@ -107,7 +112,8 @@ export type LandingPageFamily =
   | "image-to-svg"
   | "palette-extractor"
   | "color-picker"
-  | "css-palette-gen";
+  | "css-palette-gen"
+  | "favicon-generator";
 
 export type ResolvedLandingPage =
   | { family: "image-annotator"; id: ImageAnnotatorLandingId }
@@ -127,7 +133,8 @@ export type ResolvedLandingPage =
   | { family: "image-to-svg"; id: ImageToSvgLandingId }
   | { family: "palette-extractor"; id: PaletteExtractorLandingId }
   | { family: "color-picker"; id: ColorPickerLandingId }
-  | { family: "css-palette-gen"; id: CssPaletteGenLandingId };
+  | { family: "css-palette-gen"; id: CssPaletteGenLandingId }
+  | { family: "favicon-generator"; id: FaviconGeneratorLandingId };
 
 export function resolveLandingPageBySlug(
   slug: string,
@@ -222,6 +229,11 @@ export function resolveLandingPageBySlug(
     return { family: "css-palette-gen", id: cssPaletteGenLanding.id };
   }
 
+  const faviconGeneratorLanding = getFaviconGeneratorLandingBySlug(slug);
+  if (faviconGeneratorLanding) {
+    return { family: "favicon-generator", id: faviconGeneratorLanding.id };
+  }
+
   return undefined;
 }
 
@@ -298,6 +310,10 @@ export function getLandingSeoBySlug(slug: string) {
       return listCssPaletteGenLandings().find(
         (entry) => entry.id === resolved.id,
       );
+    case "favicon-generator":
+      return listFaviconGeneratorLandings().find(
+        (entry) => entry.id === resolved.id,
+      );
   }
 }
 
@@ -327,6 +343,7 @@ export function listAllLandingPages(): LandingPageRef[] {
     ...listPaletteExtractorLandings(),
     ...listColorPickerLandings(),
     ...listCssPaletteGenLandings(),
+    ...listFaviconGeneratorLandings(),
   ];
 }
 

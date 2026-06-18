@@ -143,6 +143,14 @@ import {
   listCssPaletteGenLandings,
   type CssPaletteGenLandingId,
 } from "@/lib/csspalettegenLandings";
+import {
+  getFaviconGeneratorArticle,
+  getFaviconGeneratorLandings,
+} from "@/lib/favicongeneratorLandingsLocale";
+import {
+  listFaviconGeneratorLandings,
+  type FaviconGeneratorLandingId,
+} from "@/lib/favicongeneratorLandings";
 import { getToolIdFromPathname, normalizePathname } from "@/lib/routes";
 import type { ToolId } from "@/lib/tools";
 
@@ -168,7 +176,8 @@ export type FooterResourceCategory =
   | "image-to-svg"
   | "palette-extractor"
   | "color-picker"
-  | "css-palette-gen";
+  | "css-palette-gen"
+  | "favicon-generator";
 
 export interface FooterResourceEntry {
   href: string;
@@ -470,6 +479,26 @@ const CSS_PALETTE_GEN_LANDING_PRIORITY_OVERRIDES: Partial<
   "css-color-palette-from-photo": 1,
 };
 
+const FAVICON_GENERATOR_LANDING_PRIORITY_OVERRIDES: Partial<
+  Record<FaviconGeneratorLandingId, number>
+> = {
+  "favicon-generator-online": 1,
+  "create-favicon-from-image": 2,
+  "free-favicon-maker": 3,
+  "convert-image-to-favicon": 4,
+  "generate-favicon-for-website": 5,
+  "favicon-icon-maker-for-web": 6,
+  "create-favicon-sizes-online": 7,
+  "client-side-favicon-generator": 8,
+  "no-upload-favicon-creator": 9,
+  "privacy-first-favicon-tool": 10,
+  "browser-based-icon-generator": 11,
+  "best-online-tool-to-create-favicon": 12,
+  "make-favicon-for-wordpress": 13,
+  "professional-favicon-maker-for-business": 14,
+  "favicon-converter-for-all-browsers": 15,
+};
+
 const RESIZER_LANDING_PRIORITY_OVERRIDES: Partial<
   Record<ResizerLandingId, number>
 > = {
@@ -727,6 +756,20 @@ function buildCssPaletteGenLandingResources(
   }));
 }
 
+function buildFaviconGeneratorLandingResources(
+  language: Language,
+): FooterResourceEntry[] {
+  const localeLandings = getFaviconGeneratorLandings(language);
+
+  return listFaviconGeneratorLandings().map((entry, index) => ({
+    href: entry.path,
+    label: localeLandings[entry.id]?.linkTitle ?? entry.linkTitle,
+    category: "favicon-generator" as const,
+    priority:
+      FAVICON_GENERATOR_LANDING_PRIORITY_OVERRIDES[entry.id] ?? 50 + index,
+  }));
+}
+
 function buildResizerLandingResources(
   language: Language,
 ): FooterResourceEntry[] {
@@ -966,6 +1009,19 @@ function buildCssPaletteGenGuideResource(
   };
 }
 
+function buildFaviconGeneratorGuideResource(
+  language: Language,
+): FooterResourceEntry {
+  const article = getFaviconGeneratorArticle(language);
+
+  return {
+    href: article.href,
+    label: article.title,
+    category: "favicon-generator",
+    priority: 17,
+  };
+}
+
 export function buildFooterResourceRegistry(
   language: Language = "en",
 ): FooterResourceEntry[] {
@@ -1006,6 +1062,8 @@ export function buildFooterResourceRegistry(
     buildColorPickerGuideResource(language),
     ...buildCssPaletteGenLandingResources(language),
     buildCssPaletteGenGuideResource(language),
+    ...buildFaviconGeneratorLandingResources(language),
+    buildFaviconGeneratorGuideResource(language),
   ];
 }
 
@@ -1064,6 +1122,9 @@ const LANDING_PATH_TO_CATEGORY = new Map<string, FooterResourceCategory>([
   ...listCssPaletteGenLandings().map(
     (entry) => [entry.path, "css-palette-gen"] as const,
   ),
+  ...listFaviconGeneratorLandings().map(
+    (entry) => [entry.path, "favicon-generator"] as const,
+  ),
 ]);
 
 /** Maps a tool page to the footer resource category it should surface. */
@@ -1089,6 +1150,7 @@ export const TOOL_FOOTER_RESOURCE_CATEGORY: Partial<
   "palette-extractor": "palette-extractor",
   "color-picker": "color-picker",
   "css-palette-gen": "css-palette-gen",
+  "favicon-generator": "favicon-generator",
 };
 
 export interface GetFooterResourcesOptions {

@@ -35,6 +35,8 @@ import { ColorPickerLandingJsonLd } from "@/components/landing/ColorPickerLandin
 import { ColorPickerLandingView } from "@/components/landing/ColorPickerLandingView";
 import { CssPaletteGenLandingJsonLd } from "@/components/landing/CssPaletteGenLandingJsonLd";
 import { CssPaletteGenLandingView } from "@/components/landing/CssPaletteGenLandingView";
+import { FaviconGeneratorLandingJsonLd } from "@/components/landing/FaviconGeneratorLandingJsonLd";
+import { FaviconGeneratorLandingView } from "@/components/landing/FaviconGeneratorLandingView";
 import {
   getAllLandingStaticParams,
   getLandingSeoBySlug,
@@ -241,6 +243,15 @@ export default async function ToolLandingPage({ params }: ToolLandingPageProps) 
       <>
         <CssPaletteGenLandingJsonLd landingId={resolved.id} />
         <CssPaletteGenLandingView landingId={resolved.id} />
+      </>
+    );
+  }
+
+  if (resolved.family === "favicon-generator") {
+    return (
+      <>
+        <FaviconGeneratorLandingJsonLd landingId={resolved.id} />
+        <FaviconGeneratorLandingView landingId={resolved.id} />
       </>
     );
   }

@@ -27,6 +27,8 @@ import { COLOR_PICKER_ARTICLE } from "./colorpickerLandings";
 import { COLOR_PICKER_LANDINGS } from "./colorpickerLandings";
 import { CSS_PALETTE_GEN_ARTICLE } from "./csspalettegenLandings";
 import { CSS_PALETTE_GEN_LANDINGS } from "./csspalettegenLandings";
+import { FAVICON_GENERATOR_ARTICLE } from "./favicongeneratorLandings";
+import { FAVICON_GENERATOR_LANDINGS } from "./favicongeneratorLandings";
 
 const ANNOTATOR_TOOL_PATH = "/tools/editor-studio/image-annotator";
 const BG_REMOVER_TOOL_PATH = "/tools/optimization/bg-remover";
@@ -46,6 +48,7 @@ const IMAGE_TO_SVG_TOOL_PATH = "/tools/dev-tools/image-to-svg";
 const PALETTE_EXTRACTOR_TOOL_PATH = "/tools/dev-tools/palette-extractor";
 const COLOR_PICKER_TOOL_PATH = "/tools/dev-tools/color-picker";
 const CSS_PALETTE_GEN_TOOL_PATH = "/tools/dev-tools/css-palette-gen";
+const FAVICON_GENERATOR_TOOL_PATH = "/tools/dev-tools/favicon-generator";
 const ANNOTATE_LANDING_PATH =
   IMAGE_ANNOTATOR_LANDINGS["annotate-images-online-free"].path;
 const DEV_LANDING_PATH =
@@ -945,6 +948,13 @@ describe("resolveFooterResourceCategory", () => {
     assert.equal(
       resolveFooterResourceCategory("/css-color-palette-from-photo"),
       "css-palette-gen",
+    );
+  });
+
+  it("returns favicon-generator for Favicon Generator tool URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(FAVICON_GENERATOR_TOOL_PATH),
+      "favicon-generator",
     );
   });
 
@@ -2261,6 +2271,196 @@ describe("getFooterResources", () => {
     assert.equal(links[0]?.label, "CSS palette from photo");
     assert.equal(links[1]?.href, CSS_PALETTE_GEN_ARTICLE.href);
     assert.equal(links[1]?.label, CSS_PALETTE_GEN_ARTICLE.title);
+  });
+
+  it("returns favicon-generator landing and guide links", () => {
+    const links = getFooterResources("favicon-generator");
+    assert.equal(links.length, 16);
+    assert.equal(
+      links[0]?.href,
+      FAVICON_GENERATOR_LANDINGS["favicon-generator-online"].path,
+    );
+    assert.equal(links[0]?.label, "Favicon generator online");
+    assert.equal(
+      links[1]?.href,
+      FAVICON_GENERATOR_LANDINGS["create-favicon-from-image"].path,
+    );
+    assert.equal(links[1]?.label, "Create favicon from image");
+    assert.equal(
+      links[2]?.href,
+      FAVICON_GENERATOR_LANDINGS["free-favicon-maker"].path,
+    );
+    assert.equal(links[2]?.label, "Free favicon maker");
+    assert.equal(
+      links[3]?.href,
+      FAVICON_GENERATOR_LANDINGS["convert-image-to-favicon"].path,
+    );
+    assert.equal(links[3]?.label, "Convert image to favicon");
+    assert.equal(
+      links[4]?.href,
+      FAVICON_GENERATOR_LANDINGS["generate-favicon-for-website"].path,
+    );
+    assert.equal(links[4]?.label, "Generate favicon for website");
+    assert.equal(
+      links[5]?.href,
+      FAVICON_GENERATOR_LANDINGS["favicon-icon-maker-for-web"].path,
+    );
+    assert.equal(links[5]?.label, "Favicon icon maker for web");
+    assert.equal(
+      links[6]?.href,
+      FAVICON_GENERATOR_LANDINGS["create-favicon-sizes-online"].path,
+    );
+    assert.equal(links[6]?.label, "Create favicon sizes online");
+    assert.equal(
+      links[7]?.href,
+      FAVICON_GENERATOR_LANDINGS["client-side-favicon-generator"].path,
+    );
+    assert.equal(links[7]?.label, "Client-side favicon generator");
+    assert.equal(
+      links[8]?.href,
+      FAVICON_GENERATOR_LANDINGS["no-upload-favicon-creator"].path,
+    );
+    assert.equal(links[8]?.label, "No-upload favicon creator");
+    assert.equal(
+      links[9]?.href,
+      FAVICON_GENERATOR_LANDINGS["privacy-first-favicon-tool"].path,
+    );
+    assert.equal(links[9]?.label, "Privacy-first favicon tool");
+    assert.equal(
+      links[10]?.href,
+      FAVICON_GENERATOR_LANDINGS["browser-based-icon-generator"].path,
+    );
+    assert.equal(links[10]?.label, "Browser-based icon generator");
+    assert.equal(
+      links[11]?.href,
+      FAVICON_GENERATOR_LANDINGS["best-online-tool-to-create-favicon"].path,
+    );
+    assert.equal(links[11]?.label, "Best online favicon tool");
+    assert.equal(
+      links[12]?.href,
+      FAVICON_GENERATOR_LANDINGS["make-favicon-for-wordpress"].path,
+    );
+    assert.equal(links[12]?.label, "Make favicon for WordPress");
+    assert.equal(
+      links[13]?.href,
+      FAVICON_GENERATOR_LANDINGS["professional-favicon-maker-for-business"]
+        .path,
+    );
+    assert.equal(links[13]?.label, "Professional business favicon maker");
+    assert.equal(
+      links[14]?.href,
+      FAVICON_GENERATOR_LANDINGS["favicon-converter-for-all-browsers"].path,
+    );
+    assert.equal(links[14]?.label, "Favicon converter for browsers");
+    assert.equal(links[15]?.href, FAVICON_GENERATOR_ARTICLE.href);
+    assert.equal(links[15]?.label, FAVICON_GENERATOR_ARTICLE.title);
+  });
+
+  it("returns favicon-generator for favicon generator online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/favicon-generator-online"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for create favicon from image landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/create-favicon-from-image"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for free favicon maker landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/free-favicon-maker"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for convert image to favicon landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/convert-image-to-favicon"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for generate favicon for website landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/generate-favicon-for-website"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for favicon icon maker for web landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/favicon-icon-maker-for-web"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for create favicon sizes online landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/create-favicon-sizes-online"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for client-side favicon generator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/client-side-favicon-generator"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for no-upload favicon creator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/no-upload-favicon-creator"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for privacy-first favicon tool landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/privacy-first-favicon-tool"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for browser-based icon generator landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/browser-based-icon-generator"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for best online tool to create favicon landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/best-online-tool-to-create-favicon"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for make favicon for WordPress landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/make-favicon-for-wordpress"),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for professional favicon maker for business landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory(
+        "/professional-favicon-maker-for-business",
+      ),
+      "favicon-generator",
+    );
+  });
+
+  it("returns favicon-generator for favicon converter for all browsers landing URL", () => {
+    assert.equal(
+      resolveFooterResourceCategory("/favicon-converter-for-all-browsers"),
+      "favicon-generator",
+    );
   });
 
   it("returns resizer landing and guide links", () => {
