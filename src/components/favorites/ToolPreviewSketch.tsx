@@ -8,6 +8,13 @@ const S = {
   fill: "none" as const,
 };
 
+const SStroke = {
+  stroke: S.stroke,
+  strokeWidth: S.strokeWidth,
+  strokeLinecap: S.strokeLinecap,
+  strokeLinejoin: S.strokeLinejoin,
+};
+
 function ResizerSketch() {
   return (
     <>
@@ -179,7 +186,7 @@ function ImageOverlaySketch() {
   return (
     <>
       <rect x="20" y="28" width="44" height="32" rx="1" {...S} strokeOpacity="0.5" />
-      <rect x="56" y="20" width="44" height="32" rx="1" fill="rgba(255,255,255,0.12)" {...S} />
+      <rect x="56" y="20" width="44" height="32" rx="1" {...SStroke} fill="rgba(255,255,255,0.12)" />
       <circle cx="72" cy="32" r="6" {...S} strokeOpacity="0.7" />
     </>
   );
@@ -210,7 +217,7 @@ function FaviconSketch() {
     <>
       <rect x="24" y="24" width="72" height="32" rx="2" {...S} />
       <rect x="24" y="24" width="72" height="10" fill="rgba(255,255,255,0.12)" stroke="white" strokeWidth="1" />
-      <rect x="30" y="40" width="12" height="12" rx="1" fill="rgba(255,255,255,0.2)" {...S} />
+      <rect x="30" y="40" width="12" height="12" rx="1" {...SStroke} fill="rgba(255,255,255,0.2)" />
       <path d="M33 46 L36 49 L39 43" stroke="white" strokeWidth="1.5" fill="none" />
     </>
   );
@@ -260,7 +267,7 @@ function DenoiserSketch() {
       </g>
       <path d="M58 40 H64" {...S} />
       <path d="M62 36 L66 40 L62 44" {...S} />
-      <rect x="70" y="30" width="28" height="20" rx="1" fill="rgba(255,255,255,0.12)" {...S} />
+      <rect x="70" y="30" width="28" height="20" rx="1" {...SStroke} fill="rgba(255,255,255,0.12)" />
     </>
   );
 }
