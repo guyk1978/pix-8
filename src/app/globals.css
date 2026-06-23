@@ -2,18 +2,18 @@
 
 /* Industrial Light (default when .light or no .dark) */
 :root {
-  --background: #f4f4f4;
-  --foreground: #1a1a1a;
-  --muted: #6b7280;
+  --background: #ffffff;
+  --foreground: #111111;
+  --muted: #4b5563;
   --border: #e5e7eb;
   --surface: #ffffff;
-  --surface-hover: #f8f9fa;
+  --surface-hover: #f5f5f5;
   --sidebar: #ffffff;
-  --accent: #525252;
-  --accent-muted: rgba(82, 82, 82, 0.08);
-  --slate: #9ca3af;
+  --accent: #404040;
+  --accent-muted: rgba(17, 17, 17, 0.06);
+  --slate: #6b7280;
   --card: #ffffff;
-  --card-hover: #f8f9fa;
+  --card-hover: #f5f5f5;
   --header: #ffffff;
   --track: #e5e7eb;
   --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
@@ -24,8 +24,8 @@
   --glow-purple: #7c3aed;
   --glow-blue: #2563eb;
   --glow-ring-track: rgba(37, 99, 235, 0.15);
-  --checker-a: #e5e7eb;
-  --checker-b: #f9fafb;
+  --checker-a: #f0f0f0;
+  --checker-b: #ffffff;
   --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-float: 0 12px 32px -8px rgb(0 0 0 / 0.12), 0 4px 12px -4px rgb(0 0 0 / 0.08);
   --shadow-hover: 0 14px 28px -6px rgb(0 0 0 / 0.14), 0 6px 14px -4px rgb(0 0 0 / 0.1);
@@ -304,66 +304,6 @@ p {
   font-size: 1.0625rem;
   font-weight: 500;
   line-height: 1.55;
-}
-
-.brand-logo-hero-section {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: clip;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
-  background:
-    radial-gradient(
-      ellipse 80% 60% at 50% 0%,
-      color-mix(in srgb, var(--glow-teal) 10%, transparent),
-      transparent 70%
-    ),
-    var(--background);
-}
-
-/* ── Homepage processing steps ── */
-
-.processing-steps-section {
-  width: 100%;
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 1.5rem 1.25rem 2rem;
-}
-
-.processing-steps-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .processing-steps-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.25rem;
-  }
-}
-
-.processing-step {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  background: var(--card);
-  padding: 1rem 1.1rem;
-}
-
-.processing-step-title {
-  margin: 0;
-  font-size: clamp(1rem, 1.4vw, 1.1875rem);
-  font-weight: 700;
-  line-height: 1.35;
-  color: var(--foreground);
-}
-
-.processing-step-text {
-  margin: 0;
-  font-size: clamp(0.8125rem, 1.1vw, 0.9375rem);
-  line-height: 1.55;
-  color: color-mix(in srgb, var(--foreground) 82%, var(--muted));
 }
 
 /* ── App header: airy tab navigation ── */
@@ -903,6 +843,37 @@ p {
   box-shadow: var(--shadow-sidebar-hover);
 }
 
+.tool-sidebar-controls .tool-sidebar-action-btn {
+  justify-content: flex-start !important;
+  width: 100% !important;
+  flex: none !important;
+  border: 1px solid var(--border) !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.tool-sidebar-controls .tool-sidebar-action-btn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--muted) 55%, var(--border)) !important;
+  background: var(--card-hover) !important;
+  box-shadow: none !important;
+}
+
+.tool-sidebar-controls .tool-sidebar-action-btn:disabled {
+  opacity: 0.4;
+}
+
+html:not(.dark) .tool-sidebar-controls .tool-sidebar-action-btn {
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+
+html:not(.dark) .tool-sidebar-controls .tool-sidebar-action-btn:hover:not(:disabled) {
+  background: var(--card-hover) !important;
+}
+
 .tool-sidebar-controls [class*="border-accent"],
 .tool-sidebar-controls [class*="bg-accent-muted"] {
   border: none !important;
@@ -1068,6 +1039,15 @@ p {
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+html:not(.dark) .tool-workspace-zone,
+html:not(.dark) .tool-page .tool-workspace-zone {
+  background: var(--card);
+}
+
+html:not(.dark) .tool-page .tool-workspace-zone:hover {
+  background: var(--card-hover);
+}
+
 .dark .tool-page .tool-workspace-zone {
   background: color-mix(in srgb, var(--card) 42%, transparent);
 }
@@ -1168,6 +1148,20 @@ p {
   color: var(--foreground);
   outline: none;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+html:not(.dark) .tool-page .tool-input,
+html:not(.dark) .tool-page .tool-zone-body .tool-input,
+html:not(.dark) .tool-page select.tool-input,
+html:not(.dark) .tool-page textarea.tool-input {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+html:not(.dark) .tool-page .tool-input:hover:not(:disabled),
+html:not(.dark) .tool-page select.tool-input:hover:not(:disabled),
+html:not(.dark) .tool-page textarea.tool-input:hover:not(:disabled) {
+  background: var(--card-hover);
 }
 
 .dark .tool-page .tool-input,
@@ -1534,9 +1528,9 @@ button[data-favorite="true"] svg path {
 /* ── Articles / blog reading typography ── */
 
 :root {
-  --article-body: #374151;
-  --article-heading: #111827;
-  --article-lead: #4b5563;
+  --article-body: #1f2937;
+  --article-heading: #111111;
+  --article-lead: #374151;
 }
 
 .dark {
@@ -1711,6 +1705,15 @@ button[data-favorite="true"] svg path {
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     background-color 0.2s ease;
+}
+
+html:not(.dark) .tool-upload-zone,
+html:not(.dark) .tool-upload-zone.tool-dropzone {
+  background: var(--card);
+}
+
+html:not(.dark) .tool-upload-zone.tool-dropzone-active {
+  background: var(--card-hover);
 }
 
 .tool-upload-zone:hover {
@@ -2055,6 +2058,22 @@ button[data-favorite="true"] svg path {
   box-shadow:
     0 0 16px color-mix(in srgb, var(--glow-purple) 25%, transparent),
     inset 0 0 0 1px color-mix(in srgb, var(--glow-blue) 20%, transparent);
+}
+
+html:not(.dark) .tool-segment-active {
+  border-color: var(--border);
+  background: #f3f4f6;
+  color: var(--foreground);
+  box-shadow: none;
+  text-shadow: none;
+}
+
+html:not(.dark) .tool-sidebar-controls .tool-segment-active {
+  border: 1px solid var(--border) !important;
+  background: #f3f4f6 !important;
+  color: var(--foreground) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
 }
 
 @utility tool-segment-idle {

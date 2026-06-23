@@ -1,3 +1,4 @@
+import { getHomeToolHref } from "@/lib/homeTool";
 import {
   getLegacyToolRoute,
   getToolCategoryId,
@@ -18,7 +19,7 @@ export function isActiveHref(pathname: string, href: string): boolean {
 }
 
 export function getToolHref(toolId: ToolId): string {
-  return getToolRoute(toolId);
+  return getHomeToolHref(toolId);
 }
 
 function resolveToolFromNestedPath(pathname: string): Tool | undefined {
@@ -64,6 +65,10 @@ export function getToolIdFromPathname(pathname: string): ToolId | null {
 
 export function isToolPage(pathname: string): boolean {
   return getToolFromPathname(pathname) !== undefined;
+}
+
+export function isHomeDashboard(pathname: string): boolean {
+  return normalizePathname(pathname) === "/";
 }
 
 export function getLegacyToolHref(toolId: ToolId): string {

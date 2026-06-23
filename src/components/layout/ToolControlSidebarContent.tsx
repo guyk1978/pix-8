@@ -1,5 +1,7 @@
 "use client";
 
+import { ToolSidebarFavoriteButton } from "@/components/favorites/ToolSidebarFavoriteButton";
+import { ToolSidebarStarRating } from "@/components/tools/ToolSidebarStarRating";
 import { AppLink } from "@/components/layout/AppLink";
 import { useToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -20,6 +22,10 @@ export function ToolControlSidebarContent() {
           <h2 className="tool-sidebar-title mt-2 truncate text-2xl font-bold leading-none tracking-tight text-foreground">
             {toolName}
           </h2>
+          <div className="mt-3 space-y-3">
+            <ToolSidebarFavoriteButton />
+            <ToolSidebarStarRating />
+          </div>
         </header>
       ) : null}
 

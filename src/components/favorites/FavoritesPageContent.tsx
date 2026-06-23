@@ -1,7 +1,7 @@
 "use client";
 
 import { AppLink } from "@/components/layout/AppLink";
-import { ToolCard } from "@/components/dashboard/ToolCard";
+import { FavoriteToolCard } from "@/components/favorites/FavoriteToolCard";
 import { useFavorites } from "@/components/favorites/FavoritesContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolById } from "@/lib/tools";
@@ -39,8 +39,8 @@ export function FavoritesPageContent() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {favoriteTools.map((tool, index) => (
-            <ToolCard key={tool.id} tool={tool} index={index} />
+          {favoriteTools.map((tool) => (
+            <FavoriteToolCard key={tool.id} tool={tool} />
           ))}
         </div>
       )}

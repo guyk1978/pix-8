@@ -1,4 +1,5 @@
 import type { WorkflowLink } from "@/components/WorkflowSuggestions";
+import { getHomeToolHref } from "@/lib/homeTool";
 import { getToolById, type ToolId } from "@/lib/tools";
 
 const WORKFLOW_MAP: Record<ToolId, ToolId[]> = {
@@ -38,5 +39,5 @@ export function getWorkflowSuggestions(toolId: ToolId): WorkflowLink[] {
   return (WORKFLOW_MAP[toolId] ?? [])
     .map((id) => getToolById(id))
     .filter((tool): tool is NonNullable<ReturnType<typeof getToolById>> => !!tool)
-    .map((tool) => ({ name: tool.name, href: tool.href }));
+    .map((tool) => ({ name: tool.name, href: getHomeToolHref(tool.id) }));
 }

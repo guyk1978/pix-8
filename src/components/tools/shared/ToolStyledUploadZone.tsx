@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { ImageGallery } from "@/components/ui/ImageGallery";
 import { UploadZoneDefaultContent } from "@/components/ui/UploadZoneDefaultContent";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { WorkflowStep } from "@/components/tools/workflow/WorkflowStep";
@@ -19,6 +20,8 @@ interface ToolStyledUploadZoneProps {
   formatHint?: string;
   className?: string;
   children?: ReactNode;
+  /** Show sample images from public/examples/ below the dropzone (single-file mode only). */
+  showExampleGallery?: boolean;
 }
 
 export function ToolStyledUploadZone({
@@ -35,6 +38,7 @@ export function ToolStyledUploadZone({
   formatHint,
   className = "",
   children,
+  showExampleGallery = true,
 }: ToolStyledUploadZoneProps) {
   const { t } = useLanguage();
   const heightClass = compact
@@ -50,9 +54,13 @@ export function ToolStyledUploadZone({
     }
   };
 
+  const handleExampleSelect = (file: File) => {
+    onFileChange(file);
+  };
+
   return (
     <WorkflowStep step="upload">
-      <div className="tool-styled-upload-stage relative w-full">
+      <div className="tool-styled-upload-stage relative w-full space-y-4">
         <div
           className={`tool-dropzone tool-styled-dropzone tool-upload-zone relative flex w-full cursor-pointer items-stretch transition-all duration-300 ${heightClass} ${
             isDragging ? "tool-dropzone-active" : ""
@@ -104,6 +112,13 @@ export function ToolStyledUploadZone({
             />
           )}
         </div>
+
+        {!multiple && showExampleGallery ? (
+          <ImageGallery
+            onFileSelect={handleExampleSelect}
+            disabled={isDragging}
+          />
+        ) : null}
       </div>
     </WorkflowStep>
   );

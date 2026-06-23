@@ -9,6 +9,7 @@ import {
 import { tools, type Tool, type ToolId } from "@/lib/tools";
 
 export { getToolRoute } from "@/lib/sidebarNav";
+export { getHomeToolHref, buildHomeToolHref } from "@/lib/homeTool";
 
 /** Primary app pages (non-tool routes). */
 export const APP_ROUTES = {

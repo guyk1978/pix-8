@@ -2,6 +2,10 @@
 
 import { useEffect, type ReactNode } from "react";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
+import {
+  ToolWorkspaceActionsProvider,
+  ToolWorkspaceActionsTarget,
+} from "@/components/tools/ToolWorkspaceActions";
 import { useWorkflowOptional } from "@/components/tools/workflow/WorkflowContext";
 import { publishWorkflowStep } from "@/lib/workflowStatus";
 import type { WorkflowState } from "@/lib/toolWorkflows";
@@ -50,6 +54,11 @@ export function ToolWorkspace({
   }, [workflow?.activeStep, workflow]);
 
   return (
-    <div className="tool-workspace relative z-[1] w-full space-y-5 text-start">{children}</div>
+    <ToolWorkspaceActionsProvider>
+      <div className="tool-workspace relative z-[1] w-full space-y-5 text-start">
+        <ToolWorkspaceActionsTarget />
+        {children}
+      </div>
+    </ToolWorkspaceActionsProvider>
   );
 }

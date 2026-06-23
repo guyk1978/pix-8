@@ -1,9 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 import { AppLink } from "@/components/layout/AppLink";
 import { usePathname } from "next/navigation";
-import { Folder, Star } from "lucide-react";
+import { Folder, LayoutGrid, Star } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -16,7 +17,7 @@ import { PwaInstallButton } from "@/components/layout/PwaInstallButton";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { BrandLogo, brandLogoAriaLabel } from "@/components/brand/BrandLogo";
 import { APP_ROUTES } from "@/lib/navigationConfig";
-import { isActiveHref, isToolPage } from "@/lib/routes";
+import { isActiveHref, isHomeDashboard, isToolPage } from "@/lib/routes";
 
 const GITHUB_REPO_URL = "https://github.com/guyk1978/pix-8";
 
@@ -45,7 +46,7 @@ export function Header() {
   const pathname = usePathname();
   const favoritesActive = isActiveHref(pathname, APP_ROUTES.favorites);
   const projectsActive = isActiveHref(pathname, APP_ROUTES.projects);
-  const appsActive = isToolPage(pathname);
+  const appsActive = isToolPage(pathname) || isHomeDashboard(pathname);
 
   return (
     <header
@@ -68,7 +69,16 @@ export function Header() {
           className="app-header-nav flex min-w-0 flex-1 items-center justify-center gap-8 lg:gap-10"
           aria-label={t("header.platform")}
         >
-          <AppsMenu appsActive={appsActive} />
+          <Suspense
+            fallback={
+              <span className={`${headerNavTabClass(appsActive)} apps-menu-trigger opacity-70`}>
+                <LayoutGrid className="header-nav-tab-icon" strokeWidth={1.75} aria-hidden />
+                <span>{t("nav.apps")}</span>
+              </span>
+            }
+          >
+            <AppsMenu appsActive={appsActive} />
+          </Suspense>
           <HeaderNavLink
             href={APP_ROUTES.favorites}
             active={favoritesActive}

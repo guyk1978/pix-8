@@ -2,20 +2,21 @@
 
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 import { ToolSidebarPanel } from "@/components/layout/ToolSidebarPanel";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { isToolPage } from "@/lib/routes";
+import { useActiveToolId } from "@/hooks/useActiveToolId";
 
 interface ToolWorkspaceLayoutProps {
   children: ReactNode;
 }
 
-export function ToolWorkspaceLayout({ children }: ToolWorkspaceLayoutProps) {
-  const pathname = usePathname();
+function ToolWorkspaceLayoutInner({ children }: ToolWorkspaceLayoutProps) {
   const { dir, language } = useLanguage();
+  const activeToolId = useActiveToolId();
   const hasActiveImage = useOptionalToolSidebar()?.hasActiveImage ?? false;
-  const showSidebar = isToolPage(pathname) && hasActiveImage;
+  const showSidebar = activeToolId !== null && hasActiveImage;
   const sidebarOnRight = language === "he" || dir === "rtl";
 
   return (
@@ -39,5 +40,19 @@ export function ToolWorkspaceLayout({ children }: ToolWorkspaceLayoutProps) {
 
       {showSidebar && sidebarOnRight ? <ToolSidebarPanel /> : null}
     </div>
+  );
+}
+
+export function ToolWorkspaceLayout({ children }: ToolWorkspaceLayoutProps) {
+  return (
+    <Suspense
+      fallback={
+        <main className="app-main min-h-0 min-w-0 flex-1 overflow-y-auto bg-background">
+          {children}
+        </main>
+      }
+    >
+      <ToolWorkspaceLayoutInner>{children}</ToolWorkspaceLayoutInner>
+    </Suspense>
   );
 }

@@ -54,7 +54,7 @@ export const he: TranslationDictionary = {
     title: "עיבוד תמונות מקומי.",
     titleMuted: "שום דבר לא עוזב את הדפדפן.",
     description:
-      "בחר כלי מהרשימה. כל העיבוד מתבצע בצד הלקוח באמצעות Canvas API — ללא העלאות וללא מעקב.",
+      "בחר כלי מהתפריט למטה או מ-Apps בכותרת. כל העיבוד מתבצע בצד הלקוח באמצעות Canvas API — ללא העלאות וללא מעקב.",
     processing: "עיבוד",
     processingValue: "בדפדפן",
     uploads: "העלאות",
@@ -70,25 +70,37 @@ export const he: TranslationDictionary = {
     showMore: "הצג עוד",
     showLess: "הצג פחות",
     browseCategories: "עיון לפי קטגוריה",
+    activeToolLabel: "כלי פעיל",
+    guideButton: "מדריך",
+    guideEyebrow: "איך זה עובד",
+    guideClose: "סגור",
     installApp: "הורד כאפליקציה",
     installAppUnavailable:
       "השתמש בתפריט הדפדפן כדי להתקין את האתר כאפליקציה (הוסף למסך הבית / התקנה).",
     processingSteps: {
-      title: "Pix-8 Processing Steps",
+      title: "שלבי העיבוד של Pix-8",
+      intro:
+        "Pix-8 פועל לגמרי בדפדפן שלך. עקבו אחר שלושת השלבים כדי לעבד תמונה בפרטיות — שום דבר לא מועלה לשרת.",
       upload: {
         label: "שלב 1 - תעלה תמונה",
         description:
           "לחץ על הכפתור כדי לבחור קובץ מהמחשב שלך. ניתן להעלות קבצי JPG, PNG, WEBP.",
+        detail:
+          "גרור קובץ לאזור ההעלאה, לחץ לבחירה מהמחשב, או בחר דוגמה מגלריית הדוגמאות. נתמכים JPG, PNG ו-WebP. התמונה נשארת במכשיר שלך — היא לא נשלחת ל-Pix-8 או לשרת צד שלישי.",
       },
       process: {
         label: "שלב 2 - עיבוד",
         description:
           "כאן מתבצע העיבוד המהיר של התמונה. התוכנה מעבדת את הנתונים ישירות בדפדפן שלך.",
+        detail:
+          "הגדר את אפשרויות הכלי בסרגל הצד או באזור העבודה, והפעל את הפעולה. שינוי גודל, דחיסה, חיתוך וכל פעולה אחרת מתבצעים על קנבס מקומי בלשונית הדפדפן. העיבוד מהיר, פרטי, ועובד גם ללא חיבור לאחר טעינת העמוד.",
       },
       download: {
         label: "שלב 3 - הורד את התמונה",
         description:
           "העיבוד הסתיים. לחץ על הכפתור כדי לשמור את התמונה המעובדת במחשב שלך.",
+        detail:
+          "כשהתוצאה מוכנה, הורד את הקובץ למחשב או העתק אותו ללוח. אפשר גם להסיר מטא-דאטה לפני הייצוא, כך שמידע מיקום ומצלמה נשאר מקומי ולא נכלל בקובץ השמור.",
         filename: "Generic_image-12.jpg",
         size: "Size: 35.75 KB",
       },
@@ -217,10 +229,11 @@ export const he: TranslationDictionary = {
     description:
       "גישה מהירה לכלי Pix-8 שסימנתם בכוכב. נשמר מקומית בדפדפן.",
     empty: "אין מועדפים עדיין",
-    emptyHint: "לחצו על הכוכב בכרטיס כלי או בדף הכלי כדי לשמור כאן.",
+    emptyHint: "לחצו על הכוכב בסרגל הצד של הכלי או בתפריט האפליקציות כדי לשמור כאן.",
     browseTools: "עיון בכל הכלים",
     addLabel: "הוסף למועדפים",
     removeLabel: "הסר מהמועדפים",
+    openTool: "פתיחת {name}",
   },
   toolRating: {
     sectionLabel: "דירוג כלי",
@@ -277,6 +290,8 @@ export const he: TranslationDictionary = {
     legalNav: "מידע משפטי ואתר",
     mission:
       "כלי תמונה בצד הלקוח — כל פיקסל נשאר במכשיר שלך, ללא העלאה לשרת.",
+    expand: "פתיחת פוטר",
+    collapse: "סגירת פוטר",
   },
   cookie: {
     title: "עוגיות עוזרות לנו לשפר את Pix-8",
@@ -353,6 +368,19 @@ export const he: TranslationDictionary = {
     uploadLogoAria: "העלאת לוגו או תמונה",
     formatsHint: "PNG · JPEG · WebP",
     formatsLabel: "פורמטים נתמכים",
+    orChooseExample: "או",
+    exampleGalleryTitle: "גלריית דוגמאות",
+    exampleGalleryHint:
+      "בחרו תמונת דוגמה לנסות את הכלי — אותו תהליך כמו העלאת קובץ.",
+    loadingExample: "טוען…",
+    exampleImageAria: "תמונת דוגמה {number}",
+    examples: {
+      image1: "דוגמה 1",
+      image2: "דוגמה 2",
+      image3: "דוגמה 3",
+      image4: "דוגמה 4",
+      image5: "דוגמה 5",
+    },
   },
   privacy: {
     stripMetadata: "הסרת מטא-דאטה",

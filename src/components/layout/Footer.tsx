@@ -6,7 +6,7 @@ import { getToolTranslationKey } from "@/i18n";
 import { JOIN_MY_PDF_URL } from "@/lib/external-links";
 import {
   getCategoryRoute,
-  getToolRoute,
+  getHomeToolHref,
 } from "@/lib/navigationConfig";
 import { SIDEBAR_NAV_CATEGORIES } from "@/lib/sidebarNav";
 import { tools } from "@/lib/tools";
@@ -58,7 +58,7 @@ export function Footer() {
               {tools.map((tool) => (
                 <li key={tool.id}>
                   <AppLink
-                    href={getToolRoute(tool.id)}
+                    href={getHomeToolHref(tool.id)}
                     className={footerLinkClassName}
                   >
                     {t(getToolTranslationKey(tool.id, "name"))}

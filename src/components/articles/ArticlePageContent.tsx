@@ -4,6 +4,7 @@ import { AppLink } from "@/components/layout/AppLink";
 import { ArticleBody } from "@/components/articles/ArticleBody";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
+import { getHomeToolHref } from "@/lib/homeTool";
 import { useLocalizedArticle } from "@/hooks/useLocalizedArticle";
 import type { Article } from "@/lib/blog";
 import type { Tool } from "@/lib/tools";
@@ -34,7 +35,7 @@ export function ArticlePageContent({
         </AppLink>
         <span className="text-border">/</span>
         <AppLink
-          href={tool?.href ?? "/"}
+          href={tool ? getHomeToolHref(tool.id) : "/"}
           className="font-label text-muted transition-colors hover:text-foreground"
         >
           {toolName}

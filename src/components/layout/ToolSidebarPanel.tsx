@@ -1,19 +1,18 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { ToolControlSidebarContent } from "@/components/layout/ToolControlSidebarContent";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { isToolPage } from "@/lib/routes";
+import { useActiveToolId } from "@/hooks/useActiveToolId";
 
 export function ToolSidebarPanel() {
-  const pathname = usePathname();
   const { t, dir } = useLanguage();
+  const activeToolId = useActiveToolId();
   const toolSidebar = useOptionalToolSidebar();
-  const toolMode = isToolPage(pathname);
   const hasActiveImage = toolSidebar?.hasActiveImage ?? false;
   const setToolMeta = toolSidebar?.setToolMeta;
+  const toolMode = activeToolId !== null;
 
   useEffect(() => {
     if (!toolMode) {

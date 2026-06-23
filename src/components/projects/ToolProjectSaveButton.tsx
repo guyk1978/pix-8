@@ -11,9 +11,13 @@ import {
 
 interface ToolProjectSaveButtonProps {
   className?: string;
+  buttonClassName?: string;
 }
 
-export function ToolProjectSaveButton({ className = "" }: ToolProjectSaveButtonProps) {
+export function ToolProjectSaveButton({
+  className = "",
+  buttonClassName,
+}: ToolProjectSaveButtonProps) {
   const { t } = useLanguage();
   const projectContext = useOptionalToolProjectContext();
   const tooltipId = useId();
@@ -21,15 +25,17 @@ export function ToolProjectSaveButton({ className = "" }: ToolProjectSaveButtonP
   if (!projectContext) return null;
 
   const { canSave, openSaveModal } = projectContext;
+  const resolvedButtonClassName =
+    buttonClassName ?? toolActionSaveButtonClassName;
 
   return (
-    <div className={`group relative w-full ${className}`}>
+    <div className={`group relative min-w-0 flex-1 ${className}`.trim()}>
       <button
         type="button"
         disabled={!canSave}
         onClick={openSaveModal}
         aria-describedby={tooltipId}
-        className={toolActionSaveButtonClassName}
+        className={resolvedButtonClassName}
       >
         <FolderPlus className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
         <span className="truncate">{t("projects.saveProject")}</span>

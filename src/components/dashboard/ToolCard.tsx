@@ -5,6 +5,7 @@ import { ToolIcon } from "@/components/dashboard/ToolIcon";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
+import { getHomeToolHref } from "@/lib/homeTool";
 import type { Tool } from "@/lib/tools";
 
 interface ToolCardProps {
@@ -21,7 +22,7 @@ export function ToolCard({ tool, index }: ToolCardProps) {
         <FavoriteButton toolSlug={tool.id} size="sm" />
       </div>
 
-      <AppLink href={tool.href} className="flex gap-4 p-4 sm:p-5">
+      <AppLink href={getHomeToolHref(tool.id)} className="flex gap-4 p-4 sm:p-5">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-background text-muted shadow-[var(--shadow-elevated)] transition-all duration-200 group-hover:text-foreground group-hover:shadow-[var(--shadow-hover)]"
           aria-hidden

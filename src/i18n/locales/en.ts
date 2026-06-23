@@ -53,7 +53,7 @@ export const en = {
     title: "Process images locally.",
     titleMuted: "Nothing leaves your browser.",
     description:
-      "Select a utility from the grid below. All processing runs client-side via the Canvas API — no uploads, no tracking.",
+      "Choose a tool from the menu below or from Apps in the header. All processing runs client-side via the Canvas API — no uploads, no tracking.",
     processing: "Processing",
     processingValue: "Client-side",
     uploads: "Uploads",
@@ -69,25 +69,37 @@ export const en = {
     showMore: "Show more",
     showLess: "Show less",
     browseCategories: "Browse by category",
+    activeToolLabel: "Active tool",
+    guideButton: "Guide",
+    guideEyebrow: "How it works",
+    guideClose: "Close",
     installApp: "Download as app",
     installAppUnavailable:
       "Use your browser menu to install this site as an app (Add to Home Screen / Install).",
     processingSteps: {
       title: "Pix-8 Processing Steps",
+      intro:
+        "Pix-8 runs entirely in your browser. Follow these three steps to process any image privately — nothing is uploaded to a server.",
       upload: {
         label: "Step 1 - Upload image",
         description:
           "Click the button to choose a file from your computer. JPG, PNG, and WEBP files are supported.",
+        detail:
+          "Drag a file into the upload area, click to browse from your computer, or choose a sample from the example gallery. JPG, PNG, and WebP are supported. Your image stays on your device — it is never sent to Pix-8 or any third-party server.",
       },
       process: {
         label: "Step 2 - Process",
         description:
           "Fast image processing happens here. The software processes your data directly in your browser.",
+        detail:
+          "Adjust the tool settings in the sidebar or workspace, then run the operation. Resizing, compression, cropping, and every other action happen on a local canvas in your browser tab. Processing is fast, private, and works offline once the page is loaded.",
       },
       download: {
         label: "Step 3 - Download image",
         description:
           "Processing is complete. Click the button to save the processed image to your computer.",
+        detail:
+          "When you are happy with the result, download the finished file to your computer or copy it to the clipboard. You can also strip metadata before export so location and camera data stay local and are not included in the saved file.",
         filename: "Generic_image-12.jpg",
         size: "Size: 35.75 KB",
       },
@@ -216,10 +228,11 @@ export const en = {
     description:
       "Quick access to the Pix-8 tools you star most often. Saved locally in your browser.",
     empty: "No favorites yet",
-    emptyHint: "Tap the star on any tool card or tool page to save it here.",
+    emptyHint: "Tap the star in the tool sidebar or Apps menu to save tools here.",
     browseTools: "Browse all tools",
     addLabel: "Add to favorites",
     removeLabel: "Remove from favorites",
+    openTool: "Open {name}",
   },
   toolRating: {
     sectionLabel: "Tool rating",
@@ -276,6 +289,8 @@ export const en = {
     legalNav: "Legal and site information",
     mission:
       "Client-side image tools — every pixel stays on your device, with zero server uploads.",
+    expand: "Expand footer",
+    collapse: "Collapse footer",
   },
   cookie: {
     title: "Cookies help us improve Pix-8",
@@ -353,6 +368,19 @@ export const en = {
     uploadLogoAria: "Upload logo or image",
     formatsHint: "PNG · JPEG · WebP",
     formatsLabel: "Supported formats",
+    orChooseExample: "or",
+    exampleGalleryTitle: "Example gallery",
+    exampleGalleryHint:
+      "Pick a sample image to try the tool — same pipeline as a file upload.",
+    loadingExample: "Loading…",
+    exampleImageAria: "Example image {number}",
+    examples: {
+      image1: "Sample 1",
+      image2: "Sample 2",
+      image3: "Sample 3",
+      image4: "Sample 4",
+      image5: "Sample 5",
+    },
   },
   privacy: {
     stripMetadata: "Strip Metadata",

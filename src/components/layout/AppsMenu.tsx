@@ -2,7 +2,7 @@
 
 import { AppLink } from "@/components/layout/AppLink";
 import { LayoutGrid, X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   useEffect,
   useId,
@@ -19,9 +19,10 @@ import {
   APP_ROUTES,
   getAppsMenuEntries,
   getAppsMenuUncategorized,
+  getHomeToolHref,
   validateNavigationConfig,
 } from "@/lib/navigationConfig";
-import { isActiveHref } from "@/lib/routes";
+import { isToolLinkActive } from "@/hooks/useActiveToolId";
 import type { SidebarNavCategoryId } from "@/lib/sidebarNav";
 import type { ToolId } from "@/lib/tools";
 
@@ -74,6 +75,7 @@ interface AppsMenuProps {
 export function AppsMenu({ appsActive = false }: AppsMenuProps) {
   const { t } = useLanguage();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const panelId = useId();
@@ -135,12 +137,12 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
   };
 
   const renderToolLink = (tool: { id: ToolId; href: string }) => {
-    const active = isActiveHref(pathname, tool.href);
+    const active = isToolLinkActive(pathname, searchParams, tool.id);
 
     return (
       <li key={tool.id}>
         <AppLink
-          href={tool.href}
+          href={getHomeToolHref(tool.id)}
           onClick={handleMenuLinkClick}
           className={`apps-menu-link block rounded-md px-3 py-2 font-label text-[13px] ${
             active ? "apps-menu-link-active" : "text-muted"

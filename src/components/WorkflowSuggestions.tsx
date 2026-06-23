@@ -3,6 +3,7 @@
 import { AppLink } from "@/components/layout/AppLink";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
+import { isHomeToolId } from "@/lib/homeTool";
 import type { ToolId } from "@/lib/tools";
 
 export interface WorkflowLink {
@@ -15,8 +16,18 @@ interface WorkflowSuggestionsProps {
 }
 
 function toolIdFromHref(href: string): ToolId | null {
-  const match = href.match(/^\/tools\/([^/]+)$/);
-  return match?.[1] as ToolId | null;
+  if (href.startsWith("/?")) {
+    const tool = new URLSearchParams(href.slice(2)).get("tool");
+    return isHomeToolId(tool) ? tool : null;
+  }
+
+  const nested = href.match(/^\/tools\/[^/]+\/([^/]+)$/);
+  if (nested) return nested[1] as ToolId;
+
+  const legacy = href.match(/^\/tools\/([^/]+)$/);
+  if (legacy && legacy[1] !== "category") return legacy[1] as ToolId;
+
+  return null;
 }
 
 export function WorkflowSuggestions({ suggestions }: WorkflowSuggestionsProps) {

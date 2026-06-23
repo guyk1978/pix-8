@@ -86,6 +86,7 @@ const ERROR_MESSAGE_KEYS: Record<string, string> = {
   "Failed to remove metadata.": "toolUi.metadataRemover.removeFailed",
   "Please select valid image files.": "errors.invalidImageFiles",
   "Could not load one or more images.": "errors.bulkLoadFailed",
+  "Failed to load example image.": "errors.loadImageFailed",
 };
 
 export function translateErrorMessage(

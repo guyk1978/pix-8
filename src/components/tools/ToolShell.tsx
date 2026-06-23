@@ -20,6 +20,8 @@ interface ToolShellProps {
   children?: ReactNode;
   relatedArticlesEn?: Article[];
   relatedArticlesHe?: Article[];
+  /** Lighter shell for the home dashboard workspace */
+  embedded?: boolean;
 }
 
 export function ToolShell({
@@ -27,9 +29,12 @@ export function ToolShell({
   children,
   relatedArticlesEn = [],
   relatedArticlesHe = [],
+  embedded = false,
 }: ToolShellProps) {
   const { t } = useLanguage();
-  const setToolMeta = useOptionalToolSidebar()?.setToolMeta;
+  const toolSidebar = useOptionalToolSidebar();
+  const setToolMeta = toolSidebar?.setToolMeta;
+  const hasActiveImage = toolSidebar?.hasActiveImage ?? false;
   const toolName = t(getToolTranslationKey(tool.id, "name"));
   const toolDescription = t(getToolTranslationKey(tool.id, "description"));
 
@@ -47,29 +52,45 @@ export function ToolShell({
     <WorkflowProvider toolId={tool.id}>
       <Suspense fallback={null}>
         <ToolProjectProvider toolId={tool.id}>
-          <div className="tool-page mx-auto w-full max-w-7xl px-4 py-6 text-start sm:px-8 sm:py-8">
+          <div
+            className={`tool-page mx-auto w-full text-start ${
+              embedded
+                ? "max-w-none px-4 py-5 sm:px-6 sm:py-6"
+                : "max-w-7xl px-4 py-6 sm:px-8 sm:py-8"
+            }`}
+          >
             <div className="tool-workspace-shell">
               <WorkflowPanel>
-                <ToolHeaderHero
-                  toolId={tool.id}
-                  title={toolName}
-                  description={toolDescription}
-                />
+                {!embedded ? (
+                  <ToolHeaderHero
+                    toolId={tool.id}
+                    title={toolName}
+                    description={toolDescription}
+                  />
+                ) : null}
 
                 <div className="relative z-10">
                   {children}
 
-                  <WorkflowSuggestions suggestions={getWorkflowSuggestions(tool.id)} />
+                  {!embedded ? (
+                    <WorkflowSuggestions suggestions={getWorkflowSuggestions(tool.id)} />
+                  ) : null}
                 </div>
               </WorkflowPanel>
             </div>
 
-            <ToolStarRating toolId={tool.id} toolName={toolName} />
+            {!embedded ? (
+              <>
+                {!hasActiveImage ? (
+                  <ToolStarRating toolId={tool.id} toolName={toolName} />
+                ) : null}
 
-            <RelatedArticles
-              articlesEn={relatedArticlesEn}
-              articlesHe={relatedArticlesHe}
-            />
+                <RelatedArticles
+                  articlesEn={relatedArticlesEn}
+                  articlesHe={relatedArticlesHe}
+                />
+              </>
+            ) : null}
           </div>
         </ToolProjectProvider>
       </Suspense>
