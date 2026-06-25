@@ -89,6 +89,11 @@ export default function RootLayout({
             <script async src={googleAnalyticsScriptSrc} />
           </>
         ) : null}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3711924762921897"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="min-h-full bg-background text-foreground">
         <ThemeProvider>

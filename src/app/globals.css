@@ -100,6 +100,14 @@ html {
   overflow-x: clip;
 }
 
+html.dark {
+  color-scheme: dark;
+}
+
+html:not(.dark) {
+  color-scheme: light;
+}
+
 body {
   overflow-x: clip;
   max-width: 100%;
@@ -1165,8 +1173,21 @@ html:not(.dark) .tool-page textarea.tool-input:hover:not(:disabled) {
 }
 
 .dark .tool-page .tool-input,
-.dark .tool-page .tool-zone-body .tool-input {
+.dark .tool-page .tool-zone-body .tool-input,
+.dark .tool-page select.tool-input {
   background: color-mix(in srgb, #0d0f14 80%, var(--card));
+  color: var(--foreground);
+}
+
+.dark select,
+.dark select.tool-input {
+  color-scheme: dark;
+}
+
+.dark select option,
+.dark select optgroup {
+  background-color: var(--card);
+  color: var(--foreground);
 }
 
 .tool-page .tool-input:hover:not(:disabled),
