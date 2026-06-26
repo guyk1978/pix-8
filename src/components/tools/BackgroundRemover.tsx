@@ -2,13 +2,14 @@
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
-import { ProcessingIndicator } from "@/components/characters/ProcessingIndicator";
+import { BackgroundRemovalScanOverlay } from "@/components/tools/BackgroundRemovalScanOverlay";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolSidebarSlot } from "@/components/layout/ToolSidebarSlot";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import {
@@ -299,7 +300,7 @@ export function BackgroundRemover() {
     processingPhase === "loading-model"
       ? t("toolUi.bgRemover.loadingModel")
       : processingPhase === "processing"
-        ? t("toolUi.bgRemover.removing")
+        ? t("toolUi.bgRemover.scanning")
         : null;
 
   const modelProgress = formatDownloadProgress(removalProgress);
@@ -412,29 +413,20 @@ export function BackgroundRemover() {
             }
           >
             {isBusy && (
-              <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex items-center gap-3 rounded-sm border border-border bg-background/90 px-3 py-2 shadow-sm backdrop-blur-sm sm:inset-x-auto sm:bottom-4 sm:right-4">
-                <ProcessingIndicator
-                  active
-                  size="sm"
-                  progress={
-                    modelProgress ?? (processingPhase === "processing" ? 75 : 25)
-                  }
-                />
-                <div className="min-w-0">
-                  <p className="font-label text-accent">{processingLabel}</p>
-                  {modelProgress !== undefined ? (
-                    <p className="font-mono text-[10px] text-muted">
-                      {t("toolUi.bgRemover.downloadingModel", {
+              <BackgroundRemovalScanOverlay
+                label={processingLabel ?? t("common.processing")}
+                sublabel={
+                  modelProgress !== undefined
+                    ? t("toolUi.bgRemover.downloadingModel", {
                         percent: modelProgress,
-                      })}
-                    </p>
-                  ) : (
-                    <p className="font-mono text-[10px] text-muted">
-                      {t("toolUi.bgRemover.processingLocal")}
-                    </p>
-                  )}
-                </div>
-              </div>
+                      })
+                    : t("toolUi.bgRemover.processingLocal")
+                }
+                progress={modelProgress}
+                variant={
+                  processingPhase === "loading-model" ? "download" : "scan"
+                }
+              />
             )}
 
             {hasProcessed ? (
@@ -482,18 +474,20 @@ export function BackgroundRemover() {
       {error ? <HelperErrorAlert message={error} className="mt-4" /> : null}
 
       <div className="mt-5 space-y-2">
-        <button
-          type="button"
-          disabled={!canProcess}
-          onClick={() => void handleProcess()}
-          className="min-h-11 w-full rounded-sm border border-border bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {isBusy
-            ? t("common.processing")
-            : isPreparingEngine
-              ? t("toolUi.bgRemover.preparingModel")
-              : t("toolUi.bgRemover.removeBackground")}
-        </button>
+        <ToolSidebarSlot id="tool-process-action" panel="actions" order={0}>
+          <button
+            type="button"
+            disabled={!canProcess}
+            onClick={() => void handleProcess()}
+            className="embedded-toolbar-process min-h-11 w-full rounded-sm border border-border bg-background px-4 py-3 font-label text-foreground transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {isBusy
+              ? t("common.processing")
+              : isPreparingEngine
+                ? t("toolUi.bgRemover.preparingModel")
+                : t("toolUi.bgRemover.removeBackground")}
+          </button>
+        </ToolSidebarSlot>
 
         <ToolOutputActions
           onDownload={handleDownloadImage}

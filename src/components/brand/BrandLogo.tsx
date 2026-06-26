@@ -7,7 +7,6 @@ export type BrandLogoSize = "sm" | "md" | "lg" | "hero";
 interface BrandLogoProps {
   size?: BrandLogoSize;
   showTagline?: boolean;
-  showGlow?: boolean;
   className?: string;
 }
 
@@ -17,20 +16,7 @@ function BrandWordmark({ size }: { size: BrandLogoSize }) {
       className={`brand-logo-wordmark brand-logo-wordmark--${size}`}
       aria-hidden
     >
-      <span className="brand-logo-pix">
-        P
-        <span className="brand-logo-i">
-          <span className="brand-logo-i-stem">i</span>
-          <span className="brand-logo-pixel" aria-hidden />
-        </span>
-        x
-      </span>
-      <span className="brand-logo-sep" aria-hidden>
-        -
-      </span>
-      <span className="brand-logo-eight">
-        <span className="brand-logo-eight-inner">8</span>
-      </span>
+      PIX-8
     </span>
   );
 }
@@ -38,17 +24,14 @@ function BrandWordmark({ size }: { size: BrandLogoSize }) {
 export function BrandLogo({
   size = "md",
   showTagline = false,
-  showGlow = false,
   className = "",
 }: BrandLogoProps) {
   const { t } = useLanguage();
-
   const wordmark = <BrandWordmark size={size} />;
 
   if (size === "hero") {
     return (
       <div className={`brand-logo-hero ${className}`.trim()}>
-        {showGlow ? <div className="brand-logo-hero-glow" aria-hidden /> : null}
         <div className="brand-logo-hero-glass">
           {wordmark}
           {showTagline ? (
@@ -63,10 +46,7 @@ export function BrandLogo({
   }
 
   return (
-    <div
-      className={`brand-logo ${showGlow ? "brand-logo--glow" : ""} ${className}`.trim()}
-    >
-      {showGlow ? <div className="brand-logo-glow" aria-hidden /> : null}
+    <div className={`brand-logo ${className}`.trim()}>
       {wordmark}
     </div>
   );

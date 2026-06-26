@@ -1,16 +1,16 @@
 "use client";
 
-import { DashboardEmbeddedTool } from "@/components/dashboard/DashboardEmbeddedTool";
 import { Suspense } from "react";
+import { DashboardEmbeddedTool } from "@/components/dashboard/DashboardEmbeddedTool";
 
 function EmbeddedToolFallback() {
   return (
     <div
-      className="mx-auto w-full max-w-5xl space-y-4 px-4 pt-5 pb-8 sm:px-6"
+      className="embedded-tool-workspace flex min-h-0 flex-1 flex-col"
       aria-hidden
     >
-      <div className="h-10 rounded-none border border-border bg-card" />
-      <div className="min-h-[24rem] rounded-none border border-border bg-card" />
+      <div className="h-16 shrink-0 border-b border-border bg-card" />
+      <div className="embedded-tool-canvas min-h-0 flex-1 transparency-checkerboard" />
     </div>
   );
 }

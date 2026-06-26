@@ -20,10 +20,10 @@ export function ProcessingModeToggle({
     <ToolSidebarSlot
       id="processing-mode"
       order={5}
-      className="mb-5"
+      className="embedded-processing-mode"
       showInlineWhenIdle
     >
-      <div className="tool-segment-track sidebar-segment-track flex gap-2">
+      <div className="tool-segment-track embedded-segment-track flex gap-1">
         <button
           type="button"
           onClick={() => onChange("single")}

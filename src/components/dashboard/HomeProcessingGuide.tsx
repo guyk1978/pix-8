@@ -119,7 +119,7 @@ export function HomeProcessingGuide() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex min-h-9 items-center gap-2 rounded-none border border-border bg-card px-3 py-2 font-label text-sm text-foreground transition-colors hover:border-muted"
+        className="inline-flex min-h-8 items-center gap-2 rounded-md bg-foreground/[0.06] px-2.5 font-label text-[0.625rem] uppercase tracking-[0.06em] text-foreground/85 transition-colors hover:bg-foreground/[0.1] hover:text-foreground"
       >
         <BookOpen className="h-3.5 w-3.5 text-muted" strokeWidth={1.75} aria-hidden />
         {t("home.guideButton")}

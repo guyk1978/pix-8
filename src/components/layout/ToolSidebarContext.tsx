@@ -15,14 +15,22 @@ interface ToolSidebarContextValue {
   toolName: string | null;
   toolTag: string | null;
   hasActiveImage: boolean;
+  embeddedToolbarLayout: boolean;
+  setEmbeddedToolbarLayout: (active: boolean) => void;
   setToolMeta: (meta: { toolId: ToolId; toolName: string; toolTag: string } | null) => void;
   setHasActiveImage: (active: boolean) => void;
   controlsContainer: HTMLDivElement | null;
   setControlsContainer: (element: HTMLDivElement | null) => void;
+  toolbarControlsContainer: HTMLDivElement | null;
+  setToolbarControlsContainer: (element: HTMLDivElement | null) => void;
+  toolbarActionsContainer: HTMLDivElement | null;
+  setToolbarActionsContainer: (element: HTMLDivElement | null) => void;
   activeSlotCount: number;
   registerSlotPresence: (id: string, present: boolean) => void;
   footerActions: ReactNode | null;
   setFooterActions: (actions: ReactNode | null) => void;
+  embeddedToolbarExpanded: boolean;
+  setEmbeddedToolbarExpanded: (expanded: boolean) => void;
 }
 
 const ToolSidebarContext = createContext<ToolSidebarContextValue | null>(null);
@@ -34,11 +42,17 @@ export function ToolSidebarProvider({ children }: { children: ReactNode }) {
     toolTag: string;
   } | null>(null);
   const [hasActiveImage, setHasActiveImageState] = useState(false);
+  const [embeddedToolbarLayout, setEmbeddedToolbarLayoutState] = useState(false);
   const [controlsContainer, setControlsContainerState] = useState<HTMLDivElement | null>(
     null,
   );
+  const [toolbarControlsContainer, setToolbarControlsContainerState] =
+    useState<HTMLDivElement | null>(null);
+  const [toolbarActionsContainer, setToolbarActionsContainerState] =
+    useState<HTMLDivElement | null>(null);
   const [activeSlotIds, setActiveSlotIds] = useState<Set<string>>(() => new Set());
   const [footerActions, setFooterActionsState] = useState<ReactNode | null>(null);
+  const [embeddedToolbarExpanded, setEmbeddedToolbarExpandedState] = useState(true);
 
   const setToolMeta = useCallback(
     (meta: { toolId: ToolId; toolName: string; toolTag: string } | null) => {
@@ -71,8 +85,24 @@ export function ToolSidebarProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const setEmbeddedToolbarLayout = useCallback((active: boolean) => {
+    setEmbeddedToolbarLayoutState((current) => (current === active ? current : active));
+  }, []);
+
   const setControlsContainer = useCallback((element: HTMLDivElement | null) => {
     setControlsContainerState((current) => (current === element ? current : element));
+  }, []);
+
+  const setToolbarControlsContainer = useCallback((element: HTMLDivElement | null) => {
+    setToolbarControlsContainerState((current) =>
+      current === element ? current : element,
+    );
+  }, []);
+
+  const setToolbarActionsContainer = useCallback((element: HTMLDivElement | null) => {
+    setToolbarActionsContainerState((current) =>
+      current === element ? current : element,
+    );
   }, []);
 
   const registerSlotPresence = useCallback((id: string, present: boolean) => {
@@ -95,32 +125,54 @@ export function ToolSidebarProvider({ children }: { children: ReactNode }) {
     setFooterActionsState((current) => (current === actions ? current : actions));
   }, []);
 
+  const setEmbeddedToolbarExpanded = useCallback((expanded: boolean) => {
+    setEmbeddedToolbarExpandedState((current) =>
+      current === expanded ? current : expanded,
+    );
+  }, []);
+
   const value = useMemo<ToolSidebarContextValue>(
     () => ({
       toolId: toolMeta?.toolId ?? null,
       toolName: toolMeta?.toolName ?? null,
       toolTag: toolMeta?.toolTag ?? null,
       hasActiveImage,
+      embeddedToolbarLayout,
+      setEmbeddedToolbarLayout,
       setToolMeta,
       setHasActiveImage,
       controlsContainer,
       setControlsContainer,
+      toolbarControlsContainer,
+      setToolbarControlsContainer,
+      toolbarActionsContainer,
+      setToolbarActionsContainer,
       activeSlotCount: activeSlotIds.size,
       registerSlotPresence,
       footerActions,
       setFooterActions,
+      embeddedToolbarExpanded,
+      setEmbeddedToolbarExpanded,
     }),
     [
       toolMeta,
       hasActiveImage,
+      embeddedToolbarLayout,
+      setEmbeddedToolbarLayout,
       setToolMeta,
       setHasActiveImage,
       controlsContainer,
       setControlsContainer,
+      toolbarControlsContainer,
+      setToolbarControlsContainer,
+      toolbarActionsContainer,
+      setToolbarActionsContainer,
       activeSlotIds,
       registerSlotPresence,
       footerActions,
       setFooterActions,
+      embeddedToolbarExpanded,
+      setEmbeddedToolbarExpanded,
     ],
   );
 

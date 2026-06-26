@@ -16,5 +16,11 @@ export const toolActionButtonClassName = toolActionBaseClassName;
 
 export const toolActionPrimaryClassName = `${toolActionBaseClassName} font-medium`;
 
+export const embeddedToolbarButtonClassName =
+  "embedded-toolbar-btn inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-md bg-foreground/[0.06] px-2.5 font-label text-[0.625rem] uppercase tracking-[0.06em] text-foreground/85 transition-colors duration-200 hover:bg-foreground/[0.1] hover:text-foreground disabled:cursor-not-allowed disabled:opacity-35";
+
+export const embeddedToolbarPrimaryClassName =
+  "embedded-toolbar-btn embedded-toolbar-btn-primary inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-md bg-[color-mix(in_srgb,var(--accent)_20%,var(--card))] px-3 font-label text-[0.625rem] font-semibold uppercase tracking-[0.06em] text-accent transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--accent)_30%,var(--card))] disabled:cursor-not-allowed disabled:opacity-35";
+
 export const toolActionTooltipClassName =
   "pointer-events-none absolute bottom-[calc(100%+0.5rem)] left-1/2 z-30 w-[min(17rem,calc(100vw-2rem))] -translate-x-1/2 rounded-lg bg-card px-3 py-2 text-center font-mono text-[10px] leading-relaxed text-foreground shadow-[var(--shadow-elevated)] opacity-0 transition-opacity duration-200 group-hover:opacity-100";

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { ToolSidebarSlot } from "@/components/layout/ToolSidebarSlot";
+import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 interface ImageFileInputProps {
@@ -15,6 +17,8 @@ interface ImageFileInputProps {
   chooseLabel?: string;
   emptyLabel?: string;
   className?: string;
+  /** Embedded toolbar slot id — use a unique value when a tool has multiple file inputs. */
+  toolbarSlotId?: string;
 }
 
 export function ImageFileInput({
@@ -28,8 +32,11 @@ export function ImageFileInput({
   chooseLabel,
   emptyLabel,
   className = "",
+  toolbarSlotId = "replace-image",
 }: ImageFileInputProps) {
   const { t } = useLanguage();
+  const embeddedToolbarLayout =
+    useOptionalToolSidebar()?.embeddedToolbarLayout ?? false;
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -55,20 +62,26 @@ export function ImageFileInput({
 
   const field = (
     <div
-      className={`flex min-h-11 items-center gap-3 rounded-sm border border-border bg-background px-3 py-2 ${className}`}
+      className={`flex items-center gap-2 rounded-md bg-foreground/[0.06] ${
+        embeddedToolbarLayout
+          ? "embedded-replace-chip h-8 max-w-[min(100%,13rem)] px-2"
+          : "min-h-11 gap-3 border border-border bg-background px-3 py-2"
+      } ${className}`}
     >
       <button
         type="button"
         disabled={disabled}
         onClick={() => inputRef.current?.click()}
-        className="shrink-0 font-label text-muted transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+        className={`shrink-0 font-label text-muted transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 ${
+          embeddedToolbarLayout ? "text-[0.625rem] uppercase tracking-wide" : ""
+        }`}
       >
         {resolvedChooseLabel}
       </button>
       <span
-        className={`min-w-0 flex-1 truncate font-mono text-xs ${
-          showingPlaceholder ? "text-muted" : "text-foreground"
-        }`}
+        className={`min-w-0 flex-1 truncate font-mono ${
+          embeddedToolbarLayout ? "text-[10px]" : "text-xs"
+        } ${showingPlaceholder ? "text-muted" : "text-foreground"}`}
         title={showingPlaceholder ? undefined : displayName}
       >
         {displayName}
@@ -90,7 +103,14 @@ export function ImageFileInput({
     return field;
   }
 
-  return (
+  const labeledField = embeddedToolbarLayout ? (
+    <div className="embedded-replace-image-row flex min-w-0 items-center gap-1.5">
+      <span className="embedded-micro-label shrink-0 font-label text-[0.625rem] uppercase tracking-wide text-muted">
+        {labelText}
+      </span>
+      {field}
+    </div>
+  ) : (
     <div className="space-y-2 text-start">
       <label htmlFor={inputId} className="block font-label text-start text-muted">
         {labelText}
@@ -98,4 +118,19 @@ export function ImageFileInput({
       {field}
     </div>
   );
+
+  if (embeddedToolbarLayout) {
+    return (
+      <ToolSidebarSlot
+        id={toolbarSlotId}
+        order={10}
+        className="embedded-replace-image"
+        showInlineWhenIdle
+      >
+        {labeledField}
+      </ToolSidebarSlot>
+    );
+  }
+
+  return labeledField;
 }

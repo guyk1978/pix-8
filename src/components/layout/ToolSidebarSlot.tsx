@@ -13,6 +13,8 @@ interface ToolSidebarSlotProps {
   className?: string;
   /** Render in main workspace when no image is active (e.g. processing mode before upload). */
   showInlineWhenIdle?: boolean;
+  /** Embedded home toolbar target — defaults to the settings/controls panel. */
+  panel?: "controls" | "actions";
 }
 
 export function ToolSidebarSlot({
@@ -21,39 +23,81 @@ export function ToolSidebarSlot({
   children,
   className = "",
   showInlineWhenIdle = false,
+  panel = "controls",
 }: ToolSidebarSlotProps) {
   const { dir } = useLanguage();
   const sidebar = useOptionalToolSidebar();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const hasActiveImage = sidebar?.hasActiveImage ?? false;
+  const embeddedToolbarLayout = sidebar?.embeddedToolbarLayout ?? false;
   const registerSlotPresence = sidebar?.registerSlotPresence;
   const controlsContainer = sidebar?.controlsContainer;
+  const toolbarControlsContainer = sidebar?.toolbarControlsContainer;
+  const toolbarActionsContainer = sidebar?.toolbarActionsContainer;
+  const toolbarVisible = hasActiveImage || showInlineWhenIdle;
+  const useToolbarControlsPanel = Boolean(
+    sidebar &&
+      embeddedToolbarLayout &&
+      panel === "controls" &&
+      toolbarControlsContainer &&
+      toolbarVisible,
+  );
+  const useToolbarActionsPanel = Boolean(
+    sidebar &&
+      embeddedToolbarLayout &&
+      panel === "actions" &&
+      toolbarActionsContainer &&
+      toolbarVisible,
+  );
   const useFloatingPanel = Boolean(
-    sidebar && hasActiveImage && isDesktop && controlsContainer,
+    sidebar &&
+      !embeddedToolbarLayout &&
+      panel === "controls" &&
+      hasActiveImage &&
+      isDesktop &&
+      controlsContainer,
   );
 
   useEffect(() => {
-    if (!registerSlotPresence || !useFloatingPanel) {
-      registerSlotPresence?.(id, false);
-      return;
-    }
+    if (!registerSlotPresence) return;
 
-    registerSlotPresence(id, true);
+    const present =
+      useToolbarControlsPanel || useToolbarActionsPanel || useFloatingPanel;
+    registerSlotPresence(id, present);
     return () => registerSlotPresence(id, false);
-  }, [registerSlotPresence, useFloatingPanel, id]);
+  }, [
+    registerSlotPresence,
+    useToolbarControlsPanel,
+    useToolbarActionsPanel,
+    useFloatingPanel,
+    id,
+  ]);
+
+  const slotContent = (
+    <div
+      className={`tool-sidebar-slot sidebar-control-stack w-full text-start ${className}`.trim()}
+      style={{ order }}
+      data-sidebar-slot={id}
+      dir={dir}
+    >
+      {children}
+    </div>
+  );
+
+  if (useToolbarControlsPanel && toolbarControlsContainer) {
+    return createPortal(slotContent, toolbarControlsContainer);
+  }
+
+  if (useToolbarActionsPanel && toolbarActionsContainer) {
+    return createPortal(slotContent, toolbarActionsContainer);
+  }
 
   if (useFloatingPanel && controlsContainer) {
-    return createPortal(
-      <div
-        className={`tool-sidebar-slot sidebar-control-stack w-full text-start ${className}`.trim()}
-        style={{ order }}
-        data-sidebar-slot={id}
-        dir={dir}
-      >
-        {children}
-      </div>,
-      controlsContainer,
-    );
+    return createPortal(slotContent, controlsContainer);
+  }
+
+  if (embeddedToolbarLayout && panel === "actions") {
+    return null;
   }
 
   if (!hasActiveImage) {
@@ -61,10 +105,14 @@ export function ToolSidebarSlot({
       return null;
     }
 
+    if (embeddedToolbarLayout && toolbarControlsContainer && panel === "controls") {
+      return createPortal(slotContent, toolbarControlsContainer);
+    }
+
     return <div className={className}>{children}</div>;
   }
 
-  if (!isDesktop) {
+  if (!isDesktop && !embeddedToolbarLayout) {
     return (
       <div
         className={`tool-mobile-controls w-full text-start ${className}`.trim()}

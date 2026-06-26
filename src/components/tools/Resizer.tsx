@@ -15,6 +15,7 @@ import {
 } from "@/components/tools/ProcessingModeToggle";
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { ToolSidebarSlot } from "@/components/layout/ToolSidebarSlot";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { useBulkFiles } from "@/hooks/useBulkFiles";
 import {
@@ -438,14 +439,16 @@ export function Resizer() {
             isProcessing={busy}
           />
         ) : (
-          <button
-            type="button"
-            disabled={!canBatchResize}
-            onClick={() => void handleBatchDownload()}
-            className="mt-5 min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {busy ? t("common.processing") : t("downloads.resizeAllZip")}
-          </button>
+          <ToolSidebarSlot id="tool-batch-action" panel="actions" order={0}>
+            <button
+              type="button"
+              disabled={!canBatchResize}
+              onClick={() => void handleBatchDownload()}
+              className="embedded-toolbar-process mt-5 min-h-11 w-full rounded-sm border border-border bg-accent-muted px-4 py-3 font-label text-accent transition-colors hover:bg-accent/20 active:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {busy ? t("common.processing") : t("downloads.resizeAllZip")}
+            </button>
+          </ToolSidebarSlot>
         )}
 
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />

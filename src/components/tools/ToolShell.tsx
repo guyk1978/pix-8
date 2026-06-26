@@ -55,11 +55,15 @@ export function ToolShell({
           <div
             className={`tool-page mx-auto w-full text-start ${
               embedded
-                ? "max-w-none px-4 py-5 sm:px-6 sm:py-6"
+                ? "embedded-tool-page flex h-full min-h-0 flex-1 flex-col px-0 py-0 max-w-none"
                 : "max-w-7xl px-4 py-6 sm:px-8 sm:py-8"
             }`}
           >
-            <div className="tool-workspace-shell">
+            <div
+              className={`tool-workspace-shell ${
+                embedded ? "flex min-h-0 flex-1 flex-col" : ""
+              }`}
+            >
               <WorkflowPanel>
                 {!embedded ? (
                   <ToolHeaderHero
@@ -69,7 +73,7 @@ export function ToolShell({
                   />
                 ) : null}
 
-                <div className="relative z-10">
+                <div className={`relative z-10 ${embedded ? "flex min-h-0 flex-1 flex-col" : ""}`}>
                   {children}
 
                   {!embedded ? (

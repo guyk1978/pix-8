@@ -2,6 +2,7 @@
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
+import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
@@ -42,6 +43,13 @@ const SOCIAL_PRESETS: { id: SocialPresetId; aspect: AspectPreset }[] = [
 ];
 
 const GENERIC_ASPECT_PRESETS: AspectPreset[] = ["free", "1:1", "16:9", "4:3"];
+
+const SOCIAL_EMBEDDED_LABELS: Record<SocialPresetId, string> = {
+  "instagram-square": "Square",
+  "story-reel": "Story",
+  "landscape-cover": "Landscape",
+  "instagram-portrait": "Portrait",
+};
 
 function getAspectRatio(preset: AspectPreset): number | null {
   return ASPECT_PRESETS.find((entry) => entry.id === preset)?.ratio ?? null;
@@ -148,6 +156,8 @@ type DragMode = "move" | "resize-se" | "resize-sw" | "resize-ne" | "resize-nw";
 
 export function Cropper() {
   const { t } = useLanguage();
+  const embeddedToolbarLayout =
+    useOptionalToolSidebar()?.embeddedToolbarLayout ?? false;
   const {
     canvasRef,
     source,
@@ -501,7 +511,13 @@ export function Cropper() {
               htmlFor: "cropper-social-square",
               accentClass: "text-[var(--glow-purple)]",
               children: (
-                <div className="grid grid-cols-1 gap-1.5 px-1 py-2.5">
+                <div
+                  className={
+                    embeddedToolbarLayout
+                      ? "embedded-chip-row embedded-chip-row-social"
+                      : "grid grid-cols-1 gap-1.5 px-1 py-2.5"
+                  }
+                >
                   {SOCIAL_PRESETS.map((preset) => (
                     <button
                       key={preset.id}
@@ -513,18 +529,30 @@ export function Cropper() {
                       type="button"
                       disabled={!source}
                       onClick={() => applyAspectPreset(preset.aspect, preset.id)}
-                      className={`${buttonClassName} flex min-h-10 flex-col items-start gap-0.5 px-3 py-2 text-start ${
+                      className={`embedded-chip-btn ${buttonClassName} ${
+                        embeddedToolbarLayout
+                          ? "embedded-chip-btn-compact"
+                          : "flex min-h-10 flex-col items-start gap-0.5 px-3 py-2 text-start"
+                      } ${
                         socialPreset === preset.id
-                          ? activeButtonClassName
-                          : "bg-background"
+                          ? embeddedToolbarLayout
+                            ? "embedded-chip-active"
+                            : activeButtonClassName
+                          : embeddedToolbarLayout
+                            ? ""
+                            : "bg-background"
                       }`}
                     >
                       <span className="font-label text-xs text-foreground">
-                        {t(`toolUi.cropper.social.${preset.id}.title`)}
+                        {embeddedToolbarLayout
+                          ? SOCIAL_EMBEDDED_LABELS[preset.id]
+                          : t(`toolUi.cropper.social.${preset.id}.title`)}
                       </span>
-                      <span className="font-mono text-[10px] text-muted">
-                        {t(`toolUi.cropper.social.${preset.id}.hint`)}
-                      </span>
+                      {!embeddedToolbarLayout ? (
+                        <span className="font-mono text-[10px] text-muted">
+                          {t(`toolUi.cropper.social.${preset.id}.hint`)}
+                        </span>
+                      ) : null}
                     </button>
                   ))}
                 </div>
@@ -535,7 +563,13 @@ export function Cropper() {
               englishLabel: "Aspect",
               htmlFor: "cropper-aspect-free",
               children: (
-                <div className="flex flex-wrap gap-2 px-1 py-2.5">
+                <div
+                  className={
+                    embeddedToolbarLayout
+                      ? "embedded-chip-row"
+                      : "flex flex-wrap gap-2 px-1 py-2.5"
+                  }
+                >
                   {GENERIC_ASPECT_PRESETS.map((presetId) => (
                     <button
                       key={presetId}
@@ -543,10 +577,16 @@ export function Cropper() {
                       type="button"
                       disabled={!source}
                       onClick={() => applyAspectPreset(presetId, null)}
-                      className={`${buttonClassName} ${
+                      className={`embedded-chip-btn ${buttonClassName} ${
+                        embeddedToolbarLayout ? "embedded-chip-btn-compact" : ""
+                      } ${
                         aspectPreset === presetId && !socialPreset
-                          ? activeButtonClassName
-                          : "bg-background"
+                          ? embeddedToolbarLayout
+                            ? "embedded-chip-active"
+                            : activeButtonClassName
+                          : embeddedToolbarLayout
+                            ? ""
+                            : "bg-background"
                       }`}
                     >
                       {presetId === "free"

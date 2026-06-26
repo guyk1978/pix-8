@@ -2,6 +2,7 @@
 
 import * as ort from "onnxruntime-web/wasm";
 import {
+  ALPHA_PRESERVATION_GAMMA,
   GUIDED_FILTER_EPSILON,
   GUIDED_FILTER_RADIUS,
   IMAGENET_MEAN,
@@ -140,6 +141,19 @@ function applyAlphaMask(
   return output;
 }
 
+/** Lifts mid-range alpha so faint subject pixels are less likely to be erased. */
+function preserveSubjectAlpha(
+  alpha: Float32Array,
+  gamma: number,
+): Float32Array {
+  const output = new Float32Array(alpha.length);
+  for (let i = 0; i < alpha.length; i++) {
+    const clamped = Math.min(1, Math.max(0, alpha[i]));
+    output[i] = Math.pow(clamped, gamma);
+  }
+  return output;
+}
+
 function configureOrtWasm(): void {
   const base = `${self.location.origin}${ONNX_WASM_PATH}`;
   ort.env.wasm.wasmPaths = base;
@@ -216,13 +230,16 @@ async function segmentImage(id: number, bitmap: ImageBitmap) {
     );
 
     const guide = imageDataToGrayscaleGuide(fullImageData);
-    const refinedAlpha = guidedFilter(
-      guide,
-      fullMask,
-      width,
-      height,
-      GUIDED_FILTER_RADIUS,
-      GUIDED_FILTER_EPSILON,
+    const refinedAlpha = preserveSubjectAlpha(
+      guidedFilter(
+        guide,
+        fullMask,
+        width,
+        height,
+        GUIDED_FILTER_RADIUS,
+        GUIDED_FILTER_EPSILON,
+      ),
+      ALPHA_PRESERVATION_GAMMA,
     );
 
     const rgba = applyAlphaMask(fullImageData, refinedAlpha);

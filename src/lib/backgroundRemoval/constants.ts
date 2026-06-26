@@ -15,3 +15,9 @@ export const IMAGENET_STD = [0.229, 0.224, 0.225] as const;
 /** Guided filter radius / regularization for alpha matting */
 export const GUIDED_FILTER_RADIUS = 5;
 export const GUIDED_FILTER_EPSILON = 0.008;
+
+/**
+ * Gamma applied to refined alpha (< 1 keeps more of the subject on difficult images).
+ * Conservative tweak — avoids aggressive erosion without a second model pass.
+ */
+export const ALPHA_PRESERVATION_GAMMA = 0.88;

@@ -2,7 +2,7 @@
 
 import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type DragEvent } from "react";
 import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
@@ -10,7 +10,10 @@ import { SliderControl } from "@/components/ui/SliderControl";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
+import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
+import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
+import { embeddedToolbarPrimaryClassName } from "@/components/tools/toolActionStyles";
 import {
   buildDownloadFilename,
   loadImageFromFile,
@@ -44,8 +47,97 @@ const positionButtonClassName =
 
 const activePositionClassName = "border-accent/40 bg-accent-muted text-accent";
 
+function WatermarkAwaitingOverlay({
+  sourceUrl,
+  error,
+  onFile,
+}: {
+  sourceUrl: string;
+  error: string | null;
+  onFile: (file: File | null) => void;
+}) {
+  const { t } = useLanguage();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDrop = useCallback(
+    (event: DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      setIsDragging(false);
+      const file = event.dataTransfer.files?.[0] ?? null;
+      if (file?.type.startsWith("image/")) {
+        void onFile(file);
+      }
+    },
+    [onFile],
+  );
+
+  return (
+    <div className="watermark-awaiting-overlay relative flex max-h-full max-w-full items-center justify-center">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={sourceUrl}
+        alt={t("alt.preview")}
+        className="character-pixelated max-h-full max-w-full object-contain opacity-75"
+      />
+      <div
+        className={`absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center transition-colors sm:gap-4 sm:p-6 ${
+          isDragging
+            ? "bg-accent/15 ring-2 ring-inset ring-accent/40"
+            : "bg-background/55 backdrop-blur-[2px]"
+        }`}
+        onDragEnter={(event) => {
+          event.preventDefault();
+          setIsDragging(true);
+        }}
+        onDragLeave={(event) => {
+          event.preventDefault();
+          if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+            setIsDragging(false);
+          }
+        }}
+        onDragOver={(event) => event.preventDefault()}
+        onDrop={handleDrop}
+      >
+        <p className="max-w-sm text-sm text-foreground sm:text-base">
+          {t("watermark.addWatermarkHint")}
+        </p>
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className={`${embeddedToolbarPrimaryClassName} !h-10 !px-4 !text-xs sm:!text-[0.6875rem]`}
+        >
+          {t("watermark.chooseWatermark")}
+        </button>
+        <p className="font-mono text-[10px] text-muted sm:text-xs">
+          {t("watermark.dropWatermarkHint")}
+        </p>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onChange={(event) => {
+            onFile(event.target.files?.[0] ?? null);
+            event.target.value = "";
+          }}
+        />
+        {error ? (
+          <p className="max-w-sm rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            {error}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function Watermark() {
   const { t, language } = useLanguage();
+  const embeddedToolbarLayout =
+    useOptionalToolSidebar()?.embeddedToolbarLayout ?? false;
+  const setEmbeddedToolbarExpanded =
+    useOptionalToolSidebar()?.setEmbeddedToolbarExpanded;
   const {
     canvasRef,
     source,
@@ -66,6 +158,7 @@ export function Watermark() {
   const [scale, setScale] = useState(20);
   const [position, setPosition] = useState<WatermarkPosition>("bottom-right");
   const [stripMetadata, setStripMetadata] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
 
   const revokeWatermarkUrl = useCallback(() => {
     if (watermarkUrlRef.current) {
@@ -150,6 +243,12 @@ export function Watermark() {
   }, [revokeWatermarkUrl]);
 
   useEffect(() => {
+    if (embeddedToolbarLayout && source && !watermark) {
+      setEmbeddedToolbarExpanded?.(true);
+    }
+  }, [embeddedToolbarLayout, source, watermark, setEmbeddedToolbarExpanded]);
+
+  useEffect(() => {
     if (!source || !watermark || !previewCanvasRef.current) return;
 
     const mainImage = new Image();
@@ -221,27 +320,35 @@ export function Watermark() {
     <ToolWorkspace
       workflowState={{
         hasSource: !!source,
-        hasConfigured: true,
+        hasConfigured: !!watermark,
         isProcessing: Boolean(isProcessing),
         isReady: canDownload,
       }}
     >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <ImageFileInput
-            id="watermark-main"
-            label={t("watermark.mainImage")}
-            fileName={source?.file.name}
+        {!source ? (
+          <ToolStyledUploadZone
+            inputId="watermark-main-upload"
             onFileChange={handleMainFile}
+            isDragging={isDragging}
+            onDraggingChange={setIsDragging}
           />
+        ) : (
+          <>
+            <ImageFileInput
+              id="watermark-main"
+              fileName={source.file.name}
+              onFileChange={handleMainFile}
+            />
 
-          <ImageFileInput
-            id="watermark-logo"
-            label={t("watermark.watermarkImage")}
-            fileName={watermark?.file.name}
-            disabled={!source}
-            onFileChange={(file) => void handleWatermarkFile(file)}
-          />
-        </div>
+            <ImageFileInput
+              id="watermark-logo"
+              toolbarSlotId="secondary-file-input"
+              label={t("watermark.watermarkImage")}
+              fileName={watermark?.file.name}
+              onFileChange={(file) => void handleWatermarkFile(file)}
+            />
+          </>
+        )}
 
         <WorkflowSettings>
           <div className="space-y-4">
@@ -295,6 +402,7 @@ export function Watermark() {
             caption={
               <>
                 {source.width} × {source.height}px · {source.file.name}
+                {watermark ? ` · ${watermark.file.name}` : null}
               </>
             }
           >
@@ -304,9 +412,11 @@ export function Watermark() {
                 className="max-h-[min(50vh,420px)] max-w-full object-contain"
               />
             ) : (
-              <p className="px-4 text-center text-sm text-muted">
-                {t("watermark.addWatermarkHint")}
-              </p>
+              <WatermarkAwaitingOverlay
+                sourceUrl={source.url}
+                error={error}
+                onFile={(file) => void handleWatermarkFile(file)}
+              />
             )}
           </ToolWorkspacePreview>
         ) : null}
@@ -317,7 +427,7 @@ export function Watermark() {
           onChange={setStripMetadata}
         />
 
-        {error ? (
+        {error && watermark ? (
           <HelperErrorAlert message={error} className="mt-4" />
         ) : null}
 

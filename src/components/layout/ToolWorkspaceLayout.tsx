@@ -15,15 +15,22 @@ interface ToolWorkspaceLayoutProps {
 function ToolWorkspaceLayoutInner({ children }: ToolWorkspaceLayoutProps) {
   const { dir, language } = useLanguage();
   const activeToolId = useActiveToolId();
-  const hasActiveImage = useOptionalToolSidebar()?.hasActiveImage ?? false;
-  const showSidebar = activeToolId !== null && hasActiveImage;
+  const toolSidebar = useOptionalToolSidebar();
+  const hasActiveImage = toolSidebar?.hasActiveImage ?? false;
+  const embeddedToolbarLayout = toolSidebar?.embeddedToolbarLayout ?? false;
+  const showSidebar =
+    activeToolId !== null && hasActiveImage && !embeddedToolbarLayout;
   const sidebarOnRight = language === "he" || dir === "rtl";
 
   return (
     <div
       dir="ltr"
-      className={`flex w-full min-w-0 flex-row items-start ${
-        showSidebar ? "tool-layout-with-sidebar" : "min-h-0 flex-1"
+      className={`flex w-full min-w-0 flex-1 flex-row items-start ${
+        embeddedToolbarLayout
+          ? "min-h-0 flex-1"
+          : showSidebar
+            ? "tool-layout-with-sidebar"
+            : "min-h-0 flex-1"
       }`}
     >
       {showSidebar && !sidebarOnRight ? <ToolSidebarPanel /> : null}
@@ -32,7 +39,11 @@ function ToolWorkspaceLayoutInner({ children }: ToolWorkspaceLayoutProps) {
         dir={dir}
         lang={language}
         className={`app-main min-w-0 flex-1 bg-background text-start ${
-          showSidebar ? "" : "min-h-0 overflow-y-auto"
+          embeddedToolbarLayout
+            ? "flex min-h-0 flex-col overflow-hidden"
+            : showSidebar
+              ? ""
+              : "min-h-0 overflow-y-auto"
         }`}
       >
         {children}
