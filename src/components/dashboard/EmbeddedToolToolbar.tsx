@@ -4,8 +4,12 @@ import { ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { ToolStarRating } from "@/components/tools/ToolStarRating";
+import type { ToolId } from "@/lib/tools";
 
 interface EmbeddedToolToolbarProps {
+  toolId: ToolId;
+  toolName: string;
   toolSelector: ReactNode;
   guide: ReactNode;
   controlsExpanded: boolean;
@@ -13,6 +17,8 @@ interface EmbeddedToolToolbarProps {
 }
 
 export function EmbeddedToolToolbar({
+  toolId,
+  toolName,
   toolSelector,
   guide,
   controlsExpanded,
@@ -40,6 +46,11 @@ export function EmbeddedToolToolbar({
             </section>
 
             <section className="embedded-toolbar-panel embedded-toolbar-panel-actions">
+              <ToolStarRating
+                toolId={toolId}
+                toolName={toolName}
+                variant="toolbar"
+              />
               <p className="embedded-toolbar-section-label">
                 {t("home.quickActionsLabel")}
               </p>

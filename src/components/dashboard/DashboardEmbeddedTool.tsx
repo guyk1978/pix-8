@@ -5,9 +5,11 @@ import { useCallback, useEffect } from "react";
 import { EmbeddedToolToolbar } from "@/components/dashboard/EmbeddedToolToolbar";
 import { HomeProcessingGuide } from "@/components/dashboard/HomeProcessingGuide";
 import { HomeToolSelector } from "@/components/dashboard/HomeToolSelector";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { ToolShell } from "@/components/tools/ToolShell";
 import { TOOL_COMPONENTS } from "@/lib/toolComponents";
+import { getToolTranslationKey } from "@/i18n";
 import {
   DEFAULT_HOME_TOOL_ID,
   getHomeToolHref,
@@ -19,6 +21,7 @@ import type { ToolId } from "@/lib/tools";
 export function DashboardEmbeddedTool() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const toolId = resolveHomeToolId(searchParams.get("tool"));
   const tool = getToolById(toolId);
   const setEmbeddedToolbarLayout = useOptionalToolSidebar()?.setEmbeddedToolbarLayout;
@@ -56,6 +59,8 @@ export function DashboardEmbeddedTool() {
       className={`embedded-tool-workspace flex min-h-0 w-full flex-1 flex-col ${controlsExpanded ? "" : "embedded-tool-workspace--focus"}`.trim()}
     >
       <EmbeddedToolToolbar
+        toolId={tool.id}
+        toolName={t(getToolTranslationKey(tool.id, "name"))}
         controlsExpanded={controlsExpanded}
         onControlsExpandedChange={setControlsExpanded}
         toolSelector={
