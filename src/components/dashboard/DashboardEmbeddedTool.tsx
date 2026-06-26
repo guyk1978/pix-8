@@ -1,10 +1,9 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { EmbeddedToolToolbar } from "@/components/dashboard/EmbeddedToolToolbar";
 import { HomeProcessingGuide } from "@/components/dashboard/HomeProcessingGuide";
-import { HomeToolSelector } from "@/components/dashboard/HomeToolSelector";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { ToolShell } from "@/components/tools/ToolShell";
@@ -16,7 +15,6 @@ import {
   resolveHomeToolId,
 } from "@/lib/homeTool";
 import { getToolById } from "@/lib/tools";
-import type { ToolId } from "@/lib/tools";
 
 export function DashboardEmbeddedTool() {
   const router = useRouter();
@@ -25,24 +23,11 @@ export function DashboardEmbeddedTool() {
   const toolId = resolveHomeToolId(searchParams.get("tool"));
   const tool = getToolById(toolId);
   const setEmbeddedToolbarLayout = useOptionalToolSidebar()?.setEmbeddedToolbarLayout;
-  const controlsExpanded =
-    useOptionalToolSidebar()?.embeddedToolbarExpanded ?? true;
-  const setControlsExpanded =
-    useOptionalToolSidebar()?.setEmbeddedToolbarExpanded ?? (() => {});
 
   useEffect(() => {
     setEmbeddedToolbarLayout?.(true);
-    setControlsExpanded(true);
     return () => setEmbeddedToolbarLayout?.(false);
-  }, [setEmbeddedToolbarLayout, setControlsExpanded, toolId]);
-
-  const handleToolChange = useCallback(
-    (nextToolId: ToolId) => {
-      if (nextToolId === toolId) return;
-      router.replace(getHomeToolHref(nextToolId), { scroll: false });
-    },
-    [router, toolId],
-  );
+  }, [setEmbeddedToolbarLayout, toolId]);
 
   useEffect(() => {
     if (!searchParams.get("tool")) {
@@ -55,22 +40,11 @@ export function DashboardEmbeddedTool() {
   const ToolComponent = TOOL_COMPONENTS[tool.id];
 
   return (
-    <section
-      className={`embedded-tool-workspace flex min-h-0 w-full flex-1 flex-col ${controlsExpanded ? "" : "embedded-tool-workspace--focus"}`.trim()}
-    >
+    <section className="embedded-tool-workspace transparency-checkerboard flex min-h-0 w-full flex-1 flex-col">
       <EmbeddedToolToolbar
         toolId={tool.id}
         toolName={t(getToolTranslationKey(tool.id, "name"))}
-        controlsExpanded={controlsExpanded}
-        onControlsExpandedChange={setControlsExpanded}
-        toolSelector={
-          <HomeToolSelector
-          value={toolId}
-          onChange={handleToolChange}
-          variant="toolbar"
-        />
-        }
-        guide={<HomeProcessingGuide />}
+        guide={<HomeProcessingGuide variant="toolbar-menu" />}
       />
 
       <div className="embedded-tool-canvas min-h-0 flex-1 overflow-hidden">

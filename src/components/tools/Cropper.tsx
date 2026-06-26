@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
+import { WorkspaceImageFilmstrip } from "@/components/ui/WorkspaceImageFilmstrip";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { SupportingArticleLink } from "@/components/tools/SupportingArticleLink";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
@@ -500,6 +501,8 @@ export function Cropper() {
             <p className="text-center font-mono text-xs text-muted">
               {source.width} × {source.height}px
             </p>
+
+            {!embeddedToolbarLayout ? <WorkspaceImageFilmstrip /> : null}
           </div>
         )}
 
@@ -508,6 +511,7 @@ export function Cropper() {
             {
               label: t("toolUi.cropper.socialPresets"),
               englishLabel: "Social",
+              menuTitle: t("embeddedToolbar.socialPresets"),
               htmlFor: "cropper-social-square",
               accentClass: "text-[var(--glow-purple)]",
               children: (
@@ -561,6 +565,7 @@ export function Cropper() {
             {
               label: t("toolUi.cropper.aspectRatio"),
               englishLabel: "Aspect",
+              menuTitle: t("embeddedToolbar.aspectRatio"),
               htmlFor: "cropper-aspect-free",
               children: (
                 <div
@@ -600,6 +605,7 @@ export function Cropper() {
             {
               label: t("toolUi.cropper.cropSize"),
               englishLabel: "Crop",
+              menuTitle: t("embeddedToolbar.cropSize"),
               htmlFor: "cropper-size-preview",
               accentClass: "text-[var(--glow-purple)]",
               children: (

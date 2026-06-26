@@ -57,16 +57,6 @@ function formatDownloadProgress(progress: RemovalProgress | null): number | unde
 
 export function BackgroundRemover() {
   const { t, language } = useLanguage();
-  const {
-    canvasRef,
-    source,
-    error,
-    loadFile,
-    handleDownload,
-    handleCopyToClipboard,
-    setError,
-  } = useImageProcessor();
-
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const resultImageRef = useRef<HTMLImageElement | null>(null);
 
@@ -85,6 +75,25 @@ export function BackgroundRemover() {
   const [engineLoading, setEngineLoading] = useState(false);
   const [engineFailed, setEngineFailed] = useState(false);
   const [engineError, setEngineError] = useState<string | null>(null);
+
+  const resetProcessing = useCallback(() => {
+    resultImageRef.current = null;
+    setHasProcessed(false);
+    setRemovalProgress(null);
+  }, []);
+
+  const {
+    canvasRef,
+    source,
+    error,
+    loadFile,
+    clear,
+    handleDownload,
+    handleCopyToClipboard,
+    setError,
+  } = useImageProcessor({
+    onWorkspaceImageSwitch: resetProcessing,
+  });
 
   useImageToolProject({
     toolId: "bg-remover",
@@ -141,12 +150,6 @@ export function BackgroundRemover() {
     paintPreview(backgroundMode, backgroundColor);
   }, [hasProcessed, backgroundMode, backgroundColor, paintPreview]);
 
-  const resetProcessing = useCallback(() => {
-    resultImageRef.current = null;
-    setHasProcessed(false);
-    setRemovalProgress(null);
-  }, []);
-
   const preloadEngine = useCallback(async () => {
     if (!isBackgroundRemovalEngineAvailable()) {
       setEngineFailed(true);
@@ -188,9 +191,13 @@ export function BackgroundRemover() {
   const handleFileChange = useCallback(
     (file: File | null) => {
       resetProcessing();
-      if (file) void loadFile(file);
+      if (file) {
+        void loadFile(file);
+        return;
+      }
+      clear();
     },
-    [loadFile, resetProcessing],
+    [clear, loadFile, resetProcessing],
   );
 
   const handleModeChange = useCallback((mode: BackgroundMode) => {

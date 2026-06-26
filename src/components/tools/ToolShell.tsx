@@ -4,6 +4,7 @@ import { Suspense, useEffect, type ReactNode } from "react";
 import { RelatedArticles } from "@/components/articles/RelatedArticles";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { ToolProjectProvider } from "@/components/projects/ToolProjectContext";
+import { WorkspaceImageQueueProvider } from "@/hooks/WorkspaceImageQueueContext";
 import { ToolStarRating } from "@/components/tools/ToolStarRating";
 import { ToolHeaderHero } from "@/components/tools/ToolHeaderHero";
 import { WorkflowPanel } from "@/components/tools/workflow/WorkflowPanel";
@@ -52,6 +53,7 @@ export function ToolShell({
     <WorkflowProvider toolId={tool.id}>
       <Suspense fallback={null}>
         <ToolProjectProvider toolId={tool.id}>
+          <WorkspaceImageQueueProvider>
           <div
             className={`tool-page mx-auto w-full text-start ${
               embedded
@@ -96,6 +98,7 @@ export function ToolShell({
               </>
             ) : null}
           </div>
+          </WorkspaceImageQueueProvider>
         </ToolProjectProvider>
       </Suspense>
     </WorkflowProvider>

@@ -4,7 +4,9 @@ import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
+import { WorkspaceImageFilmstrip } from "@/components/ui/WorkspaceImageFilmstrip";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
@@ -52,6 +54,8 @@ interface DragState {
 
 export function CustomCutter() {
   const { t } = useLanguage();
+  const embeddedToolbarLayout =
+    useOptionalToolSidebar()?.embeddedToolbarLayout ?? false;
   const {
     canvasRef,
     source,
@@ -524,6 +528,8 @@ export function CustomCutter() {
           <p className="text-center text-xs leading-relaxed text-muted">
             {t("toolUi.customCutter.hintDraw")}
           </p>
+
+          {!embeddedToolbarLayout ? <WorkspaceImageFilmstrip /> : null}
         </div>
       )}
 

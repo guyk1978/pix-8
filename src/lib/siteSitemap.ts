@@ -46,6 +46,18 @@ export function buildSiteSitemapEntries(): SiteSitemapEntry[] {
       group: "Core",
       lastModified: now,
     },
+    {
+      path: "/privacy",
+      label: "Privacy Policy",
+      group: "Legal",
+      lastModified: now,
+    },
+    {
+      path: "/terms",
+      label: "Terms of Use",
+      group: "Legal",
+      lastModified: now,
+    },
   ];
 
   for (const landing of listAllLandingPages()) {

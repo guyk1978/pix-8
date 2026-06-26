@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { ToolSidebarSlot } from "@/components/layout/ToolSidebarSlot";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
@@ -59,6 +58,10 @@ export function ImageFileInput({
     onFileChange(file);
     event.target.value = "";
   };
+
+  if (embeddedToolbarLayout && toolbarSlotId === "replace-image") {
+    return null;
+  }
 
   const field = (
     <div
@@ -120,16 +123,7 @@ export function ImageFileInput({
   );
 
   if (embeddedToolbarLayout) {
-    return (
-      <ToolSidebarSlot
-        id={toolbarSlotId}
-        order={10}
-        className="embedded-replace-image"
-        showInlineWhenIdle
-      >
-        {labeledField}
-      </ToolSidebarSlot>
-    );
+    return labelText ? labeledField : field;
   }
 
   return labeledField;

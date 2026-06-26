@@ -4,7 +4,8 @@ export type ExampleImageId =
   | "image2"
   | "image3"
   | "image4"
-  | "image5";
+  | "image5"
+  | "image6";
 
 export interface ExampleImage {
   id: ExampleImageId;
@@ -18,6 +19,7 @@ export const EXAMPLE_IMAGES: ExampleImage[] = [
   { id: "image3", fileName: "image3.webp", src: "/examples/image3.webp" },
   { id: "image4", fileName: "image4.webp", src: "/examples/image4.webp" },
   { id: "image5", fileName: "image5.webp", src: "/examples/image5.webp" },
+  { id: "image6", fileName: "image6.webp", src: "/examples/image6.webp" },
 ];
 
 export async function loadExampleImageAsFile(

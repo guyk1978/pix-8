@@ -46,6 +46,7 @@ export interface ToolProjectHandlers {
 }
 
 interface ToolProjectContextValue {
+  toolId: ToolId;
   canSave: boolean;
   isResultMarked: boolean;
   resultMark: ToolResultMarkRegistration | null;
@@ -186,6 +187,7 @@ export function ToolProjectProvider({
 
   const value = useMemo(
     () => ({
+      toolId,
       canSave,
       isResultMarked,
       resultMark,
@@ -194,6 +196,7 @@ export function ToolProjectProvider({
       registerResultMark,
     }),
     [
+      toolId,
       canSave,
       isResultMarked,
       openSaveModal,

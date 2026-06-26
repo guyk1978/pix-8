@@ -29,8 +29,6 @@ interface ToolSidebarContextValue {
   registerSlotPresence: (id: string, present: boolean) => void;
   footerActions: ReactNode | null;
   setFooterActions: (actions: ReactNode | null) => void;
-  embeddedToolbarExpanded: boolean;
-  setEmbeddedToolbarExpanded: (expanded: boolean) => void;
 }
 
 const ToolSidebarContext = createContext<ToolSidebarContextValue | null>(null);
@@ -52,7 +50,6 @@ export function ToolSidebarProvider({ children }: { children: ReactNode }) {
     useState<HTMLDivElement | null>(null);
   const [activeSlotIds, setActiveSlotIds] = useState<Set<string>>(() => new Set());
   const [footerActions, setFooterActionsState] = useState<ReactNode | null>(null);
-  const [embeddedToolbarExpanded, setEmbeddedToolbarExpandedState] = useState(true);
 
   const setToolMeta = useCallback(
     (meta: { toolId: ToolId; toolName: string; toolTag: string } | null) => {
@@ -125,12 +122,6 @@ export function ToolSidebarProvider({ children }: { children: ReactNode }) {
     setFooterActionsState((current) => (current === actions ? current : actions));
   }, []);
 
-  const setEmbeddedToolbarExpanded = useCallback((expanded: boolean) => {
-    setEmbeddedToolbarExpandedState((current) =>
-      current === expanded ? current : expanded,
-    );
-  }, []);
-
   const value = useMemo<ToolSidebarContextValue>(
     () => ({
       toolId: toolMeta?.toolId ?? null,
@@ -151,8 +142,6 @@ export function ToolSidebarProvider({ children }: { children: ReactNode }) {
       registerSlotPresence,
       footerActions,
       setFooterActions,
-      embeddedToolbarExpanded,
-      setEmbeddedToolbarExpanded,
     }),
     [
       toolMeta,
@@ -171,8 +160,6 @@ export function ToolSidebarProvider({ children }: { children: ReactNode }) {
       registerSlotPresence,
       footerActions,
       setFooterActions,
-      embeddedToolbarExpanded,
-      setEmbeddedToolbarExpanded,
     ],
   );
 

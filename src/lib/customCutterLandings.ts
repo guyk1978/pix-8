@@ -2,7 +2,7 @@ export const CUSTOM_CUTTER_TOOL_HREF = "/tools/editor-studio/custom-cutter";
 
 export const CUSTOM_CUTTER_LANDING_ACCENT = "#8E977D";
 
-/** Wire a guide article here when the blog post is published. */
+/** Linked from Custom Cutter SEO landings and in-tool guide. */
 export const CUSTOM_CUTTER_ARTICLE = {
   href: "/articles/privacy-first-custom-cutting",
   title: "Privacy-first custom image cutting guide",

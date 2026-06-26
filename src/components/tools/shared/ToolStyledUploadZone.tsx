@@ -1,10 +1,12 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ImageGallery } from "@/components/ui/ImageGallery";
-import { UploadZoneDefaultContent } from "@/components/ui/UploadZoneDefaultContent";
+import { CompactUploadContent } from "@/components/ui/CompactUploadContent";
+import { useOptionalToolProjectContext } from "@/components/projects/ToolProjectContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { WorkflowStep } from "@/components/tools/workflow/WorkflowStep";
+import { resolveUploadHeadline } from "@/lib/toolUploadCopy";
+import type { ToolId } from "@/lib/tools";
 
 interface ToolStyledUploadZoneProps {
   inputId: string;
@@ -20,6 +22,8 @@ interface ToolStyledUploadZoneProps {
   formatHint?: string;
   className?: string;
   children?: ReactNode;
+  /** Resolve a tool-specific upload headline when `headline` is omitted. */
+  toolId?: ToolId;
   /** Show sample images from public/examples/ below the dropzone (single-file mode only). */
   showExampleGallery?: boolean;
 }
@@ -34,16 +38,20 @@ export function ToolStyledUploadZone({
   compact = false,
   ariaLabel,
   headline,
-  hint,
   formatHint,
   className = "",
   children,
+  toolId,
   showExampleGallery = true,
 }: ToolStyledUploadZoneProps) {
   const { t } = useLanguage();
-  const heightClass = compact
-    ? "min-h-[8rem] sm:min-h-32"
-    : "min-h-[15.5rem] sm:min-h-[17.5rem]";
+  const contextToolId = useOptionalToolProjectContext()?.toolId;
+  const resolvedToolId = toolId ?? contextToolId;
+  const resolvedHeadline = resolveUploadHeadline(t, {
+    headline,
+    toolId: resolvedToolId,
+    multiple,
+  });
 
   const handleFiles = (files: FileList | null | undefined) => {
     if (!files || files.length === 0) return;
@@ -60,11 +68,11 @@ export function ToolStyledUploadZone({
 
   return (
     <WorkflowStep step="upload">
-      <div className="tool-styled-upload-stage relative w-full space-y-4">
+      <div className="tool-styled-upload-stage relative w-full">
         <div
-          className={`tool-dropzone tool-styled-dropzone tool-upload-zone relative flex w-full cursor-pointer items-stretch transition-all duration-300 ${heightClass} ${
-            isDragging ? "tool-dropzone-active" : ""
-          } ${className}`}
+          className={`tool-dropzone tool-styled-dropzone tool-upload-zone compact-upload-dropzone relative flex w-full cursor-pointer items-center justify-center transition-all duration-300 ${
+            compact ? "compact-upload-dropzone--tight" : ""
+          } ${isDragging ? "tool-dropzone-active" : ""} ${className}`}
           onDragEnter={(event) => {
             event.preventDefault();
             onDraggingChange(true);
@@ -91,34 +99,25 @@ export function ToolStyledUploadZone({
               ariaLabel ??
               (multiple ? t("upload.uploadImagesAria") : t("upload.uploadImageAria"))
             }
-            className="absolute inset-0 z-20 cursor-pointer opacity-0"
+            className="sr-only"
             onChange={(event) => {
               handleFiles(event.target.files);
               event.target.value = "";
             }}
           />
 
-          {children ? (
-            <div className="relative z-10 flex w-full flex-col items-center justify-center gap-3 px-6 py-8 sm:px-10">
-              {children}
-            </div>
-          ) : (
-            <UploadZoneDefaultContent
-              headline={headline}
-              hint={hint}
-              formatHint={formatHint}
-              isDragging={isDragging}
-              compact={compact}
-            />
-          )}
+          <CompactUploadContent
+            inputId={inputId}
+            headline={resolvedHeadline}
+            formatHint={formatHint}
+            isDragging={isDragging}
+            multiple={multiple}
+            showExamples={showExampleGallery}
+            onExampleSelect={handleExampleSelect}
+          >
+            {children}
+          </CompactUploadContent>
         </div>
-
-        {!multiple && showExampleGallery ? (
-          <ImageGallery
-            onFileSelect={handleExampleSelect}
-            disabled={isDragging}
-          />
-        ) : null}
       </div>
     </WorkflowStep>
   );

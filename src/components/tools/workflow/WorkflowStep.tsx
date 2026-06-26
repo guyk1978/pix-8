@@ -1,8 +1,10 @@
 "use client";
 
 import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { ToolSidebarSlot } from "@/components/layout/ToolSidebarSlot";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { EmbeddedToolbarDropdown } from "@/components/tools/shared/EmbeddedToolbarDropdown";
 import {
   useWorkflowOptional,
   type AnchorRect,
@@ -140,11 +142,24 @@ export function WorkflowSettings({
   children: ReactNode;
   className?: string;
 }) {
+  const { t } = useLanguage();
+  const embeddedToolbarLayout =
+    useOptionalToolSidebar()?.embeddedToolbarLayout ?? false;
+
   return (
     <ToolSidebarSlot id="workflow-settings" order={20} className={className}>
-      <WorkflowStep step="configure" className={className}>
-        {children}
-      </WorkflowStep>
+      {embeddedToolbarLayout ? (
+        <EmbeddedToolbarDropdown
+          id="workflow-settings"
+          title={t("embeddedToolbar.settingsSection")}
+        >
+          {children}
+        </EmbeddedToolbarDropdown>
+      ) : (
+        <WorkflowStep step="configure" className={className}>
+          {children}
+        </WorkflowStep>
+      )}
     </ToolSidebarSlot>
   );
 }

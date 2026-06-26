@@ -4,8 +4,10 @@ import { ToolWorkspace } from "@/components/tools/ToolWorkspace";
 import { HelperErrorAlert } from "@/components/characters/HelperErrorAlert";
 import { useCallback, useEffect, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
+import { WorkspaceImageFilmstrip } from "@/components/ui/WorkspaceImageFilmstrip";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import {
@@ -29,6 +31,8 @@ const activeButtonClassName =
 
 export function RotateFlip() {
   const { t } = useLanguage();
+  const embeddedToolbarLayout =
+    useOptionalToolSidebar()?.embeddedToolbarLayout ?? false;
   const {
     canvasRef,
     source,
@@ -178,6 +182,8 @@ export function RotateFlip() {
           <p className="mt-3 text-center font-mono text-xs text-muted">
             {source.width} × {source.height}px · {source.file.name}
           </p>
+
+          {!embeddedToolbarLayout ? <WorkspaceImageFilmstrip /> : null}
         </>
       )}
 

@@ -16,7 +16,14 @@ function BrandWordmark({ size }: { size: BrandLogoSize }) {
       className={`brand-logo-wordmark brand-logo-wordmark--${size}`}
       aria-hidden
     >
-      PIX-8
+      <span className="brand-logo-pix">PIX</span>
+      <span className="brand-logo-divider" aria-hidden>
+        -
+      </span>
+      <span className="brand-logo-eight">
+        <span className="brand-logo-eight-grid" aria-hidden />
+        <span className="brand-logo-eight-inner">8</span>
+      </span>
     </span>
   );
 }
@@ -45,11 +52,7 @@ export function BrandLogo({
     );
   }
 
-  return (
-    <div className={`brand-logo ${className}`.trim()}>
-      {wordmark}
-    </div>
-  );
+  return <div className={`brand-logo ${className}`.trim()}>{wordmark}</div>;
 }
 
 /** Accessible label for links wrapping the logo */

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { WorkspaceImageFilmstrip } from "@/components/ui/WorkspaceImageFilmstrip";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
@@ -27,7 +28,7 @@ export function ToolWorkspacePreview({
       <section
         className={`embedded-preview-zone flex min-h-0 flex-1 flex-col text-start ${className}`.trim()}
       >
-        <div className="embedded-preview-canvas transparency-checkerboard flex min-h-0 flex-1 items-center justify-center p-3 sm:p-6">
+        <div className="embedded-preview-canvas flex min-h-0 flex-1 items-center justify-center bg-transparent p-3 sm:p-6">
           {children}
         </div>
         {caption ? (
@@ -48,6 +49,7 @@ export function ToolWorkspacePreview({
         ) : null}
       </div>
       <div className="tool-preview-canvas sm:min-h-56">{children}</div>
+      {!embeddedToolbarLayout ? <WorkspaceImageFilmstrip /> : null}
       {caption ? (
         <p className="mt-3 text-center font-mono text-xs text-muted">{caption}</p>
       ) : null}

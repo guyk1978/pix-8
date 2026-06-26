@@ -58,10 +58,10 @@ export function Header() {
         <div className="app-header-brand flex min-w-0 shrink-0 items-center">
           <AppLink
             href={APP_ROUTES.home}
-            className="rounded-sm transition-opacity hover:opacity-80"
+            className="brand-logo-link rounded-sm outline-none transition-opacity hover:opacity-95"
             aria-label={brandLogoAriaLabel(t)}
           >
-            <BrandLogo size="md" />
+            <BrandLogo size="lg" />
           </AppLink>
         </div>
 

@@ -7,7 +7,11 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 const STEPS = ["upload", "process", "download"] as const;
 
-export function HomeProcessingGuide() {
+export function HomeProcessingGuide({
+  variant = "default",
+}: {
+  variant?: "default" | "toolbar-menu";
+}) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -119,9 +123,15 @@ export function HomeProcessingGuide() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex min-h-8 items-center gap-2 rounded-md bg-foreground/[0.06] px-2.5 font-label text-[0.625rem] uppercase tracking-[0.06em] text-foreground/85 transition-colors hover:bg-foreground/[0.1] hover:text-foreground"
+        className={
+          variant === "toolbar-menu"
+            ? "embedded-toolbar-menu-link"
+            : "inline-flex min-h-8 items-center gap-2 rounded-md bg-foreground/[0.06] px-2.5 font-label text-[0.625rem] uppercase tracking-[0.06em] text-foreground/85 transition-colors hover:bg-foreground/[0.1] hover:text-foreground"
+        }
       >
-        <BookOpen className="h-3.5 w-3.5 text-muted" strokeWidth={1.75} aria-hidden />
+        {variant === "toolbar-menu" ? null : (
+          <BookOpen className="h-3.5 w-3.5 text-muted" strokeWidth={1.75} aria-hidden />
+        )}
         {t("home.guideButton")}
       </button>
       {modal}

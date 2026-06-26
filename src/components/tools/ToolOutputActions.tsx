@@ -229,8 +229,10 @@ export function ToolOutputActions(props: ToolOutputActionsProps) {
           </ToolSidebarSlot>
         ) : null}
 
-        {useToolbarPanel && toolbarActionsContainer && panel ? (
-          <ActionsPortal container={toolbarActionsContainer}>{panel}</ActionsPortal>
+        {useToolbarPanel && panel ? (
+          <ToolSidebarSlot id="tool-output-actions" panel="actions" order={20}>
+            {panel}
+          </ToolSidebarSlot>
         ) : null}
 
         {!useSidebarPanel &&

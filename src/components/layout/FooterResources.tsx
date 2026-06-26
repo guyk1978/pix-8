@@ -6,8 +6,9 @@ import {
   getFooterResources,
   resolveFooterResourceCategory,
   type FooterResourceCategory,
+  type FooterResourceEntry,
 } from "@/lib/footerResources";
-import { SITE_FOOTER_ACCENT, type SiteFooterLink } from "@/lib/siteFooterLinks";
+import { SITE_FOOTER_ACCENT } from "@/lib/siteFooterLinks";
 import { usePathname } from "next/navigation";
 
 const footerLinkClassName =
@@ -19,7 +20,11 @@ interface FooterResourcesProps {
   limit?: number;
 }
 
-function ResourceLinkItem({ link }: { link: SiteFooterLink }) {
+function ResourceLinkItem({
+  link,
+}: {
+  link: Pick<FooterResourceEntry, "href" | "label">;
+}) {
   return (
     <AppLink
       href={link.href}

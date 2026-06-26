@@ -4,6 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { translateErrorMessage } from "@/i18n";
+import {
+  useOptionalWorkspaceImageQueuePublisher,
+  type WorkspaceQueueItem,
+} from "@/hooks/WorkspaceImageQueueContext";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -98,6 +102,37 @@ export type DownloadOptions = Pick<
 >;
 
 export const DEFAULT_STRIP_METADATA = true;
+
+export type WorkspaceLoadMode = "add" | "replace";
+
+export interface UseImageProcessorOptions {
+  /** Reset tool-specific state when the user switches images in the filmstrip. */
+  onWorkspaceImageSwitch?: () => void;
+  /** Show the bottom image filmstrip for multi-image editing. */
+  enableWorkspaceQueue?: boolean;
+}
+
+function buildImageSource(parsed: ParsedImage): ImageSource {
+  return {
+    file: parsed.file,
+    url: parsed.objectUrl,
+    width: parsed.width,
+    height: parsed.height,
+    name: parsed.name,
+    mimeType: parsed.file.type,
+  };
+}
+
+function buildQueueItem(parsed: ParsedImage, id: string): WorkspaceQueueItem {
+  return {
+    id,
+    file: parsed.file,
+    thumbUrl: parsed.objectUrl,
+    name: parsed.name,
+    width: parsed.width,
+    height: parsed.height,
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Loading / parsing
@@ -603,44 +638,157 @@ export async function handleDownload(
 // React hook
 // ---------------------------------------------------------------------------
 
-export function useImageProcessor() {
+export function useImageProcessor(options: UseImageProcessorOptions = {}) {
+  const {
+    onWorkspaceImageSwitch,
+    enableWorkspaceQueue = true,
+  } = options;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const previewUrlRef = useRef<string | null>(null);
+  const workspaceItemsRef = useRef<WorkspaceQueueItem[]>([]);
+  const onWorkspaceImageSwitchRef = useRef(onWorkspaceImageSwitch);
+  const publishWorkspaceQueue = useOptionalWorkspaceImageQueuePublisher();
   const { t, language } = useLanguage();
   const { showToast } = useToast();
 
   const [source, setSource] = useState<ImageSource | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [workspaceItems, setWorkspaceItems] = useState<WorkspaceQueueItem[]>([]);
+  const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>(null);
+  const [isWorkspaceLoading, setIsWorkspaceLoading] = useState(false);
+
+  useEffect(() => {
+    onWorkspaceImageSwitchRef.current = onWorkspaceImageSwitch;
+  }, [onWorkspaceImageSwitch]);
+
+  useEffect(() => {
+    workspaceItemsRef.current = workspaceItems;
+  }, [workspaceItems]);
+
+  useEffect(() => {
+    if (!enableWorkspaceQueue || !source || workspaceItems.length > 0) return;
+
+    const id = crypto.randomUUID();
+    const item: WorkspaceQueueItem = {
+      id,
+      file: source.file,
+      thumbUrl: source.url,
+      name: source.name,
+      width: source.width,
+      height: source.height,
+    };
+
+    workspaceItemsRef.current = [item];
+    setWorkspaceItems([item]);
+    setActiveWorkspaceId(id);
+  }, [enableWorkspaceQueue, source, workspaceItems.length]);
+
+  const revokeWorkspaceItemUrl = useCallback((id: string) => {
+    const item = workspaceItemsRef.current.find((entry) => entry.id === id);
+    if (item) revokeObjectUrl(item.thumbUrl);
+  }, []);
 
   const clearPreviewUrl = useCallback(() => {
-    revokeObjectUrl(previewUrlRef.current);
+    const current = previewUrlRef.current;
+    if (!current) return;
+
+    const stillUsed = workspaceItemsRef.current.some(
+      (item) => item.thumbUrl === current,
+    );
+
+    if (!stillUsed) {
+      revokeObjectUrl(current);
+    }
+
     previewUrlRef.current = null;
   }, []);
 
-  const clear = useCallback(() => {
-    clearPreviewUrl();
-    setSource(null);
-    setError(null);
-  }, [clearPreviewUrl]);
+  const clearWorkspaceQueue = useCallback(() => {
+    for (const item of workspaceItemsRef.current) {
+      revokeObjectUrl(item.thumbUrl);
+    }
+    workspaceItemsRef.current = [];
+    setWorkspaceItems([]);
+    setActiveWorkspaceId(null);
+  }, []);
+
+  const applyParsedImage = useCallback(
+    (parsed: ParsedImage, itemId: string | null) => {
+      clearPreviewUrl();
+      previewUrlRef.current = parsed.objectUrl;
+      setSource(buildImageSource(parsed));
+      setActiveWorkspaceId(itemId);
+    },
+    [clearPreviewUrl],
+  );
+
+  const activateWorkspaceItem = useCallback(
+    async (id: string) => {
+      if (!enableWorkspaceQueue) return;
+
+      const item = workspaceItemsRef.current.find((entry) => entry.id === id);
+      if (!item || id === activeWorkspaceId) return;
+
+      onWorkspaceImageSwitchRef.current?.();
+      clearPreviewUrl();
+      previewUrlRef.current = item.thumbUrl;
+      setSource({
+        file: item.file,
+        url: item.thumbUrl,
+        width: item.width,
+        height: item.height,
+        name: item.name,
+        mimeType: item.file.type,
+      });
+      setActiveWorkspaceId(id);
+      setError(null);
+    },
+    [activeWorkspaceId, clearPreviewUrl, enableWorkspaceQueue],
+  );
 
   const loadFile = useCallback(
-    async (file: File) => {
+    async (file: File, workspaceMode: WorkspaceLoadMode = "replace") => {
       setError(null);
 
       try {
-        clearPreviewUrl();
         const parsed = await parseImageFile(file);
-        previewUrlRef.current = parsed.objectUrl;
 
-        setSource({
-          file: parsed.file,
-          url: parsed.objectUrl,
-          width: parsed.width,
-          height: parsed.height,
-          name: parsed.name,
-          mimeType: parsed.file.type,
-        });
+        if (!enableWorkspaceQueue) {
+          applyParsedImage(parsed, null);
+          return;
+        }
+
+        if (workspaceMode === "add" || workspaceItemsRef.current.length === 0) {
+          if (
+            workspaceMode === "add" &&
+            workspaceItemsRef.current.length > 0
+          ) {
+            onWorkspaceImageSwitchRef.current?.();
+          }
+
+          const id = crypto.randomUUID();
+          const item = buildQueueItem(parsed, id);
+          setWorkspaceItems((current) => [...current, item]);
+          applyParsedImage(parsed, id);
+          return;
+        }
+
+        const activeId = activeWorkspaceId;
+        if (!activeId) {
+          const id = crypto.randomUUID();
+          const item = buildQueueItem(parsed, id);
+          setWorkspaceItems([item]);
+          applyParsedImage(parsed, id);
+          return;
+        }
+
+        revokeWorkspaceItemUrl(activeId);
+        const item = buildQueueItem(parsed, activeId);
+        setWorkspaceItems((current) =>
+          current.map((entry) => (entry.id === activeId ? item : entry)),
+        );
+        applyParsedImage(parsed, activeId);
       } catch (cause) {
         const message =
           cause instanceof Error
@@ -649,8 +797,49 @@ export function useImageProcessor() {
         setError(message);
       }
     },
-    [clearPreviewUrl, language, t],
+    [
+      activeWorkspaceId,
+      applyParsedImage,
+      enableWorkspaceQueue,
+      language,
+      revokeWorkspaceItemUrl,
+      t,
+    ],
   );
+
+  const addWorkspaceFiles = useCallback(
+    async (fileList: FileList | File[]) => {
+      if (!enableWorkspaceQueue) return;
+
+      const files = Array.from(fileList).filter((file) =>
+        file.type.startsWith("image/"),
+      );
+
+      if (files.length === 0) {
+        setError(t("errors.invalidImageFiles"));
+        return;
+      }
+
+      setIsWorkspaceLoading(true);
+      setError(null);
+
+      try {
+        for (const file of files) {
+          await loadFile(file, "add");
+        }
+      } finally {
+        setIsWorkspaceLoading(false);
+      }
+    },
+    [enableWorkspaceQueue, loadFile, t],
+  );
+
+  const clear = useCallback(() => {
+    clearPreviewUrl();
+    clearWorkspaceQueue();
+    setSource(null);
+    setError(null);
+  }, [clearPreviewUrl, clearWorkspaceQueue]);
 
   const runProcessImage = useCallback(
     async (
@@ -739,8 +928,49 @@ export function useImageProcessor() {
   );
 
   useEffect(() => {
-    return () => clearPreviewUrl();
+    return () => {
+      clearPreviewUrl();
+      for (const item of workspaceItemsRef.current) {
+        revokeObjectUrl(item.thumbUrl);
+      }
+    };
   }, [clearPreviewUrl]);
+
+  useEffect(() => {
+    if (!publishWorkspaceQueue || !enableWorkspaceQueue) {
+      publishWorkspaceQueue?.(null);
+      return;
+    }
+
+    if (workspaceItems.length === 0) {
+      publishWorkspaceQueue(null);
+      return;
+    }
+
+    publishWorkspaceQueue({
+      items: workspaceItems,
+      activeId: activeWorkspaceId,
+      isLoading: isWorkspaceLoading,
+      selectItem: (id) => {
+        void activateWorkspaceItem(id);
+      },
+      addFiles: (files) => {
+        void addWorkspaceFiles(files);
+      },
+    });
+  }, [
+    activateWorkspaceItem,
+    activeWorkspaceId,
+    addWorkspaceFiles,
+    enableWorkspaceQueue,
+    isWorkspaceLoading,
+    publishWorkspaceQueue,
+    workspaceItems,
+  ]);
+
+  useEffect(() => {
+    return () => publishWorkspaceQueue?.(null);
+  }, [publishWorkspaceQueue]);
 
   return {
     canvasRef,
@@ -748,6 +978,10 @@ export function useImageProcessor() {
     error,
     isProcessing,
     loadFile,
+    addWorkspaceFiles,
+    workspaceItems,
+    activeWorkspaceId,
+    activateWorkspaceItem,
     clear,
     processImage: runProcessImage,
     handleDownload: runHandleDownload,

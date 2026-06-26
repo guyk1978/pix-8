@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
+import { WorkspaceImageFilmstrip } from "@/components/ui/WorkspaceImageFilmstrip";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import {
   ToolWorkspaceActionsProvider,
@@ -57,16 +58,19 @@ export function ToolWorkspace({
 
   return (
     <ToolWorkspaceActionsProvider>
-      <div
-        className={`tool-workspace relative z-[1] w-full text-start ${
-          embeddedToolbarLayout
-            ? "embedded-tool-workspace-inner flex h-full min-h-0 flex-1 flex-col"
-            : "space-y-5"
-        }`}
-      >
-        {!embeddedToolbarLayout ? <ToolWorkspaceActionsTarget /> : null}
-        {children}
-      </div>
+        <div
+          className={`tool-workspace relative z-[1] w-full text-start ${
+            embeddedToolbarLayout
+              ? "embedded-tool-workspace-inner flex h-full min-h-0 flex-1 flex-col"
+              : "flex flex-col gap-5"
+          }`}
+        >
+          <div className={embeddedToolbarLayout ? "min-h-0 flex-1 overflow-auto" : undefined}>
+            {!embeddedToolbarLayout ? <ToolWorkspaceActionsTarget /> : null}
+            {children}
+          </div>
+          {embeddedToolbarLayout ? <WorkspaceImageFilmstrip /> : null}
+        </div>
     </ToolWorkspaceActionsProvider>
   );
 }

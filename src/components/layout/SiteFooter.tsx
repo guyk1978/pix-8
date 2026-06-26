@@ -26,6 +26,8 @@ interface FooterLinkItemProps {
 }
 
 function FooterLinkItem({ link }: FooterLinkItemProps) {
+  const { t } = useLanguage();
+  const label = t(link.labelKey);
   const style = { color: SITE_FOOTER_ACCENT };
 
   if (link.external) {
@@ -36,9 +38,9 @@ function FooterLinkItem({ link }: FooterLinkItemProps) {
         style={style}
         target="_blank"
         rel="noopener noreferrer"
-        title={link.label}
+        title={label}
       >
-        {link.label}
+        {label}
       </a>
     );
   }
@@ -48,9 +50,9 @@ function FooterLinkItem({ link }: FooterLinkItemProps) {
       href={link.href}
       className={footerLinkClassName}
       style={style}
-      title={link.label}
+      title={label}
     >
-      {link.label}
+      {label}
     </AppLink>
   );
 }

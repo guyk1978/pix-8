@@ -12,7 +12,6 @@ import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
 import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
-import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { embeddedToolbarPrimaryClassName } from "@/components/tools/toolActionStyles";
 import {
   buildDownloadFilename,
@@ -134,10 +133,6 @@ function WatermarkAwaitingOverlay({
 
 export function Watermark() {
   const { t, language } = useLanguage();
-  const embeddedToolbarLayout =
-    useOptionalToolSidebar()?.embeddedToolbarLayout ?? false;
-  const setEmbeddedToolbarExpanded =
-    useOptionalToolSidebar()?.setEmbeddedToolbarExpanded;
   const {
     canvasRef,
     source,
@@ -241,12 +236,6 @@ export function Watermark() {
   useEffect(() => {
     return () => revokeWatermarkUrl();
   }, [revokeWatermarkUrl]);
-
-  useEffect(() => {
-    if (embeddedToolbarLayout && source && !watermark) {
-      setEmbeddedToolbarExpanded?.(true);
-    }
-  }, [embeddedToolbarLayout, source, watermark, setEmbeddedToolbarExpanded]);
 
   useEffect(() => {
     if (!source || !watermark || !previewCanvasRef.current) return;

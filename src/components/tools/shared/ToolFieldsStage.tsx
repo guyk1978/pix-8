@@ -3,10 +3,14 @@
 import type { ReactNode } from "react";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 import { ToolSidebarSlot } from "@/components/layout/ToolSidebarSlot";
+import {
+  EmbeddedToolbarDropdown,
+} from "@/components/tools/shared/EmbeddedToolbarDropdown";
 
 export interface ToolFieldConfig {
   label: string;
   englishLabel: string;
+  menuTitle?: string;
   htmlFor: string;
   accentClass?: string;
   children: ReactNode;
@@ -19,6 +23,7 @@ interface ToolFieldsStageProps {
 function ToolField({
   label,
   englishLabel,
+  menuTitle,
   htmlFor,
   children,
 }: ToolFieldConfig) {
@@ -27,12 +32,12 @@ function ToolField({
 
   if (embeddedToolbarLayout) {
     return (
-      <section className="embedded-toolbar-section">
-        <label htmlFor={htmlFor} className="embedded-toolbar-section-label">
-          {englishLabel}
-        </label>
-        <div className="embedded-toolbar-section-body">{children}</div>
-      </section>
+      <EmbeddedToolbarDropdown
+        id={htmlFor}
+        title={menuTitle ?? englishLabel}
+      >
+        {children}
+      </EmbeddedToolbarDropdown>
     );
   }
 
@@ -59,17 +64,19 @@ export function ToolFieldsStage({ fields }: ToolFieldsStageProps) {
       order={15}
       className="tool-fields-stage w-full"
     >
-      <div
-        className={
-          embeddedToolbarLayout
-            ? "embedded-toolbar-fields-grid"
-            : "flex w-full flex-col gap-6"
-        }
-      >
-        {fields.map((field) => (
-          <ToolField key={field.htmlFor} {...field} />
-        ))}
-      </div>
+      {embeddedToolbarLayout ? (
+        <>
+          {fields.map((field) => (
+            <ToolField key={field.htmlFor} {...field} />
+          ))}
+        </>
+      ) : (
+        <div className="flex w-full flex-col gap-6">
+          {fields.map((field) => (
+            <ToolField key={field.htmlFor} {...field} />
+          ))}
+        </div>
+      )}
     </ToolSidebarSlot>
   );
 }

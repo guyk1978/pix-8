@@ -4,7 +4,7 @@ export const SITE_FOOTER_ACCENT = "#8E977D";
 
 export interface SiteFooterLink {
   href: string;
-  label: string;
+  labelKey: string;
   external?: boolean;
 }
 
@@ -22,12 +22,12 @@ export const SITE_FOOTER_RELATED_TOOL_IDS = [
 ] as const satisfies readonly ToolId[];
 
 export const SITE_FOOTER_LEGAL_LINKS: SiteFooterLink[] = [
-  { href: "/privacy", label: "Privacy Policy" },
-  { href: "/terms", label: "Terms of Use" },
-  { href: "mailto:hello@pix-8.com", label: "Contact", external: true },
+  { href: "/privacy", labelKey: "siteFooter.privacyPolicy" },
+  { href: "/terms", labelKey: "siteFooter.termsOfUse" },
+  { href: "mailto:hello@pix-8.com", labelKey: "siteFooter.contact", external: true },
 ];
 
 export const SITE_FOOTER_UTILITY_LINKS: SiteFooterLink[] = [
-  { href: "/blog", label: "Blog" },
-  { href: "/settings", label: "Settings" },
+  { href: "/blog", labelKey: "siteFooter.blog" },
+  { href: "/settings", labelKey: "siteFooter.settings" },
 ];
