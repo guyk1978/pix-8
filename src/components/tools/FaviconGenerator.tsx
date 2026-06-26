@@ -14,8 +14,10 @@ import {
   copyImageToClipboard,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import { useImageToolProject } from "@/hooks/useToolProject";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { WorkflowSettings } from "@/components/tools/workflow/WorkflowStep";
 import {
   buildFaviconExport,
@@ -47,6 +49,12 @@ export function FaviconGenerator() {
     DEFAULT_FAVICON_SETTINGS,
   );
   const [exportFormat, setExportFormat] = useState<FaviconExportFormat>("ico");
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+  } = useToolExportSettings();
 
   useImageToolProject({
     toolId: "favicon-generator",
@@ -118,8 +126,8 @@ export function FaviconGenerator() {
       img.src = source.url;
     });
 
-    return buildFaviconExport(image, settings, exportFormat);
-  }, [source, settings, exportFormat]);
+    return buildFaviconExport(image, settings, exportFormat, cornerRadius);
+  }, [source, settings, exportFormat, cornerRadius]);
 
   const handleDownload = useCallback(async () => {
     if (!source) return;
@@ -285,6 +293,15 @@ export function FaviconGenerator() {
 
           </div>
         </WorkflowSettings>
+
+        <StripMetadataToggle
+          checked={stripMetadata}
+          disabled={!source}
+          onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={16}
+        />
 
         {error ? (
           <HelperErrorAlert message={error} className="mt-4" />

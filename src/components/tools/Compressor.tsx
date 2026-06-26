@@ -31,6 +31,7 @@ import {
   type ImageFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import { downloadZipArchive } from "@/lib/zipDownload";
 
 function formatFileSize(bytes: number): string {
@@ -62,7 +63,13 @@ export function Compressor() {
 
   const [mode, setMode] = useState<ProcessingMode>("single");
   const [quality, setQuality] = useState(80);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [isDragging, setIsDragging] = useState(false);
   const [estimatedSize, setEstimatedSize] = useState<number | null>(null);
   const [isEstimating, setIsEstimating] = useState(false);
@@ -78,9 +85,10 @@ export function Compressor() {
     bulk,
     canSave: mode === "single" ? !!source : bulk.items.length > 0,
     loadFile,
-    getExtraPayload: () => ({ quality, stripMetadata }),
+    getExtraPayload: () => ({ quality, ...downloadOptions }),
     applyExtraPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyNumberPayload(payload, "quality", setQuality);
     },
     onModeRestore: setMode,
@@ -119,7 +127,7 @@ export function Compressor() {
             height: source.height,
             format: outputFormat,
             quality: qualityNormalized,
-            stripMetadata,
+            ...downloadOptions,
             canvas: canvasRef.current,
           });
 
@@ -137,7 +145,7 @@ export function Compressor() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [source, quality, outputFormat, qualityNormalized, stripMetadata, canvasRef, mode]);
+  }, [source, quality, outputFormat, qualityNormalized, downloadOptions, canvasRef, mode]);
 
   const compressFile = useCallback(
     async (file: File, width: number, height: number, mimeType: string) => {
@@ -147,11 +155,11 @@ export function Compressor() {
         height,
         format,
         quality: qualityNormalized,
-        stripMetadata,
+        ...downloadOptions,
         canvas: canvasRef.current,
       });
     },
-    [qualityNormalized, stripMetadata, canvasRef],
+    [qualityNormalized, downloadOptions, canvasRef],
   );
 
   const handleCompressDownload = useCallback(async () => {
@@ -162,7 +170,7 @@ export function Compressor() {
       height: source.height,
       format: outputFormat,
       quality: qualityNormalized,
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
 
@@ -171,7 +179,7 @@ export function Compressor() {
     await handleDownload(
       result.blob,
       buildDownloadFilename(`${source.name}-optimized`, result.format),
-      { stripMetadata },
+      { ...downloadOptions },
     );
   }, [
     source,
@@ -191,13 +199,13 @@ export function Compressor() {
       height: source.height,
       format: outputFormat,
       quality: qualityNormalized,
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
 
     if (!result) return;
 
-    await handleCopyToClipboard(result.blob, { stripMetadata });
+    await handleCopyToClipboard(result.blob, { ...downloadOptions });
   }, [
     source,
     outputFormat,
@@ -387,6 +395,13 @@ export function Compressor() {
         checked={stripMetadata}
         disabled={fieldsDisabled}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       {displayError ? (

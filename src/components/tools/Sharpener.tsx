@@ -23,6 +23,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   applyBooleanPayload,
   applyNumberPayload,
@@ -48,7 +49,13 @@ export function Sharpener() {
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isSharpening, setIsSharpening] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [intensity, setIntensity] = useState(DEFAULT_SHARPEN_SETTINGS.intensity);
   const debouncedIntensity = useDebouncedValue(intensity, 150);
   const [comparePosition, setComparePosition] = useState(50);
@@ -57,9 +64,10 @@ export function Sharpener() {
     toolId: "sharpener",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, intensity, comparePosition }),
+    getExtraPayload: () => ({ ...downloadOptions, intensity, comparePosition }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyNumberPayload(payload, "intensity", setIntensity);
       applyNumberPayload(payload, "comparePosition", setComparePosition);
     },
@@ -176,9 +184,9 @@ export function Sharpener() {
     await handleDownload(
       afterCanvasRef.current,
       buildDownloadFilename(`${source.name}-sharpened`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, stripMetadata, handleDownload]);
+  }, [source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !afterCanvasRef.current) return;
@@ -190,9 +198,9 @@ export function Sharpener() {
     await handleCopyToClipboard(afterCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const busy = isProcessing || isSharpening;
   const isUpdatingPreview = intensity !== debouncedIntensity;
@@ -301,6 +309,13 @@ export function Sharpener() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error ? (

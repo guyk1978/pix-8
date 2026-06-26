@@ -374,6 +374,7 @@ export const he: TranslationDictionary = {
   embeddedToolbar: {
     settingsSection: "הגדרות",
     privacySection: "פרטיות ומטא-דאטה",
+    cornersSection: "עיגול פינות",
     rateSection: "דירוג",
     actionsSection: "פעולות",
     actionsEmpty: "העלו תמונה כדי לראות פעולות הורדה וייצוא.",
@@ -562,6 +563,7 @@ export const he: TranslationDictionary = {
     uploadMainHint: "העלה תמונה ראשית כדי להתחיל",
   },
   toolUi: {
+    roundCorners: "עיגול פינות",
     rotateFlip: {
       transform: "טרנספורמציה",
       outputSize: "גודל פלט",

@@ -16,7 +16,8 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 export function ImageInverter() {
   const { t } = useLanguage();
   const {
@@ -32,16 +33,23 @@ export function ImageInverter() {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [inverted, setInverted] = useState(true);
 
   useImageToolProject({
     toolId: "image-inverter",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, inverted }),
+    getExtraPayload: () => ({ ...downloadOptions, inverted }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyBooleanPayload(payload, "inverted", setInverted);
     },
   });
@@ -83,9 +91,9 @@ export function ImageInverter() {
     await handleDownload(
       previewCanvasRef.current,
       buildDownloadFilename(`${source.name}-${suffix}`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, inverted, stripMetadata, handleDownload]);
+  }, [source, inverted, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !previewCanvasRef.current) return;
@@ -97,9 +105,9 @@ export function ImageInverter() {
     await handleCopyToClipboard(previewCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const canDownload = !!source && !isProcessing;
 
@@ -165,6 +173,13 @@ export function ImageInverter() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error ? (

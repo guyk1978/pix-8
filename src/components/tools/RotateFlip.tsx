@@ -18,9 +18,11 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   applyBooleanPayload,
   useImageToolProject,
+  applyNumberPayload,
 } from "@/hooks/useToolProject";
 
 const buttonClassName =
@@ -47,21 +49,27 @@ export function RotateFlip() {
   const [rotation, setRotation] = useState<RotationDegrees>(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
   const [flipVertical, setFlipVertical] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [isDragging, setIsDragging] = useState(false);
 
   useImageToolProject({
     toolId: "rotate-flip",
     source,
     loadFile,
-    getExtraPayload: () => ({
-      stripMetadata,
+    getExtraPayload: () => ({ ...downloadOptions,
       rotation,
       flipHorizontal,
       flipVertical,
     }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyBooleanPayload(payload, "flipHorizontal", setFlipHorizontal);
       applyBooleanPayload(payload, "flipVertical", setFlipVertical);
       if (typeof payload.rotation === "number") {
@@ -111,14 +119,14 @@ export function RotateFlip() {
       height: outputDimensions.height,
       format: resolveFormat(source.mimeType),
       transform,
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
   }, [
     source,
     outputDimensions,
     transform,
-    stripMetadata,
+    downloadOptions,
     processImage,
     canvasRef,
   ]);
@@ -130,16 +138,16 @@ export function RotateFlip() {
     await handleDownload(
       result.blob,
       buildDownloadFilename(`${source.name}-transformed`, result.format),
-      { stripMetadata },
+      { ...downloadOptions },
     );
-  }, [runTransform, source, stripMetadata, handleDownload]);
+  }, [runTransform, source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     const result = await runTransform();
     if (!result) return;
 
-    await handleCopyToClipboard(result.blob, { stripMetadata });
-  }, [runTransform, stripMetadata, handleCopyToClipboard]);
+    await handleCopyToClipboard(result.blob, { ...downloadOptions });
+  }, [runTransform, downloadOptions, handleCopyToClipboard]);
 
   const canDownload = !!source && !isProcessing;
 
@@ -258,6 +266,13 @@ export function RotateFlip() {
         checked={stripMetadata}
         disabled={!source}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       {error ? (

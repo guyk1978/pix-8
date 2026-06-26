@@ -22,6 +22,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   applyBooleanPayload,
   applyNumberPayload,
@@ -152,7 +153,13 @@ export function Watermark() {
   const [opacity, setOpacity] = useState(80);
   const [scale, setScale] = useState(20);
   const [position, setPosition] = useState<WatermarkPosition>("bottom-right");
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [isDragging, setIsDragging] = useState(false);
 
   const revokeWatermarkUrl = useCallback(() => {
@@ -166,7 +173,7 @@ export function Watermark() {
     toolId: "watermark",
     canSave: !!source,
     getToolState: () => ({
-      stripMetadata,
+      ...downloadOptions,
       opacity,
       scale,
       position,
@@ -184,6 +191,7 @@ export function Watermark() {
     },
     restore: async (settings, files) => {
       applyBooleanPayload(settings, "stripMetadata", setStripMetadata);
+      applyNumberPayload(settings, "cornerRadius", setCornerRadius);
       applyNumberPayload(settings, "opacity", setOpacity);
       applyNumberPayload(settings, "scale", setScale);
 
@@ -265,7 +273,7 @@ export function Watermark() {
       width: source.width,
       height: source.height,
       format: resolveFormat(source.mimeType),
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
       watermark: {
         image: watermark.image,
@@ -280,7 +288,7 @@ export function Watermark() {
     opacity,
     position,
     scale,
-    stripMetadata,
+    downloadOptions,
     processImage,
     canvasRef,
   ]);
@@ -292,16 +300,16 @@ export function Watermark() {
     await handleDownload(
       result.blob,
       buildDownloadFilename(`${source.name}-watermarked`, result.format),
-      { stripMetadata },
+      { ...downloadOptions },
     );
-  }, [runWatermark, source, stripMetadata, handleDownload]);
+  }, [runWatermark, source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     const result = await runWatermark();
     if (!result) return;
 
-    await handleCopyToClipboard(result.blob, { stripMetadata });
-  }, [runWatermark, stripMetadata, handleCopyToClipboard]);
+    await handleCopyToClipboard(result.blob, { ...downloadOptions });
+  }, [runWatermark, downloadOptions, handleCopyToClipboard]);
 
   const canDownload = !!source && !!watermark && !isProcessing;
 
@@ -414,6 +422,13 @@ export function Watermark() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error && watermark ? (

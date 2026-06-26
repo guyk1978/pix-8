@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
 import { ToolOutputActions } from "@/components/tools/ToolOutputActions";
+import { StripMetadataToggle } from "@/components/tools/StripMetadataToggle";
 import { ToolFieldsStage } from "@/components/tools/shared/ToolFieldsStage";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
@@ -16,6 +17,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import { useImageToolProject } from "@/hooks/useToolProject";
 
 interface MetadataField {
@@ -123,6 +125,13 @@ export function MetadataRemover() {
   const [cleanBlob, setCleanBlob] = useState<Blob | null>(null);
   const [cleanFormat, setCleanFormat] = useState<"png" | "jpeg" | "webp">("jpeg");
   const [metadataRemoved, setMetadataRemoved] = useState(false);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
 
   useImageToolProject({
     toolId: "metadata-remover",
@@ -206,9 +215,9 @@ export function MetadataRemover() {
     await handleDownload(
       cleanBlob,
       buildDownloadFilename(`${source.name}-clean`, cleanFormat),
-      { stripMetadata: true, format: cleanFormat },
+      { stripMetadata: true, format: cleanFormat, cornerRadius },
     );
-  }, [source, cleanBlob, metadataRemoved, cleanFormat, handleDownload]);
+  }, [source, cleanBlob, metadataRemoved, cleanFormat, cornerRadius, handleDownload]);
 
   const handleCopyClean = useCallback(async () => {
     if (!cleanBlob || !metadataRemoved) return;
@@ -216,8 +225,9 @@ export function MetadataRemover() {
     await handleCopyToClipboard(cleanBlob, {
       stripMetadata: true,
       format: cleanFormat,
+      cornerRadius,
     });
-  }, [cleanBlob, metadataRemoved, cleanFormat, handleCopyToClipboard]);
+  }, [cleanBlob, metadataRemoved, cleanFormat, cornerRadius, handleCopyToClipboard]);
 
   const isWorking = isScanning || isProcessing;
   const canDownload = !!source && metadataRemoved && !!cleanBlob && !isWorking;
@@ -342,6 +352,19 @@ export function MetadataRemover() {
             ),
           },
         ]}
+      />
+
+      <StripMetadataToggle
+        checked={stripMetadata}
+        disabled={!source}
+        onChange={setStripMetadata}
+        cornerRadius={cornerRadius}
+        onCornerRadiusChange={setCornerRadius}
+        maxCornerRadius={
+          source
+            ? Math.floor(Math.min(source.width, source.height) / 2)
+            : 200
+        }
       />
 
       {error ? (

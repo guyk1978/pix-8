@@ -15,7 +15,8 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 import {
   createAnnotationId,
   displayToNaturalCoords,
@@ -57,7 +58,13 @@ export function ImageAnnotator() {
   const movedDuringPointerRef = useRef(false);
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [annotations, setAnnotations] = useState<ImageAnnotation[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pendingInput, setPendingInput] = useState<PendingTagInput | null>(null);
@@ -68,9 +75,10 @@ export function ImageAnnotator() {
     toolId: "image-annotator",
     source,
     loadFile,
-    getToolState: () => ({ stripMetadata, annotations }),
+    getToolState: () => ({ ...downloadOptions, annotations }),
     applyToolState: (settings) => {
       applyBooleanPayload(settings, "stripMetadata", setStripMetadata);
+      applyNumberPayload(settings, "cornerRadius", setCornerRadius);
       if (Array.isArray(settings.annotations)) {
         setAnnotations(settings.annotations as ImageAnnotation[]);
       }
@@ -294,9 +302,9 @@ export function ImageAnnotator() {
     await handleDownload(
       canvasRef.current,
       buildDownloadFilename(`${source.name}-annotated`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [annotations, canvasRef, handleDownload, source, stripMetadata]);
+  }, [annotations, canvasRef, handleDownload, source, downloadOptions]);
 
   const handleCopy = useCallback(async () => {
     const image = previewImageRef.current;
@@ -312,14 +320,14 @@ export function ImageAnnotator() {
 
     await handleCopyToClipboard(canvasRef.current, {
       format: "png",
-      stripMetadata,
+      ...downloadOptions,
     });
   }, [
     annotations,
     canvasRef,
     handleCopyToClipboard,
     source,
-    stripMetadata,
+    downloadOptions,
   ]);
 
   const updateAnnotationLabel = useCallback((id: string, label: string) => {
@@ -532,6 +540,13 @@ export function ImageAnnotator() {
         checked={stripMetadata}
         disabled={!source}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       <ToolOutputActions

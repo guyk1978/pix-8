@@ -44,7 +44,7 @@ export function HomeProcessingGuide({
     open && mounted
       ? createPortal(
           <div
-            className="fixed inset-0 z-[90] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] sm:p-8"
+            className="home-guide-overlay fixed inset-0 z-[90] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm sm:p-6"
             role="presentation"
             onClick={close}
           >
@@ -52,49 +52,49 @@ export function HomeProcessingGuide({
               role="dialog"
               aria-modal="true"
               aria-labelledby={titleId}
-              className="flex max-h-[min(92vh,44rem)] w-full max-w-3xl flex-col overflow-hidden rounded-none border border-border bg-card shadow-[var(--shadow-float)]"
+              className="home-guide-dialog flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_24px_64px_color-mix(in_srgb,var(--foreground)_14%,transparent)]"
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 py-5 sm:px-8">
-                <div className="min-w-0 space-y-2">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+              <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border/70 px-5 py-4 sm:px-6">
+                <div className="min-w-0 space-y-1.5">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                     {t("home.guideEyebrow")}
                   </p>
                   <h2
                     id={titleId}
-                    className="text-xl font-medium tracking-tight text-foreground sm:text-2xl"
+                    className="text-lg font-semibold tracking-tight text-foreground sm:text-xl"
                   >
                     {t("home.processingSteps.title")}
                   </h2>
-                  <p className="max-w-2xl text-base leading-relaxed text-muted">
+                  <p className="max-w-xl text-sm leading-relaxed text-muted">
                     {t("home.processingSteps.intro")}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={close}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none border border-border bg-background text-muted transition-colors hover:border-muted hover:text-foreground"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border/80 bg-background/80 text-muted transition-colors hover:border-muted hover:bg-background hover:text-foreground"
                   aria-label={t("home.guideClose")}
                 >
                   <X className="h-4 w-4" strokeWidth={1.75} aria-hidden />
                 </button>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8 sm:py-8">
-                <ol className="space-y-8">
+              <div className="px-5 py-4 sm:px-6">
+                <ol className="space-y-4">
                   {STEPS.map((step, index) => (
-                    <li key={step} className="flex gap-4 sm:gap-5">
+                    <li key={step} className="flex gap-3 sm:gap-3.5">
                       <span
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-border bg-background font-mono text-sm text-foreground"
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border/80 bg-background font-mono text-xs font-medium text-foreground"
                         aria-hidden
                       >
                         {index + 1}
                       </span>
-                      <div className="min-w-0 space-y-2">
-                        <h3 className="font-label text-lg text-foreground sm:text-xl">
+                      <div className="min-w-0 space-y-1">
+                        <h3 className="font-label text-sm font-semibold text-foreground">
                           {t(`home.processingSteps.${step}.label`)}
                         </h3>
-                        <p className="text-base leading-relaxed text-foreground sm:text-[1.0625rem] sm:leading-8">
+                        <p className="text-sm leading-relaxed text-muted">
                           {t(`home.processingSteps.${step}.detail`)}
                         </p>
                       </div>
@@ -103,11 +103,11 @@ export function HomeProcessingGuide({
                 </ol>
               </div>
 
-              <div className="shrink-0 border-t border-border px-6 py-4 sm:px-8">
+              <div className="shrink-0 border-t border-border/70 px-5 py-3.5 sm:px-6">
                 <button
                   type="button"
                   onClick={close}
-                  className="min-h-11 w-full rounded-none border border-border bg-background px-4 font-label text-sm text-foreground transition-colors hover:border-muted sm:w-auto sm:min-w-36"
+                  className="min-h-10 w-full rounded-xl border border-border/80 bg-background px-4 font-label text-sm text-foreground transition-colors hover:border-muted hover:bg-card sm:w-auto sm:min-w-32"
                 >
                   {t("home.guideClose")}
                 </button>

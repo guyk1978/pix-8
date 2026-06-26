@@ -23,6 +23,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   applyBooleanPayload,
   applyNumberPayload,
@@ -58,7 +59,13 @@ export function GrainGenerator() {
   const [grainSeed, setGrainSeed] = useState(1);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [comparePosition, setComparePosition] = useState(50);
   const [intensity, setIntensity] = useState(DEFAULT_GRAIN_SETTINGS.intensity);
   const debouncedIntensity = useDebouncedValue(intensity, 150);
@@ -67,14 +74,14 @@ export function GrainGenerator() {
     toolId: "grain-generator",
     source,
     loadFile,
-    getExtraPayload: () => ({
-      stripMetadata,
+    getExtraPayload: () => ({ ...downloadOptions,
       intensity,
       comparePosition,
       grainSeed,
     }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyNumberPayload(payload, "intensity", setIntensity);
       applyNumberPayload(payload, "comparePosition", setComparePosition);
       applyNumberPayload(payload, "grainSeed", setGrainSeed);
@@ -189,9 +196,9 @@ export function GrainGenerator() {
     await handleDownload(
       afterCanvasRef.current,
       buildDownloadFilename(`${source.name}-grain`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, stripMetadata, handleDownload]);
+  }, [source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !afterCanvasRef.current) return;
@@ -203,9 +210,9 @@ export function GrainGenerator() {
     await handleCopyToClipboard(afterCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const busy = isProcessing || isApplying;
   const isUpdatingPreview = intensity !== debouncedIntensity;
@@ -323,6 +330,13 @@ export function GrainGenerator() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error ? (

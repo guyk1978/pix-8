@@ -16,12 +16,14 @@ import { useBulkFiles } from "@/hooks/useBulkFiles";
 import {
   applyBooleanPayload,
   useToolProject,
+  applyNumberPayload,
 } from "@/hooks/useToolProject";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   buildDownloadFilename,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   COLLAGE_LAYOUT_IDS,
   DEFAULT_COLLAGE_SETTINGS,
@@ -54,7 +56,13 @@ export function ImageCollageMaker() {
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isRendering, setIsRendering] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [settings, setSettings] = useState<CollageSettings>(
     DEFAULT_COLLAGE_SETTINGS,
   );
@@ -64,7 +72,7 @@ export function ImageCollageMaker() {
     toolId: "image-collage",
     canSave: bulk.items.length > 0,
     getToolState: () => ({
-      stripMetadata,
+      ...downloadOptions,
       settings,
     }),
     getImages: () =>
@@ -74,6 +82,7 @@ export function ImageCollageMaker() {
       })),
     restore: async (toolSettings, files) => {
       applyBooleanPayload(toolSettings, "stripMetadata", setStripMetadata);
+      applyNumberPayload(toolSettings, "cornerRadius", setCornerRadius);
 
       if (toolSettings.settings && typeof toolSettings.settings === "object") {
         setSettings(toolSettings.settings as CollageSettings);
@@ -169,18 +178,18 @@ export function ImageCollageMaker() {
     await handleDownload(
       previewCanvasRef.current,
       buildDownloadFilename("collage", "png"),
-      { format: "png", stripMetadata },
+      { format: "png", ...downloadOptions },
     );
-  }, [bulk.items.length, stripMetadata, handleDownload]);
+  }, [bulk.items.length, downloadOptions, handleDownload]);
 
   const handleCopyCollage = useCallback(async () => {
     if (!previewCanvasRef.current || bulk.items.length === 0) return;
 
     await handleCopyToClipboard(previewCanvasRef.current, {
       format: "png",
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [bulk.items.length, stripMetadata, handleCopyToClipboard]);
+  }, [bulk.items.length, downloadOptions, handleCopyToClipboard]);
 
   const hasImages = bulk.items.length > 0;
   const isUpdatingPreview = settings.gap !== debouncedGap;
@@ -330,6 +339,13 @@ export function ImageCollageMaker() {
         checked={stripMetadata}
         disabled={!hasImages}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            outputSize
+              ? Math.floor(Math.min(outputSize.width, outputSize.height) / 2)
+              : 200
+          }
       />
 
       {displayError ? (

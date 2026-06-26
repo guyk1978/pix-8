@@ -17,7 +17,8 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 
 type AspectPreset = "free" | "1:1" | "16:9" | "4:3" | "9:16" | "4:5";
 
@@ -181,7 +182,13 @@ export function Cropper() {
   const [crop, setCrop] = useState<CropRegion | null>(null);
   const [aspectPreset, setAspectPreset] = useState<AspectPreset>("free");
   const [socialPreset, setSocialPreset] = useState<SocialPresetId | null>(null);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [displaySize, setDisplaySize] = useState({ width: 0, height: 0 });
 
@@ -189,14 +196,14 @@ export function Cropper() {
     toolId: "cropper",
     source,
     loadFile,
-    getExtraPayload: () => ({
-      stripMetadata,
+    getExtraPayload: () => ({ ...downloadOptions,
       crop,
       aspectPreset,
       socialPreset,
     }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       if (typeof payload.aspectPreset === "string") {
         setAspectPreset(payload.aspectPreset as AspectPreset);
       }
@@ -374,10 +381,10 @@ export function Cropper() {
       height: cropRegion.height,
       crop: cropRegion,
       format: resolveFormat(source.mimeType),
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
-  }, [source, crop, stripMetadata, processImage, canvasRef]);
+  }, [source, crop, downloadOptions, processImage, canvasRef]);
 
   const handleCropDownload = useCallback(async () => {
     const result = await runCrop();
@@ -386,16 +393,16 @@ export function Cropper() {
     await handleDownload(
       result.blob,
       buildDownloadFilename(`${source.name}-cropped`, result.format),
-      { stripMetadata },
+      { ...downloadOptions },
     );
-  }, [runCrop, source, stripMetadata, handleDownload]);
+  }, [runCrop, source, downloadOptions, handleDownload]);
 
   const handleCropCopy = useCallback(async () => {
     const result = await runCrop();
     if (!result) return;
 
-    await handleCopyToClipboard(result.blob, { stripMetadata });
-  }, [runCrop, stripMetadata, handleCopyToClipboard]);
+    await handleCopyToClipboard(result.blob, { ...downloadOptions });
+  }, [runCrop, downloadOptions, handleCopyToClipboard]);
 
   const canCrop =
     !!source && !!crop && crop.width > 0 && crop.height > 0 && !isProcessing;
@@ -626,6 +633,13 @@ export function Cropper() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error ? (

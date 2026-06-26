@@ -24,6 +24,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   applyBooleanPayload,
   applyNumberPayload,
@@ -62,7 +63,13 @@ export function ImageFilters() {
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isApplyingFilter, setIsApplyingFilter] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [comparePosition, setComparePosition] = useState(50);
   const [activeFilter, setActiveFilter] = useState<ImageFilterId>(
     DEFAULT_IMAGE_FILTER,
@@ -72,9 +79,10 @@ export function ImageFilters() {
     toolId: "image-filters",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, activeFilter, comparePosition }),
+    getExtraPayload: () => ({ ...downloadOptions, activeFilter, comparePosition }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyNumberPayload(payload, "comparePosition", setComparePosition);
       if (typeof payload.activeFilter === "string") {
         setActiveFilter(payload.activeFilter as ImageFilterId);
@@ -191,9 +199,9 @@ export function ImageFilters() {
     await handleDownload(
       afterCanvasRef.current,
       buildDownloadFilename(`${source.name}-filtered`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, stripMetadata, handleDownload]);
+  }, [source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !afterCanvasRef.current) return;
@@ -205,9 +213,9 @@ export function ImageFilters() {
     await handleCopyToClipboard(afterCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const busy = isProcessing || isApplyingFilter;
   const canDownload = !!source && !busy;
@@ -327,6 +335,13 @@ export function ImageFilters() {
         checked={stripMetadata}
         disabled={!source}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       {error ? <HelperErrorAlert message={error} className="mt-4" /> : null}

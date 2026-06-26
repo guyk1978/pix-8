@@ -21,6 +21,7 @@ import { useBulkFiles } from "@/hooks/useBulkFiles";
 import {
   applyBooleanPayload,
   useBulkToolProject,
+  applyNumberPayload,
 } from "@/hooks/useToolProject";
 import {
   type ImageFormat,
@@ -30,6 +31,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import { downloadZipArchive } from "@/lib/zipDownload";
 
 const inputClassName = "tool-input";
@@ -58,7 +60,13 @@ export function Converter() {
 
   const [mode, setMode] = useState<ProcessingMode>("single");
   const [targetFormat, setTargetFormat] = useState<ImageFormat>("jpeg");
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [isDragging, setIsDragging] = useState(false);
   const [isBatchProcessing, setIsBatchProcessing] = useState(false);
 
@@ -77,9 +85,10 @@ export function Converter() {
     bulk,
     canSave: mode === "single" ? !!source : bulk.items.length > 0,
     loadFile,
-    getExtraPayload: () => ({ targetFormat, stripMetadata }),
+    getExtraPayload: () => ({ targetFormat, ...downloadOptions }),
     applyExtraPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       if (
         payload.targetFormat === "jpeg" ||
         payload.targetFormat === "png" ||
@@ -114,11 +123,11 @@ export function Converter() {
         height,
         format: targetFormat,
         quality,
-        stripMetadata,
+        ...downloadOptions,
         canvas: canvasRef.current,
       });
     },
-    [targetFormat, quality, stripMetadata, canvasRef],
+    [targetFormat, quality, downloadOptions, canvasRef],
   );
 
   const handleConvertDownload = useCallback(async () => {
@@ -129,7 +138,7 @@ export function Converter() {
       height: source.height,
       format: targetFormat,
       quality,
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
 
@@ -138,7 +147,7 @@ export function Converter() {
     await handleDownload(
       result.blob,
       buildDownloadFilename(source.name, result.format),
-      { stripMetadata },
+      { ...downloadOptions },
     );
   }, [
     source,
@@ -158,13 +167,13 @@ export function Converter() {
       height: source.height,
       format: targetFormat,
       quality,
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
 
     if (!result) return;
 
-    await handleCopyToClipboard(result.blob, { stripMetadata });
+    await handleCopyToClipboard(result.blob, { ...downloadOptions });
   }, [
     source,
     targetFormat,
@@ -323,6 +332,13 @@ export function Converter() {
         checked={stripMetadata}
         disabled={fieldsDisabled}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       {displayError ? (

@@ -23,6 +23,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   applyBooleanPayload,
   applyNumberPayload,
@@ -57,7 +58,13 @@ export function Denoiser() {
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isDenoising, setIsDenoising] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [comparePosition, setComparePosition] = useState(50);
   const [strength, setStrength] = useState(DEFAULT_DENOISE_SETTINGS.strength);
   const debouncedStrength = useDebouncedValue(strength, 200);
@@ -66,9 +73,10 @@ export function Denoiser() {
     toolId: "denoiser",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, strength, comparePosition }),
+    getExtraPayload: () => ({ ...downloadOptions, strength, comparePosition }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyNumberPayload(payload, "strength", setStrength);
       applyNumberPayload(payload, "comparePosition", setComparePosition);
     },
@@ -183,9 +191,9 @@ export function Denoiser() {
     await handleDownload(
       afterCanvasRef.current,
       buildDownloadFilename(`${source.name}-denoised`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, stripMetadata, handleDownload]);
+  }, [source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !afterCanvasRef.current) return;
@@ -197,9 +205,9 @@ export function Denoiser() {
     await handleCopyToClipboard(afterCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const busy = isProcessing || isDenoising;
   const isUpdatingPreview = strength !== debouncedStrength;
@@ -308,6 +316,13 @@ export function Denoiser() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error ? (

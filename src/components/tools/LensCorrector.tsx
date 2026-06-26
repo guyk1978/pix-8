@@ -22,6 +22,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   applyBooleanPayload,
   applyNumberPayload,
@@ -45,7 +46,13 @@ export function LensCorrector() {
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isCorrecting, setIsCorrecting] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [correction, setCorrection] = useState(
     DEFAULT_LENS_CORRECTION_SETTINGS.correction,
   );
@@ -55,9 +62,10 @@ export function LensCorrector() {
     toolId: "lens-corrector",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, showGrid, correction }),
+    getExtraPayload: () => ({ ...downloadOptions, showGrid, correction }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyBooleanPayload(payload, "showGrid", setShowGrid);
       applyNumberPayload(payload, "correction", setCorrection);
     },
@@ -135,9 +143,9 @@ export function LensCorrector() {
     await handleDownload(
       previewCanvasRef.current,
       buildDownloadFilename(`${source.name}-corrected`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, stripMetadata, handleDownload]);
+  }, [source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !previewCanvasRef.current) return;
@@ -149,9 +157,9 @@ export function LensCorrector() {
     await handleCopyToClipboard(previewCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const busy = isProcessing || isCorrecting;
   const isUpdatingPreview = correction !== debouncedCorrection;
@@ -258,6 +266,13 @@ export function LensCorrector() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error ? (

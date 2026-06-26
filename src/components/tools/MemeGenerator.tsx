@@ -18,9 +18,11 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   applyBooleanPayload,
   useToolProject,
+  applyNumberPayload,
 } from "@/hooks/useToolProject";
 import { MAIN_IMAGE_KEY } from "@/lib/projects/types";
 import {
@@ -50,7 +52,13 @@ export function MemeGenerator() {
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [selectedTemplateId, setSelectedTemplateId] =
     useState<MemeTemplateId | null>(null);
   const [settings, setSettings] = useState<MemeSettings>({
@@ -62,7 +70,7 @@ export function MemeGenerator() {
     toolId: "meme-generator",
     canSave: !!source,
     getToolState: () => ({
-      stripMetadata,
+      ...downloadOptions,
       selectedTemplateId,
       settings,
     }),
@@ -73,6 +81,7 @@ export function MemeGenerator() {
       if (!file) return;
 
       applyBooleanPayload(toolSettings, "stripMetadata", setStripMetadata);
+      applyNumberPayload(toolSettings, "cornerRadius", setCornerRadius);
 
       if (
         toolSettings.selectedTemplateId === null ||
@@ -150,9 +159,9 @@ export function MemeGenerator() {
     await handleDownload(
       previewCanvasRef.current,
       buildDownloadFilename(baseName, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, selectedTemplateId, stripMetadata, handleDownload]);
+  }, [source, selectedTemplateId, downloadOptions, handleDownload]);
 
   const handleCopyMeme = useCallback(async () => {
     if (!source || !previewCanvasRef.current) return;
@@ -164,9 +173,9 @@ export function MemeGenerator() {
     await handleCopyToClipboard(previewCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const hasText = !!settings.topText.trim() || !!settings.bottomText.trim();
   const busy = isProcessing || isLoadingTemplate;
@@ -282,6 +291,13 @@ export function MemeGenerator() {
         checked={stripMetadata}
         disabled={!source}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       {error ? <HelperErrorAlert message={error} className="mt-4" /> : null}

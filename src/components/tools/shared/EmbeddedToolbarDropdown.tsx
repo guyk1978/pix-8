@@ -55,8 +55,8 @@ export function EmbeddedToolbarDropdown({
         <span>{title}</span>
         <ChevronDown
           className="embedded-toolbar-dropdown-chevron"
-          size={14}
-          strokeWidth={2}
+          size={16}
+          strokeWidth={2.25}
           aria-hidden
         />
       </button>

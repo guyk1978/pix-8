@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { WorkspaceImageFilmstrip } from "@/components/ui/WorkspaceImageFilmstrip";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
+import { PreviewCornerRadiusEffect } from "@/components/tools/shared/PreviewCornerRadiusEffect";
 import {
   ToolWorkspaceActionsProvider,
   ToolWorkspaceActionsTarget,
@@ -23,6 +24,7 @@ export function ToolWorkspace({
   workflowState,
   hasActiveImage,
 }: ToolWorkspaceProps) {
+  const workspaceRootRef = useRef<HTMLDivElement>(null);
   const workflow = useWorkflowOptional();
   const sidebar = useOptionalToolSidebar();
   const setHasActiveImage = sidebar?.setHasActiveImage;
@@ -59,12 +61,14 @@ export function ToolWorkspace({
   return (
     <ToolWorkspaceActionsProvider>
         <div
+          ref={workspaceRootRef}
           className={`tool-workspace relative z-[1] w-full text-start ${
             embeddedToolbarLayout
               ? "embedded-tool-workspace-inner flex h-full min-h-0 flex-1 flex-col"
               : "flex flex-col gap-5"
           }`}
         >
+          <PreviewCornerRadiusEffect rootRef={workspaceRootRef} />
           <div className={embeddedToolbarLayout ? "min-h-0 flex-1 overflow-auto" : undefined}>
             {!embeddedToolbarLayout ? <ToolWorkspaceActionsTarget /> : null}
             {children}

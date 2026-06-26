@@ -11,7 +11,8 @@ import { ImageFileInput } from "@/components/ui/ImageFileInput";
 import { ToolStyledUploadZone } from "@/components/tools/shared/ToolStyledUploadZone";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useImageProcessor } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 import { ToolProjectSaveSection } from "@/components/projects/ToolProjectSaveSection";
 import {
   extractDominantColors,
@@ -38,7 +39,13 @@ export function PaletteExtractor() {
 
   const [palette, setPalette] = useState<PaletteColor[]>([]);
   const [isExtracting, setIsExtracting] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [isDragging, setIsDragging] = useState(false);
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
 
@@ -46,9 +53,10 @@ export function PaletteExtractor() {
     toolId: "palette-extractor",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, palette }),
+    getExtraPayload: () => ({ ...downloadOptions, palette }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       if (Array.isArray(payload.palette)) {
         setPalette(payload.palette as PaletteColor[]);
       }
@@ -224,6 +232,13 @@ export function PaletteExtractor() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
         {stripMetadata && source && (
           <p className="font-mono text-[10px] text-muted">

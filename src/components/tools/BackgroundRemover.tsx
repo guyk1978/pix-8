@@ -16,10 +16,12 @@ import {
   buildDownloadFilename,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import {
   applyBooleanPayload,
   applyStringPayload,
   useImageToolProject,
+  applyNumberPayload,
 } from "@/hooks/useToolProject";
 import {
   blobToImage,
@@ -63,7 +65,13 @@ export function BackgroundRemover() {
   const [backgroundMode, setBackgroundMode] =
     useState<BackgroundMode>("transparent");
   const [backgroundColor, setBackgroundColor] = useState("#121212");
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [processingPhase, setProcessingPhase] = useState<ProcessingPhase>("idle");
   const [removalProgress, setRemovalProgress] = useState<RemovalProgress | null>(
     null,
@@ -106,6 +114,7 @@ export function BackgroundRemover() {
     }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyStringPayload(payload, "backgroundColor", setBackgroundColor);
       if (
         payload.backgroundMode === "transparent" ||
@@ -258,7 +267,7 @@ export function BackgroundRemover() {
       await handleDownload(
         blob,
         buildDownloadFilename(`${source.name}-nobg`, "png"),
-        { stripMetadata },
+        { ...downloadOptions },
       );
     } catch (cause) {
       setError(resolveErrorMessage(language, cause, "errors.downloadFailed"));
@@ -288,7 +297,7 @@ export function BackgroundRemover() {
       });
 
       const blob = await canvasToPngBlob(resultCanvas);
-      await handleCopyToClipboard(blob, { stripMetadata, format: "png" });
+      await handleCopyToClipboard(blob, { ...downloadOptions, format: "png" });
     } catch (cause) {
       setError(resolveErrorMessage(language, cause, "errors.copyImageFailed"));
     }
@@ -457,6 +466,13 @@ export function BackgroundRemover() {
         checked={stripMetadata}
         disabled={!source || isBusy}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       {mounted && engineFailed ? (

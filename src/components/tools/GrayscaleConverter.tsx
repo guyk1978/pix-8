@@ -21,7 +21,8 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 type GrayscalePresetKey = "neutral" | "dramatic" | "soft";
 
 const PRESETS: { key: GrayscalePresetKey; settings: GrayscaleSettings }[] = [
@@ -45,7 +46,13 @@ export function GrayscaleConverter() {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [settings, setSettings] = useState<GrayscaleSettings>(
     DEFAULT_GRAYSCALE_SETTINGS,
   );
@@ -54,9 +61,10 @@ export function GrayscaleConverter() {
     toolId: "grayscale-converter",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, settings }),
+    getExtraPayload: () => ({ ...downloadOptions, settings }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       if (payload.settings && typeof payload.settings === "object") {
         setSettings(payload.settings as GrayscaleSettings);
       }
@@ -99,9 +107,9 @@ export function GrayscaleConverter() {
     await handleDownload(
       previewCanvasRef.current,
       buildDownloadFilename(`${source.name}-grayscale`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, stripMetadata, handleDownload]);
+  }, [source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !previewCanvasRef.current) return;
@@ -113,9 +121,9 @@ export function GrayscaleConverter() {
     await handleCopyToClipboard(previewCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const patchSettings = useCallback((patch: Partial<GrayscaleSettings>) => {
     setSettings((current) => ({ ...current, ...patch }));
@@ -214,6 +222,13 @@ export function GrayscaleConverter() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error ? (

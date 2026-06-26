@@ -11,6 +11,7 @@ import { WorkflowPanel } from "@/components/tools/workflow/WorkflowPanel";
 import { WorkflowProvider } from "@/components/tools/workflow/WorkflowContext";
 import { WorkflowSuggestions } from "@/components/WorkflowSuggestions";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { ToolExportOptionsProvider } from "@/hooks/useToolExportSettings";
 import { getToolTranslationKey } from "@/i18n";
 import type { Article } from "@/lib/blog";
 import type { Tool } from "@/lib/tools";
@@ -76,7 +77,9 @@ export function ToolShell({
                 ) : null}
 
                 <div className={`relative z-10 ${embedded ? "flex min-h-0 flex-1 flex-col" : ""}`}>
-                  {children}
+                  <ToolExportOptionsProvider>
+                    {children}
+                  </ToolExportOptionsProvider>
 
                   {!embedded ? (
                     <WorkflowSuggestions suggestions={getWorkflowSuggestions(tool.id)} />

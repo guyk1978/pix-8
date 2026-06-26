@@ -16,7 +16,8 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 import {
   displayToNaturalCoords,
   renderTextOverlayCanvas,
@@ -72,7 +73,13 @@ export function TextOverlay() {
 
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [settings, setSettings] = useState<TextOverlaySettings>({
     ...defaultSettings,
     x: 0,
@@ -101,9 +108,10 @@ export function TextOverlay() {
     toolId: "text-overlay",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, settings }),
+    getExtraPayload: () => ({ ...downloadOptions, settings }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       if (payload.settings && typeof payload.settings === "object") {
         setSettings(payload.settings as TextOverlaySettings);
       }
@@ -189,9 +197,9 @@ export function TextOverlay() {
     await handleDownload(previewCanvasRef.current, buildDownloadFilename(`${source.name}-text`, format), {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, settings.text, stripMetadata, handleDownload]);
+  }, [source, settings.text, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !previewCanvasRef.current || !settings.text.trim()) return;
@@ -203,9 +211,9 @@ export function TextOverlay() {
     await handleCopyToClipboard(previewCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, settings.text, stripMetadata, handleCopyToClipboard]);
+  }, [source, settings.text, downloadOptions, handleCopyToClipboard]);
 
   const canDownload =
     !!source && !!settings.text.trim() && !isProcessing;
@@ -440,6 +448,13 @@ export function TextOverlay() {
         checked={stripMetadata}
         disabled={!source}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       {error ? (

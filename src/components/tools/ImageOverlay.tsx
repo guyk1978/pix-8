@@ -18,7 +18,8 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 import {
   DEFAULT_OVERLAY_TRANSFORM,
   renderImageOverlayCanvas,
@@ -55,7 +56,13 @@ export function ImageOverlay() {
   const [isDragging, setIsDragging] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [selectedPresetId, setSelectedPresetId] =
     useState<OverlayPresetId | null>(null);
   const [overlayReady, setOverlayReady] = useState(false);
@@ -68,12 +75,13 @@ export function ImageOverlay() {
     source,
     loadFile,
     getExtraPayload: () => ({
-      stripMetadata,
+      ...downloadOptions,
       selectedPresetId,
       transform,
     }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
 
       if (
         typeof payload.selectedPresetId === "string" &&
@@ -253,10 +261,10 @@ export function ImageOverlay() {
       {
         format,
         quality,
-        stripMetadata,
+        ...downloadOptions,
       },
     );
-  }, [source, overlayReady, stripMetadata, handleDownload]);
+  }, [source, overlayReady, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !previewCanvasRef.current || !overlayReady) return;
@@ -268,9 +276,9 @@ export function ImageOverlay() {
     await handleCopyToClipboard(previewCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, overlayReady, stripMetadata, handleCopyToClipboard]);
+  }, [source, overlayReady, downloadOptions, handleCopyToClipboard]);
 
   const canDownload = !!source && overlayReady && !isProcessing;
   const opacityPercent = Math.round(transform.opacity * 100);
@@ -410,6 +418,13 @@ export function ImageOverlay() {
         checked={stripMetadata}
         disabled={!source}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       {error ? (

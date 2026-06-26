@@ -23,7 +23,8 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 const PRESET_KEYS = ["balanced", "brighten", "punch"] as const;
 
 const PRESET_SETTINGS: Record<
@@ -52,7 +53,13 @@ export function LightAdjuster() {
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [isAdjusting, setIsAdjusting] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [settings, setSettings] = useState<LightAdjustSettings>(
     DEFAULT_LIGHT_ADJUST_SETTINGS,
   );
@@ -62,9 +69,10 @@ export function LightAdjuster() {
     toolId: "light-adjuster",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, settings }),
+    getExtraPayload: () => ({ ...downloadOptions, settings }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       if (payload.settings && typeof payload.settings === "object") {
         setSettings(payload.settings as LightAdjustSettings);
       }
@@ -150,9 +158,9 @@ export function LightAdjuster() {
     await handleDownload(
       previewCanvasRef.current,
       buildDownloadFilename(`${source.name}-adjusted`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, stripMetadata, handleDownload]);
+  }, [source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !previewCanvasRef.current) return;
@@ -164,9 +172,9 @@ export function LightAdjuster() {
     await handleCopyToClipboard(previewCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const busy = isProcessing || isAdjusting;
   const isUpdatingPreview =
@@ -274,6 +282,13 @@ export function LightAdjuster() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error ? (

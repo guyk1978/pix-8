@@ -22,6 +22,7 @@ export interface MagnifierProjectSettings extends Record<string, unknown> {
   pan: MagnifierPanSettings;
   sharpenSettings: RefinementSettings;
   stripMetadata?: boolean;
+  cornerRadius?: number;
 }
 
 export function getSourceFileKey(file: File): string {
@@ -61,12 +62,14 @@ export function buildMagnifierToolState(
   viewState: MagnifierViewState,
   refinement: RefinementSettings,
   stripMetadata: boolean,
+  cornerRadius = 0,
 ): MagnifierProjectSettings {
   return {
     zoomLevel: viewState.userZoom,
     pan: { x: viewState.translateX, y: viewState.translateY },
     sharpenSettings: { ...refinement },
     stripMetadata,
+    cornerRadius,
   };
 }
 
@@ -112,6 +115,10 @@ export function parseMagnifierProjectSettings(
         typeof settings.stripMetadata === "boolean"
           ? settings.stripMetadata
           : undefined,
+      cornerRadius:
+        typeof settings.cornerRadius === "number"
+          ? settings.cornerRadius
+          : undefined,
     };
   }
 
@@ -146,6 +153,10 @@ export function parseMagnifierProjectSettings(
       stripMetadata:
         typeof settings.stripMetadata === "boolean"
           ? settings.stripMetadata
+          : undefined,
+      cornerRadius:
+        typeof settings.cornerRadius === "number"
+          ? settings.cornerRadius
           : undefined,
     };
   }

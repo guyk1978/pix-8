@@ -374,6 +374,7 @@ export const en = {
   embeddedToolbar: {
     settingsSection: "Settings",
     privacySection: "Privacy & Metadata",
+    cornersSection: "Round Corners",
     rateSection: "Rate",
     actionsSection: "Actions",
     actionsEmpty: "Upload an image to see download and export actions.",
@@ -562,6 +563,7 @@ export const en = {
     uploadMainHint: "Upload a main image to begin",
   },
   toolUi: {
+    roundCorners: "Round corners",
     rotateFlip: {
       transform: "Transform",
       outputSize: "Output Size",

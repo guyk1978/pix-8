@@ -101,13 +101,21 @@ export function encodeIco(
   return buffer;
 }
 
+import { applyCornerRadiusToCanvas } from "@/lib/roundCorners";
+
 export async function buildFaviconExport(
   image: HTMLImageElement,
   settings: FaviconSettings,
   format: FaviconExportFormat,
+  cornerRadius = 0,
 ): Promise<{ blob: Blob; filename: string }> {
+  const applyRadius = (canvas: HTMLCanvasElement, size: number) => {
+    if (cornerRadius <= 0) return canvas;
+    return applyCornerRadiusToCanvas(canvas, Math.min(cornerRadius, size / 2));
+  };
+
   if (format === "png") {
-    const canvas = renderFaviconCanvas(image, 32, settings);
+    const canvas = applyRadius(renderFaviconCanvas(image, 32, settings), 32);
     const blob = await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((result) => {
         if (result) resolve(result);
@@ -120,7 +128,7 @@ export async function buildFaviconExport(
 
   const pngBuffers = await Promise.all(
     FAVICON_EXPORT_SIZES.map(async (size) => {
-      const canvas = renderFaviconCanvas(image, size, settings);
+      const canvas = applyRadius(renderFaviconCanvas(image, size, settings), size);
       return {
         size,
         data: await canvasToPngBuffer(canvas),

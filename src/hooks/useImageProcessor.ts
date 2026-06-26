@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { applyCornerRadiusToCanvas } from "@/lib/roundCorners";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { translateErrorMessage } from "@/i18n";
@@ -65,6 +66,8 @@ export interface ProcessingOptions {
   watermark?: WatermarkLayer;
   /** Strip EXIF/IPTC/XMP metadata from output. Defaults to true. */
   stripMetadata?: boolean;
+  /** Rounded corner radius in output pixels. Defaults to 0. */
+  cornerRadius?: number;
   /** Optional canvas to reuse instead of creating a new one. */
   canvas?: HTMLCanvasElement | null;
 }
@@ -98,10 +101,11 @@ export interface ImageSource {
 
 export type DownloadOptions = Pick<
   ProcessingOptions,
-  "format" | "quality" | "stripMetadata"
+  "format" | "quality" | "stripMetadata" | "cornerRadius"
 >;
 
 export const DEFAULT_STRIP_METADATA = true;
+export const DEFAULT_CORNER_RADIUS = 0;
 
 export type WorkspaceLoadMode = "add" | "replace";
 
@@ -485,6 +489,11 @@ async function verifyMetadataStripped(blob: Blob): Promise<void> {
   }
 }
 
+function resolveCornerRadius(options: Pick<ProcessingOptions, "cornerRadius">): number {
+  const radius = options.cornerRadius ?? DEFAULT_CORNER_RADIUS;
+  return Number.isFinite(radius) && radius > 0 ? radius : 0;
+}
+
 function canPassthroughOriginal(
   parsed: ParsedImage,
   options: ProcessingOptions,
@@ -495,6 +504,7 @@ function canPassthroughOriginal(
     !hasActiveTransform(options.transform) &&
     !options.watermark &&
     options.stripMetadata === false &&
+    resolveCornerRadius(options) === 0 &&
     parsed.width === options.width &&
     parsed.height === options.height &&
     format === resolveFormat(parsed.file.type) &&
@@ -507,10 +517,17 @@ async function exportCanvasBlob(
   format: ImageFormat,
   quality: number | undefined,
   stripMetadata: boolean,
+  cornerRadius: number,
 ): Promise<Blob> {
-  const exportCanvas = stripMetadata
-    ? createMetadataFreeCanvas(canvas)
-    : canvas;
+  let exportCanvas = canvas;
+
+  if (cornerRadius > 0) {
+    exportCanvas = applyCornerRadiusToCanvas(exportCanvas, cornerRadius);
+  }
+
+  if (stripMetadata) {
+    exportCanvas = createMetadataFreeCanvas(exportCanvas);
+  }
 
   const blob = await canvasToBlob(exportCanvas, format, quality);
 
@@ -519,6 +536,38 @@ async function exportCanvasBlob(
   }
 
   return blob;
+}
+
+async function prepareOutputBlob(
+  output: HTMLCanvasElement | Blob,
+  format: ImageFormat,
+  quality: number | undefined,
+  stripMetadata: boolean,
+  cornerRadius: number,
+): Promise<Blob> {
+  if (output instanceof HTMLCanvasElement) {
+    return exportCanvasBlob(output, format, quality, stripMetadata, cornerRadius);
+  }
+
+  if (cornerRadius > 0 || stripMetadata) {
+    const bitmap = await createImageBitmap(output);
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      bitmap.close();
+      throw new Error("Canvas context unavailable.");
+    }
+
+    ctx.drawImage(bitmap, 0, 0);
+    bitmap.close();
+
+    return exportCanvasBlob(canvas, format, quality, stripMetadata, cornerRadius);
+  }
+
+  return output;
 }
 
 // ---------------------------------------------------------------------------
@@ -531,6 +580,7 @@ export async function processImage(
 ): Promise<ProcessedImage> {
   const parsed = await parseImageFile(file);
   const stripMetadata = resolveStripMetadata(options);
+  const cornerRadius = resolveCornerRadius(options);
   const format = resolveFormat(file.type, options.format);
 
   try {
@@ -552,6 +602,7 @@ export async function processImage(
       format,
       options.quality,
       stripMetadata,
+      cornerRadius,
     );
 
     return {
@@ -582,7 +633,7 @@ async function blobToPngBlob(blob: Blob): Promise<Blob> {
   ctx.drawImage(bitmap, 0, 0);
   bitmap.close();
 
-  return exportCanvasBlob(canvas, "png", undefined, true);
+  return exportCanvasBlob(canvas, "png", undefined, true, 0);
 }
 
 export async function copyImageToClipboard(
@@ -594,11 +645,18 @@ export async function copyImageToClipboard(
   }
 
   const stripMetadata = resolveStripMetadata(options ?? {});
+  const cornerRadius = resolveCornerRadius(options ?? {});
   const format = options?.format ?? "png";
 
   const pngBlob =
-    output instanceof HTMLCanvasElement
-      ? await exportCanvasBlob(output, "png", options?.quality, stripMetadata)
+    output instanceof HTMLCanvasElement || cornerRadius > 0 || stripMetadata
+      ? await prepareOutputBlob(
+          output,
+          "png",
+          options?.quality,
+          stripMetadata,
+          cornerRadius,
+        )
       : output.type === "image/png"
         ? output
         : await blobToPngBlob(output);
@@ -614,12 +672,16 @@ export async function handleDownload(
   options?: DownloadOptions,
 ): Promise<void> {
   const stripMetadata = resolveStripMetadata(options ?? {});
+  const cornerRadius = resolveCornerRadius(options ?? {});
   const format = options?.format ?? "png";
 
-  const blob =
-    output instanceof Blob
-      ? output
-      : await exportCanvasBlob(output, format, options?.quality, stripMetadata);
+  const blob = await prepareOutputBlob(
+    output,
+    format,
+    options?.quality,
+    stripMetadata,
+    cornerRadius,
+  );
 
   const hasExtension = /\.[a-z0-9]+$/i.test(filename);
   const fullName = hasExtension
@@ -886,6 +948,7 @@ export function useImageProcessor(options: UseImageProcessorOptions = {}) {
 
         await handleDownload(output, filename, {
           stripMetadata: DEFAULT_STRIP_METADATA,
+          cornerRadius: DEFAULT_CORNER_RADIUS,
           ...options,
         });
 
@@ -910,6 +973,7 @@ export function useImageProcessor(options: UseImageProcessorOptions = {}) {
       try {
         await copyImageToClipboard(output, {
           stripMetadata: DEFAULT_STRIP_METADATA,
+          cornerRadius: DEFAULT_CORNER_RADIUS,
           ...options,
         });
 

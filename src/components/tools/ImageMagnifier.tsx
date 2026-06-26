@@ -23,6 +23,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import { useToolProject } from "@/hooks/useToolProject";
 import { MAIN_IMAGE_KEY } from "@/lib/projects/types";
 import {
@@ -102,7 +103,13 @@ export function ImageMagnifier() {
   );
   const [lockedSnapshot, setLockedSnapshot] =
     useState<MagnifierResultSnapshot | null>(null);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [isExporting, setIsExporting] = useState(false);
   const [settingsRevision, setSettingsRevision] = useState(0);
   const exportCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -118,7 +125,7 @@ export function ImageMagnifier() {
     toolId: "magnifier",
     canSave: !!source,
     getToolState: () =>
-      buildMagnifierToolState(viewState, refinement, stripMetadata),
+      buildMagnifierToolState(viewState, refinement, stripMetadata, cornerRadius),
     getImages: () =>
       source ? [{ key: MAIN_IMAGE_KEY, file: source.file }] : [],
     restore: async (settings, files, meta) => {
@@ -347,6 +354,9 @@ export function ImageMagnifier() {
 
       if (typeof settings.stripMetadata === "boolean") {
         setStripMetadata(settings.stripMetadata);
+      }
+      if (typeof settings.cornerRadius === "number") {
+        setCornerRadius(settings.cornerRadius);
       }
 
       renderPreviewCanvas(false, settings.sharpenSettings);
@@ -683,7 +693,7 @@ export function ImageMagnifier() {
       await handleDownload(
         exportCanvas,
         buildDownloadFilename(`${source.name}-magnifier-view`, format),
-        { format, quality, stripMetadata },
+        { format, quality, ...downloadOptions },
       );
 
       showToast(t("toolUi.magnifier.export.saved"), {
@@ -698,7 +708,7 @@ export function ImageMagnifier() {
     source,
     isResultMarked,
     buildExportCanvas,
-    stripMetadata,
+    downloadOptions,
     showToast,
     t,
     language,
@@ -715,7 +725,7 @@ export function ImageMagnifier() {
       const exportCanvas = buildExportCanvas();
       await copyImageToClipboard(exportCanvas, {
         format: "png",
-        stripMetadata,
+        ...downloadOptions,
       });
 
       showToast(t("toast.imageCopiedPaste"));
@@ -728,7 +738,7 @@ export function ImageMagnifier() {
     source,
     isResultMarked,
     buildExportCanvas,
-    stripMetadata,
+    downloadOptions,
     showToast,
     t,
     language,
@@ -1030,6 +1040,13 @@ export function ImageMagnifier() {
         checked={stripMetadata}
         disabled={!source}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       <ToolOutputActions

@@ -21,7 +21,8 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 const PRESETS: { key: "gallery" | "minimal" | "soft"; settings: BorderSettings }[] = [
   {
     key: "gallery",
@@ -58,16 +59,23 @@ export function BorderGenerator() {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [isDraggingFile, setIsDraggingFile] = useState(false);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [settings, setSettings] = useState<BorderSettings>(DEFAULT_SETTINGS);
 
   useImageToolProject({
     toolId: "border-generator",
     source,
     loadFile,
-    getExtraPayload: () => ({ stripMetadata, settings }),
+    getExtraPayload: () => ({ ...downloadOptions, settings }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       if (payload.settings && typeof payload.settings === "object") {
         setSettings(payload.settings as BorderSettings);
       }
@@ -107,9 +115,9 @@ export function BorderGenerator() {
     await handleDownload(
       previewCanvasRef.current,
       buildDownloadFilename(`${source.name}-framed`, format),
-      { format, quality, stripMetadata },
+      { format, quality, ...downloadOptions },
     );
-  }, [source, stripMetadata, handleDownload]);
+  }, [source, downloadOptions, handleDownload]);
 
   const handleCopyImage = useCallback(async () => {
     if (!source || !previewCanvasRef.current) return;
@@ -121,9 +129,9 @@ export function BorderGenerator() {
     await handleCopyToClipboard(previewCanvasRef.current, {
       format,
       quality,
-      stripMetadata,
+      ...downloadOptions,
     });
-  }, [source, stripMetadata, handleCopyToClipboard]);
+  }, [source, downloadOptions, handleCopyToClipboard]);
 
   const outputSize = source
     ? getBorderedCanvasSize(source.width, source.height, settings.width)
@@ -240,6 +248,13 @@ export function BorderGenerator() {
           checked={stripMetadata}
           disabled={!source}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {error ? (

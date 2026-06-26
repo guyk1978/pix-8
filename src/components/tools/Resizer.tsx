@@ -22,6 +22,7 @@ import {
   applyBooleanPayload,
   applyStringPayload,
   useBulkToolProject,
+  applyNumberPayload,
 } from "@/hooks/useToolProject";
 import {
   buildDownloadFilename,
@@ -29,6 +30,7 @@ import {
   resolveFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import { downloadZipArchive } from "@/lib/zipDownload";
 
 const inputClassName = "tool-input tabular-nums placeholder:text-muted";
@@ -80,7 +82,13 @@ export function Resizer() {
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
   const [lockAspectRatio, setLockAspectRatio] = useState(true);
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [isDragging, setIsDragging] = useState(false);
   const [isBatchProcessing, setIsBatchProcessing] = useState(false);
 
@@ -102,6 +110,7 @@ export function Resizer() {
     }),
     applyExtraPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyBooleanPayload(payload, "lockAspectRatio", setLockAspectRatio);
       applyStringPayload(payload, "width", setWidth);
       applyStringPayload(payload, "height", setHeight);
@@ -184,11 +193,11 @@ export function Resizer() {
         width: dimensions.width,
         height: dimensions.height,
         format: resolveFormat(file.type),
-        stripMetadata,
+        ...downloadOptions,
         canvas: canvasRef.current,
       });
     },
-    [parsedWidth, parsedHeight, lockAspectRatio, stripMetadata, canvasRef],
+    [parsedWidth, parsedHeight, lockAspectRatio, downloadOptions, canvasRef],
   );
 
   const handleResizeDownload = useCallback(async () => {
@@ -198,7 +207,7 @@ export function Resizer() {
       width: parsedWidth,
       height: parsedHeight,
       format: resolveFormat(source.mimeType),
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
 
@@ -207,7 +216,7 @@ export function Resizer() {
     await handleDownload(
       result.blob,
       buildDownloadFilename(`${source.name}-resized`, result.format),
-      { stripMetadata },
+      { ...downloadOptions },
     );
   }, [
     source,
@@ -227,13 +236,13 @@ export function Resizer() {
       width: parsedWidth,
       height: parsedHeight,
       format: resolveFormat(source.mimeType),
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
 
     if (!result) return;
 
-    await handleCopyToClipboard(result.blob, { stripMetadata });
+    await handleCopyToClipboard(result.blob, { ...downloadOptions });
   }, [
     source,
     hasValidDimensions,
@@ -424,6 +433,13 @@ export function Resizer() {
           checked={stripMetadata}
           disabled={mode === "single" ? !source : bulk.items.length === 0}
           onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
         />
 
         {displayError ? (

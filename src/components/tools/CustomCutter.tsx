@@ -16,7 +16,8 @@ import {
   type ImageFormat,
   useImageProcessor,
 } from "@/hooks/useImageProcessor";
-import { applyBooleanPayload, useImageToolProject } from "@/hooks/useToolProject";
+import { useToolExportSettings } from "@/hooks/useToolExportSettings";
+import { applyBooleanPayload, useImageToolProject, applyNumberPayload } from "@/hooks/useToolProject";
 import {
   exportCustomCutterCanvas,
   renderKeepSelectionCanvas,
@@ -73,7 +74,13 @@ export function CustomCutter() {
 
   const [selection, setSelection] = useState<CropRegion | null>(null);
   const [displaySize, setDisplaySize] = useState({ width: 0, height: 0 });
-  const [stripMetadata, setStripMetadata] = useState(true);
+  const {
+    stripMetadata,
+    setStripMetadata,
+    cornerRadius,
+    setCornerRadius,
+    downloadOptions,
+  } = useToolExportSettings();
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [outputFormat, setOutputFormat] = useState<ImageFormat>("png");
   const [overlayCursor, setOverlayCursor] = useState("crosshair");
@@ -82,13 +89,13 @@ export function CustomCutter() {
     toolId: "custom-cutter",
     source,
     loadFile,
-    getExtraPayload: () => ({
-      stripMetadata,
+    getExtraPayload: () => ({ ...downloadOptions,
       selection,
       outputFormat,
     }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
+      applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       if (payload.selection && typeof payload.selection === "object") {
         setSelection(payload.selection as CropRegion);
       }
@@ -214,7 +221,7 @@ export function CustomCutter() {
       width: source.width,
       height: source.height,
       format: outputFormat,
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
 
@@ -223,9 +230,9 @@ export function CustomCutter() {
     await handleDownload(
       result.blob,
       buildDownloadFilename(`${source.name}-custom-cut`, result.format),
-      { stripMetadata, format: outputFormat },
+      { ...downloadOptions, format: outputFormat },
     );
-  }, [canvasRef, handleDownload, outputFormat, processImage, source, stripMetadata]);
+  }, [canvasRef, handleDownload, outputFormat, processImage, source, downloadOptions]);
 
   const handleExportCopy = useCallback(async () => {
     if (!source) return;
@@ -234,13 +241,13 @@ export function CustomCutter() {
       width: source.width,
       height: source.height,
       format: outputFormat,
-      stripMetadata,
+      ...downloadOptions,
       canvas: canvasRef.current,
     });
 
     if (!result) return;
 
-    await handleCopyToClipboard(result.blob, { stripMetadata, format: outputFormat });
+    await handleCopyToClipboard(result.blob, { ...downloadOptions, format: outputFormat });
   }, [
     canvasRef,
     handleCopyToClipboard,
@@ -537,6 +544,13 @@ export function CustomCutter() {
         checked={stripMetadata}
         disabled={!source}
         onChange={setStripMetadata}
+          cornerRadius={cornerRadius}
+          onCornerRadiusChange={setCornerRadius}
+          maxCornerRadius={
+            source
+              ? Math.floor(Math.min(source.width, source.height) / 2)
+              : 200
+          }
       />
 
       {error ? <HelperErrorAlert message={error} /> : null}
