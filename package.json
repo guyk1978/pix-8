@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "tsx scripts/dev-with-inventory.ts",
-    "build": "npm run setup-ml-assets && npm run generate-share-assets && npm run inventory && next build",
+    "build": "npm run setup-ml-assets && npm run generate-share-assets && npm run generate-example-images && npm run inventory && next build",
     "setup-ml-assets": "tsx scripts/setup-ml-assets.ts",
     "generate-share-assets": "tsx scripts/generate-share-assets.ts",
     "inventory": "tsx scripts/generate-inventory.ts",
-    "postinstall": "tsx scripts/setup-ml-assets.ts && npm run inventory",
+    "generate-example-images": "tsx scripts/generate-example-images.ts",
+    "postinstall": "tsx scripts/setup-ml-assets.ts && npm run generate-example-images && npm run inventory",
     "start": "next start",
     "lint": "eslint",
     "test:footer-resources": "node --import tsx --test src/lib/footerResources.test.ts"

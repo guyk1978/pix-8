@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
+import { ExampleImageCarousel } from "@/components/ui/ExampleImageCarousel";
 import {
   EXAMPLE_IMAGES,
   loadExampleImageAsFile,
@@ -73,43 +74,55 @@ export function ImageGallery({
         ) : null}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {EXAMPLE_IMAGES.map((example, index) => {
-          const isActive = selectedId === example.id;
-          const isLoading = loadingId === example.id;
+      <ExampleImageCarousel
+        items={EXAMPLE_IMAGES}
+        trackClassName="example-image-gallery-grid"
+      >
+        {(visibleImages, startIndex) =>
+          visibleImages.map((example, index) => {
+            const globalIndex = startIndex + index;
+            const isActive = selectedId === example.id;
+            const isLoading = loadingId === example.id;
 
-          return (
-            <button
-              key={example.id}
-              type="button"
-              disabled={busy}
-              onClick={() => void handleSelect(example.id)}
-              aria-pressed={isActive}
-              aria-busy={isLoading}
-              aria-label={t("upload.exampleImageAria", { number: index + 1 })}
-              className={`group overflow-hidden rounded-none border border-border bg-card p-1 text-start transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-50 ${
-                isActive ? activeCardClassName : ""
-              }`}
-            >
-              <div className="relative aspect-[4/3] overflow-hidden rounded-none border border-border bg-background">
-                <Image
-                  src={example.src}
-                  alt={t("upload.exampleImageAria", { number: index + 1 })}
-                  fill
-                  sizes="(max-width: 640px) 45vw, 160px"
-                  className={`object-cover transition-opacity ${
-                    isLoading ? "opacity-40" : "opacity-100"
-                  } group-hover:opacity-90`}
-                  unoptimized
-                />
-              </div>
-              <span className="mt-1 block px-0.5 font-mono text-[10px] leading-tight text-muted group-hover:text-foreground">
-                {t(`upload.examples.${example.id}`)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+            return (
+              <button
+                key={example.id}
+                type="button"
+                disabled={busy}
+                onClick={() => void handleSelect(example.id)}
+                aria-pressed={isActive}
+                aria-busy={isLoading}
+                aria-label={t("upload.exampleImageAria", {
+                  number: globalIndex + 1,
+                })}
+                className={`group overflow-hidden rounded-none border border-border bg-card p-1 text-start transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-50 ${
+                  isActive ? activeCardClassName : ""
+                }`}
+              >
+                <div className="relative aspect-[4/3] overflow-hidden rounded-none border border-border bg-background">
+                  <Image
+                    src={example.src}
+                    alt={t("upload.exampleImageAria", {
+                      number: globalIndex + 1,
+                    })}
+                    fill
+                    sizes="(max-width: 640px) 45vw, 160px"
+                    className={`object-cover transition-opacity ${
+                      isLoading ? "opacity-40" : "opacity-100"
+                    } group-hover:opacity-90`}
+                    unoptimized
+                  />
+                </div>
+                <span className="mt-1 block px-0.5 font-mono text-[10px] leading-tight text-muted group-hover:text-foreground">
+                  {t("upload.exampleImageAria", {
+                    number: globalIndex + 1,
+                  })}
+                </span>
+              </button>
+            );
+          })
+        }
+      </ExampleImageCarousel>
 
       <p className="font-mono text-[10px] leading-relaxed text-muted">
         {t("upload.exampleGalleryHint")}

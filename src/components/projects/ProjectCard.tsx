@@ -5,6 +5,7 @@ import { FolderOpen, Trash2 } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useProjects } from "@/components/projects/ProjectsContext";
 import { getToolTranslationKey } from "@/i18n";
+import { isEditorProjectPayload } from "@/lib/editor/editorProject";
 import { buildHomeToolHref } from "@/lib/homeTool";
 import type { SavedProjectRecord } from "@/lib/projects/types";
 import { getToolById } from "@/lib/tools";
@@ -24,9 +25,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const { t, language } = useLanguage();
   const { removeProject } = useProjects();
   const tool = getToolById(project.toolId);
-  const toolName = tool
-    ? t(getToolTranslationKey(tool.id, "name"))
-    : project.toolId;
+  const isEditorProject = isEditorProjectPayload(project.payload);
+  const toolName = isEditorProject
+    ? t("editor.project.label")
+    : tool
+      ? t(getToolTranslationKey(tool.id, "name"))
+      : project.toolId;
+
+  const openHref = isEditorProject
+    ? `/?project=${project.id}`
+    : buildHomeToolHref(project.toolId, { project: project.id });
 
   return (
     <article className="borderless-elevated flex flex-col gap-4 rounded-xl bg-card p-4 transition-shadow hover:shadow-[var(--shadow-hover)]">
@@ -42,7 +50,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
       <div className="mt-auto flex flex-col gap-2 sm:flex-row">
         <AppLink
-          href={buildHomeToolHref(project.toolId, { project: project.id })}
+          href={openHref}
           className="borderless-interactive inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-accent-muted px-4 py-2 font-label text-sm text-accent shadow-[var(--shadow-elevated)] transition-colors hover:bg-accent/20 hover:shadow-[var(--shadow-hover)]"
         >
           <FolderOpen className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />

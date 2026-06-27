@@ -1,26 +1,13 @@
-/** Sample images served from `public/examples/`. Keep in sync with that folder. */
-export type ExampleImageId =
-  | "image1"
-  | "image2"
-  | "image3"
-  | "image4"
-  | "image5"
-  | "image6";
+import type { ExampleImage } from "@/lib/exampleImages.generated";
 
-export interface ExampleImage {
-  id: ExampleImageId;
-  fileName: string;
-  src: string;
-}
+export {
+  EXAMPLE_IMAGES,
+  type ExampleImage,
+  type ExampleImageId,
+} from "@/lib/exampleImages.generated";
 
-export const EXAMPLE_IMAGES: ExampleImage[] = [
-  { id: "image1", fileName: "image1.webp", src: "/examples/image1.webp" },
-  { id: "image2", fileName: "image2.webp", src: "/examples/image2.webp" },
-  { id: "image3", fileName: "image3.webp", src: "/examples/image3.webp" },
-  { id: "image4", fileName: "image4.webp", src: "/examples/image4.webp" },
-  { id: "image5", fileName: "image5.webp", src: "/examples/image5.webp" },
-  { id: "image6", fileName: "image6.webp", src: "/examples/image6.webp" },
-];
+/** Max thumbnails visible at once; additional examples use carousel paging. */
+export const EXAMPLE_IMAGES_PAGE_SIZE = 6;
 
 export async function loadExampleImageAsFile(
   example: ExampleImage,

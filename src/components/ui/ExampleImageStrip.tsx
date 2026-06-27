@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { resolveErrorMessage } from "@/i18n";
+import { ExampleImageCarousel } from "@/components/ui/ExampleImageCarousel";
 import {
   EXAMPLE_IMAGES,
   loadExampleImageAsFile,
@@ -57,45 +58,51 @@ export function ExampleImageStrip({
         {t("upload.noImageTryThese")}
       </p>
 
-      <div
-        className="example-image-strip"
-        role="list"
-        aria-label={t("upload.exampleGalleryTitle")}
+      <ExampleImageCarousel
+        items={EXAMPLE_IMAGES}
+        trackClassName="example-image-strip"
       >
-        {EXAMPLE_IMAGES.map((example, index) => {
-          const isActive = selectedId === example.id;
-          const isLoading = loadingId === example.id;
+        {(visibleImages, startIndex) =>
+          visibleImages.map((example, index) => {
+            const globalIndex = startIndex + index;
+            const isActive = selectedId === example.id;
+            const isLoading = loadingId === example.id;
 
-          return (
-            <button
-              key={example.id}
-              type="button"
-              disabled={busy}
-              onClick={(event) => {
-                event.stopPropagation();
-                void handleSelect(example.id);
-              }}
-              aria-pressed={isActive}
-              aria-busy={isLoading}
-              aria-label={t("upload.exampleImageAria", { number: index + 1 })}
-              className={`example-image-strip-thumb group ${
-                isActive ? "example-image-strip-thumb--active" : ""
-              }`}
-            >
-              <Image
-                src={example.src}
-                alt=""
-                fill
-                sizes="48px"
-                className={`object-cover transition-opacity ${
-                  isLoading ? "opacity-40" : "opacity-100 group-hover:opacity-90"
+            return (
+              <button
+                key={example.id}
+                type="button"
+                disabled={busy}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  void handleSelect(example.id);
+                }}
+                aria-pressed={isActive}
+                aria-busy={isLoading}
+                aria-label={t("upload.exampleImageAria", {
+                  number: globalIndex + 1,
+                })}
+                className={`example-image-strip-thumb group ${
+                  isActive ? "example-image-strip-thumb--active" : ""
                 }`}
-                unoptimized
-              />
-            </button>
-          );
-        })}
-      </div>
+              >
+                <Image
+                  src={example.src}
+                  alt=""
+                  fill
+                  sizes="48px"
+                  className={`object-cover transition-opacity ${
+                    isLoading
+                      ? "opacity-40"
+                      : "opacity-100 group-hover:opacity-90"
+                  }`}
+                  unoptimized
+                />
+              </button>
+            );
+          })
+        }
+      </ExampleImageCarousel>
 
       {loadingId ? (
         <p className="example-image-strip-status font-mono text-[10px] text-muted">
