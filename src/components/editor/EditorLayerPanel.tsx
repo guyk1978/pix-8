@@ -42,7 +42,7 @@ export function EditorLayerPanel() {
   const handleDragEnd = () => setDragIndex(null);
 
   return (
-    <section className="contextual-panel contextual-panel--layers">
+    <section className="contextual-panel contextual-panel--layers editor-ui-enter">
       <header className="unified-editor-panel-header contextual-panel-header">
         <h2 className="unified-editor-panel-title">{t("editor.layers.stackTitle")}</h2>
         {source ? (

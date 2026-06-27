@@ -271,6 +271,16 @@ export const en = {
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",
       zoomReset: "Reset zoom to 100%",
+      backgroundToggle: "Toggle background ({mode})",
+      backgroundMode: {
+        grid: "Grid",
+        clean: "Clean matte",
+        contrast: "Contrast grid",
+      },
+    },
+    focusMode: {
+      hideHeader: "Enter focus mode",
+      showHeader: "Show header",
     },
     project: {
       label: "Unified Editor",

@@ -272,6 +272,16 @@ export const he: TranslationDictionary = {
       zoomIn: "זום פנימה",
       zoomOut: "זום החוצה",
       zoomReset: "איפוס זום ל-100%",
+      backgroundToggle: "שנה רקע ({mode})",
+      backgroundMode: {
+        grid: "רשת",
+        clean: "מט משי",
+        contrast: "רשת ניגודיות",
+      },
+    },
+    focusMode: {
+      hideHeader: "מצב מיקוד",
+      showHeader: "הצג כותרת",
     },
     project: {
       label: "עורך מאוחד",

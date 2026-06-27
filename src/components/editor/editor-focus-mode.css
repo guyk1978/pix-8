@@ -1,0 +1,101 @@
+/* Editor focus mode — collapsible app header */
+
+:root {
+  --app-header-height: 4rem;
+  --editor-focus-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-shell--editor-focus {
+  height: 100vh;
+  overflow: hidden;
+  --editor-chrome-top: var(--app-header-height);
+}
+
+.app-shell--editor-focus.app-shell--header-hidden {
+  --editor-chrome-top: 0px;
+}
+
+.app-header-wrapper {
+  flex-shrink: 0;
+  height: var(--app-header-height);
+  overflow: hidden;
+  transition: height 0.3s var(--editor-focus-ease);
+}
+
+.app-shell--header-hidden .app-header-wrapper {
+  height: 0;
+}
+
+.app-header-wrapper .app-header {
+  height: var(--app-header-height);
+  transition: transform 0.3s var(--editor-focus-ease);
+}
+
+.app-shell--header-hidden .app-header-wrapper .app-header {
+  transform: translateY(-100%);
+}
+
+.editor-focus-toggle {
+  color: var(--accent);
+}
+
+.editor-focus-fab {
+  position: fixed;
+  top: 0.625rem;
+  left: 50%;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--editor-accent, var(--accent)) 35%, var(--border));
+  background: color-mix(in srgb, var(--background) 92%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+  color: var(--foreground);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transform: translateX(-50%);
+  transition:
+    transform 0.3s var(--editor-focus-ease),
+    opacity 0.3s var(--editor-focus-ease),
+    box-shadow 0.3s var(--editor-focus-ease);
+}
+
+.editor-focus-fab:hover {
+  box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.5);
+}
+
+.editor-focus-fab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.editor-focus-fab-label {
+  max-width: 12rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .editor-focus-fab-label {
+    display: none;
+  }
+
+  .editor-focus-fab {
+    padding: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-header-wrapper,
+  .app-header-wrapper .app-header,
+  .editor-focus-fab {
+    transition: none;
+  }
+}

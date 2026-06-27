@@ -1,0 +1,45 @@
+/* Hebrew / RTL editor layout — canvas left, sidebar right, LTR canvas transforms */
+
+.unified-editor-body--sticky-canvas {
+  direction: ltr;
+  flex-direction: row;
+}
+
+.unified-editor-body--sticky-canvas > .sticky-canvas-column {
+  flex: 1 1 auto;
+  min-width: 0;
+  order: 1;
+}
+
+.unified-editor-body--sticky-canvas > .editor-sidebar-dock {
+  flex: 0 0 auto;
+  order: 2;
+}
+
+/* Isolate canvas transforms from document RTL */
+.sticky-canvas-column,
+.canvas-anchor,
+.canvas-workspace,
+.canvas-container,
+.image-wrapper,
+.image-wrapper__stage {
+  direction: ltr;
+}
+
+.image-wrapper__stage {
+  left: 0;
+  top: 0;
+  inset-inline-start: unset;
+  transform-origin: left top;
+}
+
+/* Hebrew UI text inside the dock */
+.editor-sidebar-dock[dir="rtl"] {
+  text-align: start;
+}
+
+.editor-sidebar-dock[dir="rtl"] .unified-editor-panel-header,
+.editor-sidebar-dock[dir="rtl"] .unified-editor-layer-label,
+.editor-sidebar-dock[dir="rtl"] .unified-editor-params-body {
+  text-align: start;
+}

@@ -1,0 +1,136 @@
+/* Editor UI polish — floating sidebar dock, motion, hover refinement */
+
+.unified-editor-body--sticky-canvas {
+  gap: 1.5rem;
+  padding-inline-end: 1.5rem;
+  padding-block: 0.75rem;
+  box-sizing: border-box;
+}
+
+.unified-editor-body--sticky-canvas .editor-sidebar-dock {
+  position: relative;
+  z-index: 2;
+  align-self: stretch;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  border: 1px solid #1a1a1a;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  background: var(--editor-surface);
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+  transition:
+    box-shadow 0.3s ease-in-out,
+    border-color 0.3s ease-in-out;
+}
+
+html:not(.dark) .unified-editor-body--sticky-canvas .editor-sidebar-dock {
+  border-color: color-mix(in srgb, var(--editor-border) 90%, #1a1a1a);
+  box-shadow:
+    -4px 0 18px rgba(0, 0, 0, 0.08),
+    -1px 0 0 color-mix(in srgb, var(--editor-border) 80%, transparent);
+}
+
+.unified-editor-body--sticky-canvas .sticky-canvas-column {
+  padding-inline-end: 0;
+}
+
+/* Pop-in entrance (opacity + transform only — no layout shift) */
+@keyframes editor-ui-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.unified-editor .editor-ui-enter {
+  animation: editor-ui-enter 0.3s ease-in-out both;
+}
+
+.unified-editor .editor-ui-motion {
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
+}
+
+.unified-editor .unified-editor-dropdown.editor-ui-enter {
+  animation: editor-ui-enter 0.3s ease-in-out both;
+}
+
+/* Layer list hover */
+.unified-editor-layer-item {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.unified-editor-layer-item:hover:not(.is-dragging):not(.is-active) {
+  background: color-mix(in srgb, var(--editor-accent) 6%, var(--editor-surface));
+}
+
+/* Parameter controls */
+.unified-editor-field {
+  transition: opacity 0.2s ease;
+}
+
+.unified-editor-input {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.unified-editor-input:hover:not(:disabled):not(:focus) {
+  border-color: color-mix(in srgb, var(--editor-accent) 35%, var(--editor-border));
+}
+
+.unified-editor-segment {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.unified-editor-filter-btn {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.unified-editor-bottom-bar .unified-editor-pill-btn,
+.unified-editor-bottom-bar .unified-editor-action-btn,
+.unified-editor-bottom-bar .unified-editor-history-btn {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unified-editor .editor-ui-enter,
+  .unified-editor .unified-editor-dropdown.editor-ui-enter {
+    animation: none;
+  }
+
+  .unified-editor .editor-ui-motion {
+    transition: none;
+  }
+
+  .unified-editor-layer-item,
+  .unified-editor-input,
+  .unified-editor-segment,
+  .unified-editor-filter-btn {
+    transition: none;
+  }
+}

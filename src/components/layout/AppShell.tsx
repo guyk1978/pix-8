@@ -6,6 +6,13 @@ import { Header } from "@/components/layout/Header";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ToolSidebarProvider } from "@/components/layout/ToolSidebarContext";
 import { ToolWorkspaceLayout } from "@/components/layout/ToolWorkspaceLayout";
+import {
+  EditorFocusFab,
+} from "@/components/editor/EditorFocusFab";
+import {
+  EditorFocusModeProvider,
+  useOptionalEditorFocusMode,
+} from "@/components/editor/EditorFocusModeContext";
 import { registerPwaServiceWorker } from "@/hooks/usePwaInstall";
 import { isHomeDashboard, isSplashEntry } from "@/lib/routes";
 
@@ -13,19 +20,41 @@ interface AppShellProps {
   children: ReactNode;
 }
 
-function AppShellFrame({ children }: AppShellProps) {
+function AppShellFrameInner({ children }: AppShellProps) {
   const pathname = usePathname();
   const hideFooter = isHomeDashboard(pathname);
+  const focusMode = useOptionalEditorFocusMode();
+  const isHeaderVisible = focusMode?.isHeaderVisible ?? true;
 
   return (
-    <div className={`flex min-w-0 flex-col overflow-x-clip bg-background ${
-      hideFooter ? "h-screen overflow-hidden" : "min-h-screen"
-    }`}>
-      <Header />
+    <div
+      className={`app-shell flex min-w-0 flex-col overflow-x-clip bg-background ${
+        hideFooter ? "app-shell--editor-focus h-screen overflow-hidden" : "min-h-screen"
+      } ${hideFooter && !isHeaderVisible ? "app-shell--header-hidden" : ""}`}
+    >
+      <div className="app-header-wrapper" aria-hidden={!isHeaderVisible}>
+        <Header />
+      </div>
+      {hideFooter && focusMode ? <EditorFocusFab /> : null}
       <ToolWorkspaceLayout>{children}</ToolWorkspaceLayout>
       {hideFooter ? null : <SiteFooter />}
     </div>
   );
+}
+
+function AppShellFrame({ children }: AppShellProps) {
+  const pathname = usePathname();
+  const hideFooter = isHomeDashboard(pathname);
+
+  if (hideFooter) {
+    return (
+      <EditorFocusModeProvider>
+        <AppShellFrameInner>{children}</AppShellFrameInner>
+      </EditorFocusModeProvider>
+    );
+  }
+
+  return <AppShellFrameInner>{children}</AppShellFrameInner>;
 }
 
 function AppShellInner({ children }: AppShellProps) {

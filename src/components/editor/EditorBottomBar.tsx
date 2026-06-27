@@ -33,7 +33,7 @@ const BOTTOM_BAR_ICONS: Record<string, typeof Crop> = {
 const DOWNLOAD_FORMATS: ImageFormat[] = ["png", "jpeg", "webp"];
 
 export function EditorBottomBar() {
-  const { t } = useLanguage();
+  const { t, dir, language } = useLanguage();
   const {
     source,
     addToolAction,
@@ -64,7 +64,7 @@ export function EditorBottomBar() {
 
   return (
     <>
-      <div className="unified-editor-bottom-bar shrink-0">
+      <div dir={dir} lang={language} className="unified-editor-bottom-bar shrink-0">
         <div className="unified-editor-bottom-actions">
           <div className="unified-editor-history-group">
             <button

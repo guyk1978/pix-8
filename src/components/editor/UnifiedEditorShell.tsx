@@ -29,7 +29,10 @@ function EditorLayoutInner() {
         <EditorProjectLoader />
       </Suspense>
       <EditorTopNav />
-      <div className="unified-editor-body unified-editor-body--sticky-canvas flex min-h-0 flex-1 overflow-hidden">
+      <div
+        className="unified-editor-body unified-editor-body--sticky-canvas flex min-h-0 flex-1 overflow-hidden"
+        dir="ltr"
+      >
         <EditorCanvas />
         <EditorContextualSidebar />
       </div>

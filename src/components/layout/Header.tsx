@@ -15,6 +15,7 @@ import {
 } from "@/components/layout/headerNavStyles";
 import { PwaInstallButton } from "@/components/layout/PwaInstallButton";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { EditorFocusToggle } from "@/components/editor/EditorFocusToggle";
 import { BrandLogo, brandLogoAriaLabel } from "@/components/brand/BrandLogo";
 import { APP_ROUTES } from "@/lib/navigationConfig";
 import { isActiveHref, isHomeDashboard, isToolPage } from "@/lib/routes";
@@ -98,6 +99,7 @@ export function Header() {
           </span>
 
           <LanguageSwitcher className={headerUtilityButtonClass} />
+          <EditorFocusToggle />
           <ShareButton className={headerUtilityButtonClass} />
           <ThemeToggle className={headerUtilityButtonClass} />
           <PwaInstallButton className={headerUtilityButtonClass} />

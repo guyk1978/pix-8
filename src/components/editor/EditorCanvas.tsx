@@ -13,8 +13,12 @@ import { ImageWrapper } from "@/components/editor/ImageWrapper";
 import { EditorCanvasDrag, useEditorCanvasDragHandlers } from "@/components/editor/EditorCanvasDrag";
 import { useEditorMaskBrushHandlers } from "@/components/editor/useEditorMaskBrushHandlers";
 import { EditorMaskBrushCursor } from "@/components/editor/EditorMaskBrushCursor";
-import { EditorCanvasZoomControls } from "@/components/editor/EditorCanvasZoomControls";
+import { EditorCanvasViewportControls } from "@/components/editor/EditorCanvasViewportControls";
 import { useEditorMaskClickHandlers } from "@/components/editor/useEditorMaskClickHandlers";
+import {
+  cycleCanvasBackgroundMode,
+  type CanvasBackgroundMode,
+} from "@/lib/editor/canvasBackgroundMode";
 import {
   ClickPulseOverlay,
   CursorOverlay,
@@ -36,6 +40,8 @@ export function EditorCanvas() {
   const liveFeedback = useLiveFeedback();
   const [isDragging, setIsDragging] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [canvasBackgroundMode, setCanvasBackgroundMode] =
+    useState<CanvasBackgroundMode>("grid");
   const inputId = useId();
   const drag = useEditorCanvasDragHandlers();
   const maskBrush = useEditorMaskBrushHandlers();
@@ -156,8 +162,16 @@ export function EditorCanvas() {
   return (
     <div className="unified-editor-canvas sticky-canvas-column">
       <div className="canvas-anchor is-anchored">
-        <EditorCanvasZoomControls />
-        <div ref={workspaceRef} className="canvas-workspace">
+        <EditorCanvasViewportControls
+          canvasBackgroundMode={canvasBackgroundMode}
+          onCycleBackground={() =>
+            setCanvasBackgroundMode((current) => cycleCanvasBackgroundMode(current))
+          }
+        />
+        <div
+          ref={workspaceRef}
+          className={`canvas-workspace canvas-workspace--${canvasBackgroundMode}`}
+        >
           <CanvasContainer width={frame.frameWidth} height={frame.frameHeight}>
             <ImageWrapper
               viewportRef={viewport.viewportRef}

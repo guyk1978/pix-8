@@ -3,6 +3,9 @@
 @import "../components/editor/contextual-scroll.css";
 @import "../components/editor/sticky-canvas.css";
 @import "../components/editor/canvas-viewport.css";
+@import "../components/editor/editor-focus-mode.css";
+@import "../components/editor/editor-ui-polish.css";
+@import "../components/editor/editor-rtl.css";
 
 /* Industrial Light (default when .light or no .dark) */
 :root {
@@ -4183,7 +4186,7 @@ html:not(.dark) .unified-editor {
   100% { transform: translateY(8px); }
 }
 
-.canvas-anchor .unified-editor-zoom-controls {
+.canvas-anchor .canvas-viewport-controls {
   position: absolute;
   top: 0.75rem;
   inset-inline-end: 0.75rem;
@@ -4384,7 +4387,6 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
   padding: 0.35rem 0.25rem;
   border-radius: 0.35rem;
   border: 1px solid transparent;
-  transition: border-color 0.15s, background 0.15s;
 }
 
 .unified-editor-layer-item.is-active {
@@ -4543,7 +4545,6 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
   font-size: 0.75rem;
   color: var(--editor-muted);
   background: var(--editor-input-bg);
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
 .unified-editor-segment.is-active,
@@ -4566,7 +4567,6 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
   font-size: 0.75rem;
   color: var(--editor-muted);
   background: var(--editor-input-bg);
-  transition: border-color 0.15s, color 0.15s;
 }
 
 .unified-editor-filter-btn.is-active,

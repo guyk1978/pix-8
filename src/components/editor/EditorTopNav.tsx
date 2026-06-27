@@ -7,7 +7,7 @@ import { EDITOR_CATEGORIES, useEditor } from "@/hooks/useEditorState";
 import type { EditorToolAction } from "@/lib/editor/layerTypes";
 
 export function EditorTopNav() {
-  const { t } = useLanguage();
+  const { t, dir, language } = useLanguage();
   const { openCategory, setOpenCategory, addToolAction, source } = useEditor();
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -29,6 +29,8 @@ export function EditorTopNav() {
   return (
     <nav
       ref={navRef}
+      dir={dir}
+      lang={language}
       className="unified-editor-nav unified-editor-chrome shrink-0 border-b"
       aria-label={t("editor.nav.label")}
     >
@@ -56,7 +58,7 @@ export function EditorTopNav() {
               </button>
               {isOpen ? (
                 <div
-                  className="unified-editor-dropdown"
+                  className="unified-editor-dropdown editor-ui-enter"
                   role="menu"
                 >
                   {category.tools.map((tool) => (
