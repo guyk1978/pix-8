@@ -9,7 +9,8 @@
     "generate-share-assets": "tsx scripts/generate-share-assets.ts",
     "inventory": "tsx scripts/generate-inventory.ts",
     "generate-example-images": "tsx scripts/generate-example-images.ts",
-    "postinstall": "tsx scripts/setup-ml-assets.ts && npm run generate-example-images && npm run inventory",
+    "postinstall": "npm run setup-ml-assets && npm run generate-example-images && npm run inventory",
+    "prestart": "npm run setup-ml-assets",
     "start": "next start",
     "lint": "eslint",
     "test:footer-resources": "node --import tsx --test src/lib/footerResources.test.ts"

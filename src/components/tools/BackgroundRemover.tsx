@@ -37,6 +37,11 @@ import {
   type RemovalProgress,
 } from "@/lib/backgroundRemoval";
 import { ToolWorkspacePreview } from "@/components/tools/shared/ToolWorkspacePreview";
+import { SliderControl } from "@/components/ui/SliderControl";
+import { BackgroundReplacePicker } from "@/components/ui/BackgroundReplacePicker";
+import {
+  type BackgroundImageLoaded,
+} from "@/lib/backgroundPresets";
 
 const toggleButtonClassName =
   "min-h-10 flex-1 rounded-sm border border-border bg-background px-3 py-2 font-label text-muted transition-colors hover:border-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40";
@@ -65,6 +70,11 @@ export function BackgroundRemover() {
   const [backgroundMode, setBackgroundMode] =
     useState<BackgroundMode>("transparent");
   const [backgroundColor, setBackgroundColor] = useState("#121212");
+  const [backgroundOpacity, setBackgroundOpacity] = useState(100);
+  const [subjectOpacity, setSubjectOpacity] = useState(100);
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | null>(null);
+  const [backgroundImageKey, setBackgroundImageKey] = useState<string | null>(null);
+  const backgroundImageRef = useRef<HTMLImageElement | null>(null);
   const {
     stripMetadata,
     setStripMetadata,
@@ -90,6 +100,13 @@ export function BackgroundRemover() {
     setRemovalProgress(null);
   }, []);
 
+  const resetBackgroundImage = useCallback(() => {
+    if (backgroundImageUrl) URL.revokeObjectURL(backgroundImageUrl);
+    backgroundImageRef.current = null;
+    setBackgroundImageUrl(null);
+    setBackgroundImageKey(null);
+  }, [backgroundImageUrl]);
+
   const {
     canvasRef,
     source,
@@ -110,15 +127,20 @@ export function BackgroundRemover() {
     getExtraPayload: () => ({
       backgroundMode,
       backgroundColor,
+      backgroundOpacity,
+      subjectOpacity,
       stripMetadata,
     }),
     applyPayload: (payload) => {
       applyBooleanPayload(payload, "stripMetadata", setStripMetadata);
       applyNumberPayload(payload, "cornerRadius", setCornerRadius);
       applyStringPayload(payload, "backgroundColor", setBackgroundColor);
+      applyNumberPayload(payload, "backgroundOpacity", setBackgroundOpacity);
+      applyNumberPayload(payload, "subjectOpacity", setSubjectOpacity);
       if (
         payload.backgroundMode === "transparent" ||
-        payload.backgroundMode === "solid"
+        payload.backgroundMode === "solid" ||
+        payload.backgroundMode === "image"
       ) {
         setBackgroundMode(payload.backgroundMode);
       }
@@ -139,7 +161,7 @@ export function BackgroundRemover() {
     !engineFailed;
 
   const paintPreview = useCallback(
-    (mode: BackgroundMode, color: string) => {
+    (mode: BackgroundMode, color: string, bgOpacity: number, subOpacity: number) => {
       const canvas = previewCanvasRef.current;
       const image = resultImageRef.current;
 
@@ -148,6 +170,10 @@ export function BackgroundRemover() {
       renderResultToCanvas(image, {
         backgroundMode: mode,
         backgroundColor: mode === "solid" ? color : undefined,
+        backgroundOpacity: bgOpacity,
+        subjectOpacity: subOpacity,
+        backgroundImage:
+          mode === "image" ? backgroundImageRef.current : undefined,
         canvas,
       });
     },
@@ -156,8 +182,42 @@ export function BackgroundRemover() {
 
   useLayoutEffect(() => {
     if (!hasProcessed) return;
-    paintPreview(backgroundMode, backgroundColor);
-  }, [hasProcessed, backgroundMode, backgroundColor, paintPreview]);
+    paintPreview(backgroundMode, backgroundColor, backgroundOpacity, subjectOpacity);
+  }, [
+    hasProcessed,
+    backgroundMode,
+    backgroundColor,
+    backgroundOpacity,
+    subjectOpacity,
+    backgroundImageUrl,
+    paintPreview,
+  ]);
+
+  const applyBackgroundImage = useCallback(
+    (payload: BackgroundImageLoaded) => {
+      resetBackgroundImage();
+      backgroundImageRef.current = payload.image;
+      setBackgroundImageUrl(payload.objectUrl);
+      setBackgroundImageKey(payload.key);
+      setBackgroundMode("image");
+      if (hasProcessed) {
+        paintPreview(
+          "image",
+          backgroundColor,
+          backgroundOpacity,
+          subjectOpacity,
+        );
+      }
+    },
+    [
+      resetBackgroundImage,
+      hasProcessed,
+      paintPreview,
+      backgroundColor,
+      backgroundOpacity,
+      subjectOpacity,
+    ],
+  );
 
   const preloadEngine = useCallback(async () => {
     if (!isBackgroundRemovalEngineAvailable()) {
@@ -197,6 +257,12 @@ export function BackgroundRemover() {
     void preloadEngine();
   }, [preloadEngine]);
 
+  useEffect(() => {
+    return () => {
+      if (backgroundImageUrl) URL.revokeObjectURL(backgroundImageUrl);
+    };
+  }, [backgroundImageUrl]);
+
   const handleFileChange = useCallback(
     (file: File | null) => {
       resetProcessing();
@@ -208,6 +274,59 @@ export function BackgroundRemover() {
     },
     [clear, loadFile, resetProcessing],
   );
+
+  const handleBackgroundFileChange = useCallback(
+    (file: File | null) => {
+      resetBackgroundImage();
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      const image = new Image();
+      image.onload = () => {
+        backgroundImageRef.current = image;
+        setBackgroundImageUrl(url);
+        setBackgroundImageKey(`upload:${file.name}`);
+        setBackgroundMode("image");
+        if (hasProcessed) {
+          paintPreview(
+            "image",
+            backgroundColor,
+            backgroundOpacity,
+            subjectOpacity,
+          );
+        }
+      };
+      image.src = url;
+    },
+    [
+      resetBackgroundImage,
+      hasProcessed,
+      paintPreview,
+      backgroundColor,
+      backgroundOpacity,
+      subjectOpacity,
+    ],
+  );
+
+  const handlePresetColorSelect = useCallback((color: string) => {
+    setBackgroundMode("solid");
+    setBackgroundColor(color);
+    resetBackgroundImage();
+    if (hasProcessed) {
+      paintPreview("solid", color, backgroundOpacity, subjectOpacity);
+    }
+  }, [
+    resetBackgroundImage,
+    hasProcessed,
+    paintPreview,
+    backgroundOpacity,
+    subjectOpacity,
+  ]);
+
+  const backgroundDimensions = {
+    width: resultImageRef.current?.naturalWidth ?? source?.width ?? 1920,
+    height: resultImageRef.current?.naturalHeight ?? source?.height ?? 1080,
+  };
 
   const handleModeChange = useCallback((mode: BackgroundMode) => {
     setBackgroundMode(mode);
@@ -259,6 +378,10 @@ export function BackgroundRemover() {
         backgroundMode,
         backgroundColor:
           backgroundMode === "solid" ? backgroundColor : undefined,
+        backgroundOpacity,
+        subjectOpacity,
+        backgroundImage:
+          backgroundMode === "image" ? backgroundImageRef.current : undefined,
         canvas: canvasRef.current,
       });
 
@@ -276,6 +399,8 @@ export function BackgroundRemover() {
     source,
     backgroundMode,
     backgroundColor,
+    backgroundOpacity,
+    subjectOpacity,
     stripMetadata,
     handleDownload,
     canvasRef,
@@ -293,6 +418,10 @@ export function BackgroundRemover() {
         backgroundMode,
         backgroundColor:
           backgroundMode === "solid" ? backgroundColor : undefined,
+        backgroundOpacity,
+        subjectOpacity,
+        backgroundImage:
+          backgroundMode === "image" ? backgroundImageRef.current : undefined,
         canvas: canvasRef.current,
       });
 
@@ -305,6 +434,8 @@ export function BackgroundRemover() {
     source,
     backgroundMode,
     backgroundColor,
+    backgroundOpacity,
+    subjectOpacity,
     stripMetadata,
     handleCopyToClipboard,
     canvasRef,
@@ -322,7 +453,7 @@ export function BackgroundRemover() {
   const modelProgress = formatDownloadProgress(removalProgress);
 
   const previewPanelClassName = `relative flex min-h-48 items-center justify-center overflow-hidden rounded-sm border border-border p-3 sm:min-h-56 ${
-    backgroundMode === "transparent" && hasProcessed
+    backgroundMode === "transparent" && hasProcessed && subjectOpacity >= 100
       ? "transparency-checkerboard"
       : ""
   }`;
@@ -356,7 +487,7 @@ export function BackgroundRemover() {
         <div className="space-y-4">
           <div className="space-y-2">
             <span className="font-label text-muted">{t("toolUi.bgRemover.background")}</span>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 disabled={!source || isBusy}
@@ -377,8 +508,31 @@ export function BackgroundRemover() {
               >
                 {t("toolUi.bgRemover.solidColor")}
               </button>
+              <button
+                type="button"
+                disabled={!source || isBusy}
+                onClick={() => handleModeChange("image")}
+                className={`${toggleButtonClassName} ${
+                  backgroundMode === "image" ? activeToggleClassName : ""
+                }`}
+              >
+                {t("toolUi.bgRemover.backgroundImage")}
+              </button>
             </div>
           </div>
+
+          {backgroundMode !== "transparent" ? (
+            <BackgroundReplacePicker
+              disabled={!source || isBusy}
+              selectedColor={backgroundMode === "solid" ? backgroundColor : null}
+              selectedImageKey={
+                backgroundMode === "image" ? backgroundImageKey : null
+              }
+              dimensions={backgroundDimensions}
+              onSelectColor={handlePresetColorSelect}
+              onSelectImage={applyBackgroundImage}
+            />
+          ) : null}
 
           {backgroundMode === "solid" && (
             <div className="mt-4 flex items-center gap-3">
@@ -397,6 +551,46 @@ export function BackgroundRemover() {
               <span className="font-mono text-xs text-muted">{backgroundColor}</span>
             </div>
           )}
+
+          {backgroundMode === "image" && (
+            <div className="mt-4 space-y-2">
+              <label htmlFor="bg-remover-bg-image" className="font-label text-muted">
+                {t("toolUi.bgRemover.uploadBackground")}
+              </label>
+              <input
+                id="bg-remover-bg-image"
+                type="file"
+                accept="image/*"
+                disabled={!source || isBusy}
+                onChange={(event) =>
+                  handleBackgroundFileChange(event.target.files?.[0] ?? null)
+                }
+                className="block w-full text-sm text-muted file:me-3 file:rounded-sm file:border file:border-border file:bg-background file:px-3 file:py-2 file:font-label file:text-foreground"
+              />
+            </div>
+          )}
+
+          {backgroundMode !== "transparent" ? (
+            <SliderControl
+              label={t("toolUi.bgRemover.backgroundOpacity")}
+              value={backgroundOpacity}
+              min={0}
+              max={100}
+              suffix="%"
+              disabled={!source || isBusy}
+              onChange={setBackgroundOpacity}
+            />
+          ) : null}
+
+          <SliderControl
+            label={t("toolUi.bgRemover.subjectOpacity")}
+            value={subjectOpacity}
+            min={0}
+            max={100}
+            suffix="%"
+            disabled={!source || isBusy}
+            onChange={setSubjectOpacity}
+          />
         </div>
       </WorkflowSettings>
 

@@ -1,4 +1,9 @@
 import { SEGMENTATION_MODEL } from "@/lib/backgroundRemoval/constants";
+import {
+  getSegmentationModelMissingMessage,
+  isSegmentationModelAssetPresent,
+  resetSegmentationModelAssetCheck,
+} from "@/lib/backgroundRemoval/modelAssetCheck";
 import type { RemovalProgress } from "@/lib/backgroundRemoval/types";
 import { loadModelWithCache } from "@/lib/modelCache";
 
@@ -142,6 +147,7 @@ export function resetBackgroundRemovalEngine(): void {
   workerFailed = false;
   lastEngineError = null;
   initPromise = null;
+  resetSegmentationModelAssetCheck();
 }
 
 export async function warmBackgroundRemovalEngine(
@@ -159,6 +165,15 @@ export async function warmBackgroundRemovalEngine(
   initPromise = new Promise<void>((resolve, reject) => {
     void (async () => {
       try {
+        if (!(await isSegmentationModelAssetPresent())) {
+          workerFailed = true;
+          workerReady = false;
+          lastEngineError = getSegmentationModelMissingMessage();
+          initPromise = null;
+          reject(new Error(lastEngineError));
+          return;
+        }
+
         onProgress?.({ phase: "loading-model" });
 
         const modelBuffer = await loadModelWithCache(

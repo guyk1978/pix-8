@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { Readable } from "node:stream";
 
 const MODEL_URL =
-  "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2netp.onnx";
+  "https://github.com/yakhyo/modnet/releases/download/weights/modnet_photographic.onnx";
 
 const ORT_FILES = [
   "ort-wasm-simd-threaded.wasm",
@@ -24,7 +24,7 @@ async function fileExists(path: string): Promise<boolean> {
 }
 
 export async function setupMlAssets(root = process.cwd()): Promise<void> {
-  const modelPath = join(root, "public", "models", "u2netp.onnx");
+  const modelPath = join(root, "public", "models", "modnet_photographic.onnx");
   const ortSrc = join(root, "node_modules", "onnxruntime-web", "dist");
   const ortDest = join(root, "public", "ort");
 

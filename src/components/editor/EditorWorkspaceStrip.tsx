@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useId, useRef } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useEditor } from "@/hooks/useEditorState";
@@ -16,9 +16,12 @@ export function EditorWorkspaceStrip() {
     activeWorkspaceImageId,
     addWorkspaceImage,
     activateWorkspaceImage,
+    removeWorkspaceImage,
   } = useEditor();
 
   if (!source) return null;
+
+  const canRemove = workspaceImages.length > 1;
 
   return (
     <div className="unified-editor-workspace shrink-0 border-b border-[var(--editor-border)]">
@@ -38,30 +41,50 @@ export function EditorWorkspaceStrip() {
           const isActive = image.id === activeWorkspaceImageId;
 
           return (
-            <button
+            <div
               key={image.id}
-              type="button"
-              className={`unified-editor-workspace-thumb ${
+              className={`unified-editor-workspace-item ${
                 isActive ? "is-active" : ""
               }`}
-              aria-label={t("editor.workspace.imageAria", {
-                name: image.name,
-                number: index + 1,
-              })}
-              aria-pressed={isActive}
-              onClick={() => {
-                if (!isActive) void activateWorkspaceImage(image.id);
-              }}
             >
-              <Image
-                src={image.url}
-                alt=""
-                fill
-                sizes="56px"
-                className="object-cover"
-                unoptimized
-              />
-            </button>
+              <button
+                type="button"
+                className="unified-editor-workspace-thumb"
+                aria-label={t("editor.workspace.imageAria", {
+                  name: image.name,
+                  number: index + 1,
+                })}
+                aria-pressed={isActive}
+                onClick={() => {
+                  if (!isActive) activateWorkspaceImage(image.id);
+                }}
+              >
+                <Image
+                  src={image.url}
+                  alt=""
+                  fill
+                  sizes="56px"
+                  className="object-cover"
+                  unoptimized
+                />
+              </button>
+
+              {canRemove ? (
+                <button
+                  type="button"
+                  className="unified-editor-workspace-remove"
+                  aria-label={t("editor.workspace.removeAria", {
+                    name: image.name,
+                  })}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    removeWorkspaceImage(image.id);
+                  }}
+                >
+                  <X className="h-3 w-3" strokeWidth={2.5} aria-hidden />
+                </button>
+              ) : null}
+            </div>
           );
         })}
       </div>

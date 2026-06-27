@@ -1,4 +1,4 @@
-export type BackgroundMode = "transparent" | "solid";
+export type BackgroundMode = "transparent" | "solid" | "image";
 
 export type RemovalPhase = "loading-model" | "processing";
 
@@ -12,5 +12,8 @@ export interface RemovalProgress {
 export interface BackgroundRemovalOptions {
   backgroundMode: BackgroundMode;
   backgroundColor?: string;
+  backgroundOpacity?: number;
+  subjectOpacity?: number;
+  backgroundImage?: HTMLImageElement | null;
   canvas?: HTMLCanvasElement | null;
 }

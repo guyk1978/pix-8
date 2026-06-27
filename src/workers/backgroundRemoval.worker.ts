@@ -5,11 +5,25 @@ import {
   ALPHA_PRESERVATION_GAMMA,
   GUIDED_FILTER_EPSILON,
   GUIDED_FILTER_RADIUS,
-  IMAGENET_MEAN,
-  IMAGENET_STD,
+  MODNET_MEAN,
+  MODNET_STD,
   ONNX_WASM_PATH,
   SEGMENTATION_MODEL,
 } from "@/lib/backgroundRemoval/constants";
+import {
+  decontaminateExteriorEdgeRgb,
+  estimateBorderBackgroundColor,
+  isolateForegroundAlpha,
+  recoverEdgeAlphaOnly,
+  recoverLimbsFromReference,
+  snapBackgroundAlpha,
+} from "@/lib/backgroundRemoval/alphaMatting";
+import { fixColorSpillHalos, fillEnclosedAlphaGaps, removeBackgroundBleed } from "@/lib/backgroundRemoval/colorSpill";
+import {
+  imageDataToModnetTensor,
+  modnetInferenceDimensions,
+  resizeMatteBilinear,
+} from "@/lib/backgroundRemoval/modnetPreprocess";
 import { guidedFilter, imageDataToGrayscaleGuide } from "@/lib/guidedFilter";
 
 type WorkerRequest =
@@ -47,80 +61,8 @@ function post(message: WorkerOutbound, transfer?: Transferable[]) {
   self.postMessage(message, transfer ?? []);
 }
 
-function normalizeMask(values: Float32Array): Float32Array {
-  let min = Infinity;
-  let max = -Infinity;
-
-  for (const value of values) {
-    if (value < min) min = value;
-    if (value > max) max = value;
-  }
-
-  const range = max - min || 1;
-  const output = new Float32Array(values.length);
-  for (let i = 0; i < values.length; i++) {
-    output[i] = (values[i] - min) / range;
-  }
-  return output;
-}
-
-function resizeMaskBilinear(
-  mask: Float32Array,
-  sourceWidth: number,
-  sourceHeight: number,
-  targetWidth: number,
-  targetHeight: number,
-): Float32Array {
-  const output = new Float32Array(targetWidth * targetHeight);
-  const xRatio = sourceWidth / targetWidth;
-  const yRatio = sourceHeight / targetHeight;
-
-  for (let y = 0; y < targetHeight; y++) {
-    const srcY = Math.min(sourceHeight - 1, y * yRatio);
-    const y0 = Math.floor(srcY);
-    const y1 = Math.min(sourceHeight - 1, y0 + 1);
-    const yLerp = srcY - y0;
-
-    for (let x = 0; x < targetWidth; x++) {
-      const srcX = Math.min(sourceWidth - 1, x * xRatio);
-      const x0 = Math.floor(srcX);
-      const x1 = Math.min(sourceWidth - 1, x0 + 1);
-      const xLerp = srcX - x0;
-
-      const top =
-        mask[y0 * sourceWidth + x0] * (1 - xLerp) +
-        mask[y0 * sourceWidth + x1] * xLerp;
-      const bottom =
-        mask[y1 * sourceWidth + x0] * (1 - xLerp) +
-        mask[y1 * sourceWidth + x1] * xLerp;
-
-      output[y * targetWidth + x] = top * (1 - yLerp) + bottom * yLerp;
-    }
-  }
-
-  return output;
-}
-
-function imageDataToInputTensor(
-  imageData: ImageData,
-  size: number,
-): ort.Tensor {
-  const { data } = imageData;
-  const plane = size * size;
-  const tensorData = new Float32Array(plane * 3);
-
-  for (let i = 0; i < plane; i++) {
-    const offset = i * 4;
-    const r = data[offset] / 255;
-    const g = data[offset + 1] / 255;
-    const b = data[offset + 2] / 255;
-
-    tensorData[i] = (r - IMAGENET_MEAN[0]) / IMAGENET_STD[0];
-    tensorData[plane + i] = (g - IMAGENET_MEAN[1]) / IMAGENET_STD[1];
-    tensorData[plane * 2 + i] = (b - IMAGENET_MEAN[2]) / IMAGENET_STD[2];
-  }
-
-  return new ort.Tensor("float32", tensorData, [1, 3, size, size]);
+function clamp01(value: number): number {
+  return Math.min(1, Math.max(0, value));
 }
 
 function applyAlphaMask(
@@ -135,23 +77,71 @@ function applyAlphaMask(
     output[offset] = data[offset];
     output[offset + 1] = data[offset + 1];
     output[offset + 2] = data[offset + 2];
-    output[offset + 3] = Math.round(alpha[i] * 255);
+    output[offset + 3] = Math.round(clamp01(alpha[i]) * 255);
   }
 
   return output;
 }
 
-/** Lifts mid-range alpha so faint subject pixels are less likely to be erased. */
-function preserveSubjectAlpha(
-  alpha: Float32Array,
-  gamma: number,
-): Float32Array {
+function preserveSubjectAlpha(alpha: Float32Array, gamma: number): Float32Array {
   const output = new Float32Array(alpha.length);
   for (let i = 0; i < alpha.length; i++) {
-    const clamped = Math.min(1, Math.max(0, alpha[i]));
-    output[i] = Math.pow(clamped, gamma);
+    output[i] = Math.pow(clamp01(alpha[i]), gamma);
   }
   return output;
+}
+
+function refineSegmentationAlpha(
+  fullImageData: ImageData,
+  coarseMask: Float32Array,
+  width: number,
+  height: number,
+): Uint8ClampedArray {
+  const guide = imageDataToGrayscaleGuide(fullImageData);
+  const { data } = fullImageData;
+
+  let alpha = preserveSubjectAlpha(
+    guidedFilter(
+      guide,
+      coarseMask,
+      width,
+      height,
+      GUIDED_FILTER_RADIUS,
+      GUIDED_FILTER_EPSILON,
+    ),
+    ALPHA_PRESERVATION_GAMMA,
+  );
+
+  alpha = snapBackgroundAlpha(alpha, 0.08);
+
+  const { alpha: isolatedAlpha, isBg } = isolateForegroundAlpha(
+    alpha,
+    width,
+    height,
+    0.12,
+    0.34,
+  );
+  alpha = fillEnclosedAlphaGaps(isolatedAlpha, isBg, width, height);
+
+  alpha = recoverEdgeAlphaOnly(data, alpha, width, height, 0.5);
+
+  const rgba = applyAlphaMask(fullImageData, alpha);
+  const bg = estimateBorderBackgroundColor(data, width, height);
+
+  recoverLimbsFromReference(rgba, alpha, data, isBg, width, height, 0.82);
+  alpha = fillEnclosedAlphaGaps(alpha, isBg, width, height, 0.38, 0.52);
+  removeBackgroundBleed(rgba, alpha, isBg, width, height, bg, { strength: 0.9 });
+  decontaminateExteriorEdgeRgb(rgba, alpha, isBg, width, height, bg, 0.84);
+  fixColorSpillHalos(rgba, alpha, isBg, width, height, {
+    luminanceThreshold: 172,
+    strength: 0.92,
+  });
+
+  for (let i = 0; i < alpha.length; i++) {
+    rgba[i * 4 + 3] = Math.round(clamp01(alpha[i]) * 255);
+  }
+
+  return rgba;
 }
 
 function configureOrtWasm(): void {
@@ -196,7 +186,6 @@ async function segmentImage(id: number, bitmap: ImageBitmap) {
 
     const width = bitmap.width;
     const height = bitmap.height;
-    const modelSize = SEGMENTATION_MODEL.inputSize;
 
     const fullCanvas = new OffscreenCanvas(width, height);
     const fullCtx = fullCanvas.getContext("2d", { willReadFrequently: true });
@@ -206,43 +195,52 @@ async function segmentImage(id: number, bitmap: ImageBitmap) {
     bitmap.close();
 
     const fullImageData = fullCtx.getImageData(0, 0, width, height);
+    const { inferenceWidth, inferenceHeight } = modnetInferenceDimensions(
+      width,
+      height,
+      SEGMENTATION_MODEL.inputSize,
+    );
 
-    const modelCanvas = new OffscreenCanvas(modelSize, modelSize);
+    const modelCanvas = new OffscreenCanvas(inferenceWidth, inferenceHeight);
     const modelCtx = modelCanvas.getContext("2d", { willReadFrequently: true });
     if (!modelCtx) throw new Error("OffscreenCanvas unavailable.");
 
-    modelCtx.drawImage(fullCanvas, 0, 0, modelSize, modelSize);
-    const modelImageData = modelCtx.getImageData(0, 0, modelSize, modelSize);
+    modelCtx.drawImage(fullCanvas, 0, 0, inferenceWidth, inferenceHeight);
+    const modelImageData = modelCtx.getImageData(0, 0, inferenceWidth, inferenceHeight);
+
+    const tensorData = imageDataToModnetTensor(
+      modelImageData,
+      inferenceWidth,
+      inferenceHeight,
+      MODNET_MEAN,
+      MODNET_STD,
+    );
 
     const inputName = session.inputNames[0];
-    const inputTensor = imageDataToInputTensor(modelImageData, modelSize);
+    const inputTensor = new ort.Tensor("float32", tensorData, [
+      1,
+      3,
+      inferenceHeight,
+      inferenceWidth,
+    ]);
     const outputs = await session.run({ [inputName]: inputTensor });
     const outputTensor = outputs[session.outputNames[0]];
     const rawMask = outputTensor.data as Float32Array;
-    const modelMask = normalizeMask(rawMask);
 
-    const fullMask = resizeMaskBilinear(
-      modelMask,
-      modelSize,
-      modelSize,
+    const inferenceMatte = new Float32Array(inferenceWidth * inferenceHeight);
+    for (let i = 0; i < inferenceMatte.length; i++) {
+      inferenceMatte[i] = clamp01(rawMask[i]);
+    }
+
+    const fullMask = resizeMatteBilinear(
+      inferenceMatte,
+      inferenceWidth,
+      inferenceHeight,
       width,
       height,
     );
 
-    const guide = imageDataToGrayscaleGuide(fullImageData);
-    const refinedAlpha = preserveSubjectAlpha(
-      guidedFilter(
-        guide,
-        fullMask,
-        width,
-        height,
-        GUIDED_FILTER_RADIUS,
-        GUIDED_FILTER_EPSILON,
-      ),
-      ALPHA_PRESERVATION_GAMMA,
-    );
-
-    const rgba = applyAlphaMask(fullImageData, refinedAlpha);
+    const rgba = refineSegmentationAlpha(fullImageData, fullMask, width, height);
     const buffer = rgba.buffer.slice(
       rgba.byteOffset,
       rgba.byteOffset + rgba.byteLength,

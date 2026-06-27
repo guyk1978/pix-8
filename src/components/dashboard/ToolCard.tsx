@@ -2,7 +2,6 @@
 
 import { AppLink } from "@/components/layout/AppLink";
 import { ToolIcon } from "@/components/dashboard/ToolIcon";
-import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
 import { getHomeToolHref } from "@/lib/homeTool";
@@ -18,10 +17,6 @@ export function ToolCard({ tool, index }: ToolCardProps) {
 
   return (
     <div className="group relative min-w-0 rounded-lg bg-card shadow-[var(--shadow-elevated)] transition-[background-color,box-shadow] duration-200 hover:bg-card-hover hover:shadow-[var(--shadow-hover)]">
-      <div className="absolute top-3 z-10 end-3">
-        <FavoriteButton toolSlug={tool.id} size="sm" />
-      </div>
-
       <AppLink href={getHomeToolHref(tool.id)} className="flex gap-4 p-4 sm:p-5">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-background text-muted shadow-[var(--shadow-elevated)] transition-all duration-200 group-hover:text-foreground group-hover:shadow-[var(--shadow-hover)]"
@@ -30,7 +25,7 @@ export function ToolCard({ tool, index }: ToolCardProps) {
           <ToolIcon id={tool.id} className="h-[18px] w-[18px]" />
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-2 pe-6">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
               <h3 className="text-sm font-medium leading-none tracking-tight text-foreground">

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { AppLink } from "@/components/layout/AppLink";
 import { usePathname } from "next/navigation";
-import { Folder, LayoutGrid, Star } from "lucide-react";
+import { Folder, LayoutGrid } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -44,7 +44,6 @@ function HeaderNavLink({ href, active, children, title }: HeaderNavLinkProps) {
 export function Header() {
   const { t, dir, language } = useLanguage();
   const pathname = usePathname();
-  const favoritesActive = isActiveHref(pathname, APP_ROUTES.favorites);
   const projectsActive = isActiveHref(pathname, APP_ROUTES.projects);
   const appsActive = isToolPage(pathname) || isHomeDashboard(pathname);
 
@@ -79,14 +78,6 @@ export function Header() {
           >
             <AppsMenu appsActive={appsActive} />
           </Suspense>
-          <HeaderNavLink
-            href={APP_ROUTES.favorites}
-            active={favoritesActive}
-            title={t("nav.favorites")}
-          >
-            <Star className="header-nav-tab-icon" strokeWidth={1.75} aria-hidden />
-            <span>{t("nav.favorites")}</span>
-          </HeaderNavLink>
           <HeaderNavLink
             href={APP_ROUTES.projects}
             active={projectsActive}

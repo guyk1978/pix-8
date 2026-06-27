@@ -19,10 +19,21 @@ export function collageImageKey(layerId: string, slotId: string): string {
   return `collage-${layerId}-${slotId}`;
 }
 
+export function bgReplaceImageKey(layerId: string): string {
+  return `bg-replace-${layerId}`;
+}
+
 export function serializeEditorLayers(layers: EditorLayer[]): SerializableEditorLayer[] {
   return layers.map((layer) => {
     if (layer.type === "bg-remove") {
-      const { resultImage: _r, processing: _p, ...rest } = layer;
+      const {
+        resultImage: _r,
+        processing: _p,
+        replaceImage: _ri,
+        replaceImageUrl: _ru,
+        replaceImageFile: _rf,
+        ...rest
+      } = layer;
       return rest;
     }
     if (layer.type === "image-overlay") {
@@ -48,9 +59,43 @@ export function deserializeEditorLayers(
 ): EditorLayer[] {
   return layers.map((layer) => {
     if (layer.type === "bg-remove") {
+      const bgData = layer as {
+        id?: string;
+        type: "bg-remove";
+        visible?: boolean;
+        locked?: boolean;
+        nameKey?: string;
+        advancedEdges?: number;
+        subjectMasking?: number;
+        depthEstimation?: number;
+        smartHandRecognition?: boolean;
+        enabled?: boolean;
+        backgroundMode?: "transparent" | "solid" | "image";
+        backgroundColor?: string;
+        backgroundOpacity?: number;
+        subjectOpacity?: number;
+        replaceImageName?: string | null;
+      };
       return {
-        ...layer,
-        id: layer.id || createLayerId(),
+        ...bgData,
+        id: bgData.id || createLayerId(),
+        type: "bg-remove",
+        visible: bgData.visible ?? true,
+        locked: bgData.locked ?? false,
+        nameKey: bgData.nameKey ?? "editor.layers.bgRemove",
+        advancedEdges: bgData.advancedEdges ?? 38,
+        subjectMasking: bgData.subjectMasking ?? 65,
+        depthEstimation: bgData.depthEstimation ?? 50,
+        smartHandRecognition: bgData.smartHandRecognition ?? true,
+        enabled: bgData.enabled ?? true,
+        backgroundMode: bgData.backgroundMode ?? "transparent",
+        backgroundColor: bgData.backgroundColor ?? "#121212",
+        backgroundOpacity: bgData.backgroundOpacity ?? 100,
+        subjectOpacity: bgData.subjectOpacity ?? 100,
+        replaceImageFile: null,
+        replaceImageName: bgData.replaceImageName ?? null,
+        replaceImageUrl: null,
+        replaceImage: null,
         resultImage: null,
         processing: false,
       } as EditorLayer;
@@ -122,6 +167,10 @@ export function buildEditorProjectPayload(
   workspace?: {
     images: { id: string; fileName: string }[];
     activeId: string | null;
+    layerStacks?: Record<
+      string,
+      { layers: SerializableEditorLayer[]; activeLayerId: string | null }
+    >;
   },
 ) {
   return {
@@ -130,6 +179,7 @@ export function buildEditorProjectPayload(
     layers: serializeEditorLayers(layers),
     workspaceImages: workspace?.images ?? [],
     activeWorkspaceImageId: workspace?.activeId ?? null,
+    workspaceLayerStacks: workspace?.layerStacks ?? {},
   };
 }
 
@@ -154,23 +204,38 @@ export function hydrateCollageLayersFromFiles(
   files: Map<string, File>,
 ): EditorLayer[] {
   return layers.map((layer) => {
-    if (layer.type !== "collage") return layer;
+    if (layer.type === "collage") {
+      return {
+        ...layer,
+        images: layer.images.map((slot) => {
+          const file = files.get(collageImageKey(layer.id, slot.id));
+          if (!file) return slot;
 
-    return {
-      ...layer,
-      images: layer.images.map((slot) => {
-        const file = files.get(collageImageKey(layer.id, slot.id));
-        if (!file) return slot;
+          return {
+            ...slot,
+            file,
+            fileName: file.name,
+            objectUrl: URL.createObjectURL(file),
+            loadedImage: null,
+          };
+        }),
+      };
+    }
 
-        return {
-          ...slot,
-          file,
-          fileName: file.name,
-          objectUrl: URL.createObjectURL(file),
-          loadedImage: null,
-        };
-      }),
-    };
+    if (layer.type === "bg-remove") {
+      const file = files.get(bgReplaceImageKey(layer.id));
+      if (!file) return layer;
+
+      return {
+        ...layer,
+        replaceImageFile: file,
+        replaceImageName: file.name,
+        replaceImageUrl: URL.createObjectURL(file),
+        replaceImage: null,
+      };
+    }
+
+    return layer;
   });
 }
 
@@ -180,17 +245,33 @@ export function collectCollageProjectImages(
   const images: { key: string; file: File }[] = [];
 
   for (const layer of layers) {
-    if (layer.type !== "collage") continue;
-    for (const slot of layer.images) {
-      if (!slot.file) continue;
+    if (layer.type === "collage") {
+      for (const slot of layer.images) {
+        if (!slot.file) continue;
+        images.push({
+          key: collageImageKey(layer.id, slot.id),
+          file: slot.file,
+        });
+      }
+      continue;
+    }
+
+    if (layer.type === "bg-remove" && layer.replaceImageFile) {
       images.push({
-        key: collageImageKey(layer.id, slot.id),
-        file: slot.file,
+        key: bgReplaceImageKey(layer.id),
+        file: layer.replaceImageFile,
       });
     }
   }
 
   return images;
+}
+
+export function revokeBgReplaceObjectUrls(layers: EditorLayer[]): void {
+  for (const layer of layers) {
+    if (layer.type !== "bg-remove") continue;
+    if (layer.replaceImageUrl) URL.revokeObjectURL(layer.replaceImageUrl);
+  }
 }
 
 export function revokeCollageObjectUrls(layers: EditorLayer[]): void {

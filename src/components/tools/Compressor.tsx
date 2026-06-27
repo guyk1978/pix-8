@@ -33,12 +33,7 @@ import {
 } from "@/hooks/useImageProcessor";
 import { useToolExportSettings } from "@/hooks/useToolExportSettings";
 import { downloadZipArchive } from "@/lib/zipDownload";
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
+import { formatFileSize } from "@/lib/formatFileSize";
 
 function getCompressionFormat(sourceMime: string): ImageFormat {
   const format = resolveFormat(sourceMime);

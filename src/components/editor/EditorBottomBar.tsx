@@ -7,11 +7,13 @@ import {
   Download,
   FlipHorizontal,
   Maximize2,
+  Redo2,
   RotateCw,
   Save,
   Star,
   Type,
   Droplets,
+  Undo2,
 } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useEditor } from "@/hooks/useEditorState";
@@ -41,6 +43,10 @@ export function EditorBottomBar() {
     toggleFavorite,
     saveProject,
     projectName,
+    canUndo,
+    canRedo,
+    undo,
+    redo,
   } = useEditor();
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
@@ -60,6 +66,27 @@ export function EditorBottomBar() {
     <>
       <div className="unified-editor-bottom-bar shrink-0">
         <div className="unified-editor-bottom-actions">
+          <div className="unified-editor-history-group">
+            <button
+              type="button"
+              className="unified-editor-history-btn"
+              disabled={!source || !canUndo}
+              aria-label={t("editor.bottomBar.undo")}
+              onClick={undo}
+            >
+              <Undo2 className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="unified-editor-history-btn"
+              disabled={!source || !canRedo}
+              aria-label={t("editor.bottomBar.redo")}
+              onClick={redo}
+            >
+              <Redo2 className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+            </button>
+          </div>
+
           {BOTTOM_BAR_ACTIONS.map((action) => {
             const Icon = BOTTOM_BAR_ICONS[action] ?? Crop;
             return (
@@ -121,7 +148,7 @@ export function EditorBottomBar() {
               type="button"
               className="unified-editor-download-btn"
               disabled={!source}
-              onClick={() => void download("png")}
+              onClick={() => void download()}
             >
               <Download className="h-4 w-4" strokeWidth={2} aria-hidden />
               <span>{t("editor.bottomBar.download")}</span>

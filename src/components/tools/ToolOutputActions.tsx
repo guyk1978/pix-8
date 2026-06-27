@@ -5,7 +5,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { HelperSuccessHint } from "@/components/characters/HelperSuccessHint";
 import { ProcessingIndicator } from "@/components/characters/ProcessingIndicator";
-import { ToolSidebarFavoriteButton } from "@/components/favorites/ToolSidebarFavoriteButton";
 import { MarkAsFinalResult } from "@/components/projects/MarkAsFinalResult";
 import { ToolProjectSaveButton } from "@/components/projects/ToolProjectSaveButton";
 import { useOptionalToolProjectContext } from "@/components/projects/ToolProjectContext";
@@ -78,8 +77,6 @@ function ToolOutputActionsPanel({
     return (
       <div className="embedded-actions-stack">
         <div className="embedded-quick-actions-grid">
-          <ToolSidebarFavoriteButton variant="toolbar" />
-
           <button
             type="button"
             disabled={copyIsDisabled}

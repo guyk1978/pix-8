@@ -1,7 +1,7 @@
 "use client";
 
 import { AppLink } from "@/components/layout/AppLink";
-import { Folder, Star } from "lucide-react";
+import { Folder } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -24,14 +24,6 @@ function DashboardIcon() {
         <rect x="3" y="14" width="7" height="7" rx="1" />
         <rect x="14" y="14" width="7" height="7" rx="1" />
       </svg>
-    </NavIcon>
-  );
-}
-
-function FavoritesIcon() {
-  return (
-    <NavIcon>
-      <Star strokeWidth={1.5} className="h-4 w-4" />
     </NavIcon>
   );
 }
@@ -184,15 +176,6 @@ export function NavigationSidebarContent({
             isActiveHref(pathname, APP_ROUTES.blog) ||
             pathname.startsWith("/articles/")
           }
-          collapsed={collapsed}
-          onNavigate={onMobileClose}
-        />
-
-        <NavItem
-          href={APP_ROUTES.favorites}
-          label={t("nav.favorites")}
-          icon={<FavoritesIcon />}
-          active={isActiveHref(pathname, APP_ROUTES.favorites)}
           collapsed={collapsed}
           onNavigate={onMobileClose}
         />

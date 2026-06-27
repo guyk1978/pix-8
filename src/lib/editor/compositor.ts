@@ -17,7 +17,16 @@ import type {
 import { layerToTransform } from "@/lib/editor/layerTypes";
 import { renderLightAdjustedCanvas } from "@/lib/lightAdjustRender";
 import { renderFilteredCanvasAsync } from "@/lib/filterRender";
-import { removeImageBackground, blobToImage } from "@/lib/backgroundRemoval";
+import {
+  removeImageBackground,
+  blobToImage,
+  renderResultToCanvas,
+} from "@/lib/backgroundRemoval";
+import {
+  applyMaskRefinement,
+  maskRefinementSettingsFromLayer,
+  spillBackgroundFromLayer,
+} from "@/lib/backgroundRemoval/maskRefinement";
 import { renderSharpenedCanvas } from "@/lib/sharpenRender";
 import { renderDenoisedCanvasAsync } from "@/lib/denoiseRender";
 import { getBorderedCanvasSize, renderBorderedCanvas } from "@/lib/borderRender";
@@ -223,6 +232,10 @@ class ComposePipeline {
     this.height = image.naturalHeight || image.height;
   }
 
+  get readSourceImage(): CanvasImageSource {
+    return this.readSource;
+  }
+
   setSourceFromCanvas(canvas: HTMLCanvasElement): void {
     this.readSource = canvas;
     this.width = canvas.width;
@@ -248,11 +261,13 @@ export interface ComposeOptions {
     slotId: string,
     image: HTMLImageElement,
   ) => void;
+  onBgReplaceImageLoaded?: (layerId: string, image: HTMLImageElement) => void;
   onSvgTraceStart?: (layerId: string) => void;
   onSvgTraced?: (layerId: string, svg: string) => void;
   onSvgTraceError?: (layerId: string, error: unknown) => void;
   shouldCancelCompose?: () => boolean;
   bgRemoveCache: Map<string, HTMLImageElement>;
+  manualMaskCache?: Map<string, Float32Array>;
   overlayCache: Map<string, HTMLImageElement>;
   collageCache: Map<string, HTMLImageElement>;
 }
@@ -270,25 +285,70 @@ export async function composeLayers(
   );
 
   for (const layer of activeLayers) {
+    if (options.shouldCancelCompose?.()) {
+      return pipeline.dimensions;
+    }
+
     switch (layer.type) {
       case "bg-remove": {
         if (!layer.enabled) break;
 
-        let resultImage =
-          layer.resultImage ?? options.bgRemoveCache.get(layer.id);
+        const referenceSource = await pipeline.toImageElement();
 
-        if (!resultImage) {
+        let rawCutout =
+          options.bgRemoveCache.get(layer.id) ?? layer.resultImage ?? null;
+
+        if (!rawCutout) {
           options.onBgRemoveProgress?.(layer.id, true);
           try {
             const blob = await removeImageBackground(await pipeline.snapshotBlob());
-            resultImage = await blobToImage(blob);
-            options.bgRemoveCache.set(layer.id, resultImage);
+            if (options.shouldCancelCompose?.()) {
+              return pipeline.dimensions;
+            }
+            rawCutout = await blobToImage(blob);
+            options.bgRemoveCache.set(layer.id, rawCutout);
           } finally {
             options.onBgRemoveProgress?.(layer.id, false);
           }
         }
 
-        pipeline.replaceSource(resultImage);
+        if (options.shouldCancelCompose?.()) {
+          return pipeline.dimensions;
+        }
+
+        const refinedCanvas = applyMaskRefinement(
+          rawCutout,
+          maskRefinementSettingsFromLayer(layer),
+          {
+            referenceSource,
+            manualAdjustments: options.manualMaskCache?.get(layer.id),
+            spillBackgroundRgb: spillBackgroundFromLayer(layer),
+          },
+        );
+
+        let backgroundImage = layer.replaceImage;
+        if (layer.backgroundMode === "image" && !backgroundImage && layer.replaceImageUrl) {
+          backgroundImage = await loadImageElement(layer.replaceImageUrl);
+          options.onBgReplaceImageLoaded?.(layer.id, backgroundImage);
+        }
+
+        const needsComposite =
+          layer.backgroundMode !== "transparent" ||
+          layer.subjectOpacity < 100;
+
+        if (!needsComposite) {
+          pipeline.setSourceFromCanvas(refinedCanvas);
+        } else {
+          const composited = renderResultToCanvas(refinedCanvas, {
+            backgroundMode: layer.backgroundMode,
+            backgroundColor: layer.backgroundColor,
+            backgroundOpacity: layer.backgroundOpacity,
+            subjectOpacity: layer.subjectOpacity,
+            backgroundImage:
+              layer.backgroundMode === "image" ? backgroundImage : undefined,
+          });
+          pipeline.setSourceFromCanvas(composited);
+        }
         break;
       }
 
@@ -508,12 +568,23 @@ export async function composeLayers(
     }
   }
 
+  if (options.shouldCancelCompose?.()) {
+    return pipeline.dimensions;
+  }
+
   pipeline.drawToOutput(outputCanvas);
   return pipeline.dimensions;
 }
 
 export function invalidateBgRemoveCache(
   cache: Map<string, HTMLImageElement>,
+  layerId: string,
+): void {
+  cache.delete(layerId);
+}
+
+export function invalidateManualMaskCache(
+  cache: Map<string, Float32Array>,
   layerId: string,
 ): void {
   cache.delete(layerId);

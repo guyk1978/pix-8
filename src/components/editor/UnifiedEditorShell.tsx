@@ -7,9 +7,12 @@ import { EditorLayerPanel } from "@/components/editor/EditorLayerPanel";
 import { EditorWorkspaceStrip } from "@/components/editor/EditorWorkspaceStrip";
 import { EditorToolPanel } from "@/components/editor/EditorToolPanel";
 import { EditorBottomBar } from "@/components/editor/EditorBottomBar";
+import { EditorHistoryBindings } from "@/components/editor/EditorHistoryBindings";
 import { EditorStatusMonitor } from "@/components/editor/EditorStatusMonitor";
 import { EditorProjectLoader } from "@/components/editor/EditorProjectLoader";
 import { EditorProvider } from "@/hooks/useEditorState";
+import { PinnedToolsProvider } from "@/components/editor/PinnedToolsProvider";
+import { EditorPinnedTools } from "@/components/editor/EditorPinnedTools";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 
 function EditorLayoutInner() {
@@ -30,11 +33,13 @@ function EditorLayoutInner() {
         <EditorCanvas />
         <aside className="unified-editor-sidebar flex min-h-0 w-72 shrink-0 flex-col border-s lg:w-80">
           <EditorWorkspaceStrip />
+          <EditorPinnedTools />
           <EditorLayerPanel />
           <EditorToolPanel />
         </aside>
       </div>
       <EditorBottomBar />
+      <EditorHistoryBindings />
       <EditorStatusMonitor />
     </section>
   );
@@ -43,7 +48,9 @@ function EditorLayoutInner() {
 export function UnifiedEditorShell() {
   return (
     <EditorProvider>
-      <EditorLayoutInner />
+      <PinnedToolsProvider>
+        <EditorLayoutInner />
+      </PinnedToolsProvider>
     </EditorProvider>
   );
 }

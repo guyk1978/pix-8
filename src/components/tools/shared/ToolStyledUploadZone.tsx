@@ -70,7 +70,7 @@ export function ToolStyledUploadZone({
     <WorkflowStep step="upload">
       <div className="tool-styled-upload-stage relative w-full">
         <div
-          className={`tool-dropzone tool-styled-dropzone tool-upload-zone compact-upload-dropzone relative flex w-full cursor-pointer items-center justify-center transition-all duration-300 ${
+          className={`tool-dropzone tool-styled-dropzone tool-upload-zone compact-upload-dropzone upload-card-dropzone relative flex w-full cursor-pointer items-center justify-center transition-all duration-300 ${
             compact ? "compact-upload-dropzone--tight" : ""
           } ${isDragging ? "tool-dropzone-active" : ""} ${className}`}
           onDragEnter={(event) => {

@@ -35,12 +35,6 @@ export function buildSiteSitemapEntries(): SiteSitemapEntry[] {
       lastModified: now,
     },
     {
-      path: "/favorites",
-      label: "Favorites",
-      group: "Core",
-      lastModified: now,
-    },
-    {
       path: "/projects",
       label: "Projects",
       group: "Core",

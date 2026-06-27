@@ -15,7 +15,6 @@ export { getHomeToolHref, buildHomeToolHref } from "@/lib/homeTool";
 export const APP_ROUTES = {
   home: "/",
   blog: "/blog",
-  favorites: "/favorites",
   projects: "/projects",
   settings: "/settings",
 } as const;
@@ -46,11 +45,6 @@ export function getPrimaryNavItems(): PrimaryNavItem[] {
       isActive: (pathname) =>
         normalizePathname(pathname) === APP_ROUTES.blog ||
         normalizePathname(pathname).startsWith("/articles/"),
-    },
-    {
-      href: APP_ROUTES.favorites,
-      labelKey: "nav.favorites",
-      isActive: (pathname) => normalizePathname(pathname) === APP_ROUTES.favorites,
     },
     {
       href: APP_ROUTES.projects,

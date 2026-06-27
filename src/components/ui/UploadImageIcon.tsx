@@ -11,34 +11,22 @@ export function UploadImageIcon({ className = "" }: UploadImageIconProps) {
       className={className}
       aria-hidden
     >
-      <rect
-        x="7"
-        y="11"
-        width="34"
-        height="26"
-        rx="2.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
       <path
-        d="M7 31l9.5-9.5 7 7 9.5-11.5L41 27"
+        d="M8 14.5C8 12.0147 10.0147 10 12.5 10H19.2L22.4 13.2H35.5C37.9853 13.2 40 15.2147 40 17.7V35.5C40 37.9853 37.9853 40 35.5 40H12.5C10.0147 40 8 37.9853 8 35.5V14.5Z"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="18" cy="20" r="2.75" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M31 9v5.5H36.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth="2"
         strokeLinejoin="round"
       />
       <path
-        d="M31 9 36.5 14.5"
+        d="M24 21V31"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M19 26L24 21L29 26"
+        stroke="currentColor"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

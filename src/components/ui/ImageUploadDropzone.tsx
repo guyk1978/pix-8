@@ -42,8 +42,8 @@ export function ImageUploadDropzone({
 
   return (
     <WorkflowStep step="upload">
-      <div
-        className={`tool-dropzone tool-upload-zone relative flex cursor-pointer flex-col items-center justify-center transition-all duration-300 sm:min-h-64 ${
+        <div
+        className={`tool-dropzone tool-upload-zone relative flex cursor-pointer flex-col items-center justify-center transition-all duration-300 sm:min-h-64 upload-card-dropzone ${
           isDragging ? "tool-dropzone-active" : ""
         } ${className}`}
         onDragEnter={(event) => {
@@ -73,7 +73,7 @@ export function ImageUploadDropzone({
           accept="image/*"
           multiple={multiple}
           aria-label={resolvedAriaLabel}
-          className="absolute inset-0 z-20 cursor-pointer opacity-0"
+          className="sr-only"
           onChange={(event) => {
             if (multiple && onFilesChange && event.target.files) {
               onFilesChange(event.target.files);
@@ -90,6 +90,8 @@ export function ImageUploadDropzone({
           </div>
         ) : (
           <UploadZoneDefaultContent
+            inputId={inputId}
+            headline={title}
             hint={hint}
             formatHint={formatHint}
             isDragging={isDragging}

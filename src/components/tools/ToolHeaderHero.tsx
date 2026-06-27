@@ -1,6 +1,5 @@
 "use client";
 
-import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { WorkflowAnchor } from "@/components/tools/workflow/WorkflowStep";
 import { useWorkflowOptional } from "@/components/tools/workflow/WorkflowContext";
@@ -12,7 +11,7 @@ interface ToolHeaderHeroProps {
   description: string;
 }
 
-export function ToolHeaderHero({ toolId, title, description }: ToolHeaderHeroProps) {
+export function ToolHeaderHero({ title, description }: ToolHeaderHeroProps) {
   const { t } = useLanguage();
   const workflow = useWorkflowOptional();
   const isStartActive = workflow?.activeStep === "start";
@@ -25,12 +24,9 @@ export function ToolHeaderHero({ toolId, title, description }: ToolHeaderHeroPro
 
       <div className="flex flex-wrap items-start justify-start gap-3">
         <div className="min-w-0 w-full max-w-2xl">
-          <div className="flex flex-wrap items-center justify-start gap-3">
-            <h1 className="text-2xl font-medium tracking-tight text-foreground sm:text-[1.75rem]">
-              {title}
-            </h1>
-            <FavoriteButton toolSlug={toolId} />
-          </div>
+          <h1 className="text-2xl font-medium tracking-tight text-foreground sm:text-[1.75rem]">
+            {title}
+          </h1>
           <p className="mt-2 text-base leading-relaxed text-muted">
             {description}
           </p>

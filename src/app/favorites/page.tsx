@@ -1,12 +1,10 @@
-import type { Metadata } from "next";
-import { FavoritesPageContent } from "@/components/favorites/FavoritesPageContent";
+import { Suspense } from "react";
+import { PreserveQueryRedirect } from "@/components/routing/PreserveQueryRedirect";
 
-export const metadata: Metadata = {
-  title: "Favorites",
-  description:
-    "Your saved Pix-8 tools — quick access to the image utilities you use most.",
-};
-
-export default function FavoritesPage() {
-  return <FavoritesPageContent />;
+export default function FavoritesRedirectPage() {
+  return (
+    <Suspense fallback={null}>
+      <PreserveQueryRedirect href="/" />
+    </Suspense>
+  );
 }

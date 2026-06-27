@@ -14,6 +14,7 @@ import type { OverlayTransform } from "@/lib/imageOverlayRender";
 import type { CollageSettings } from "@/lib/collageRender";
 import type { SvgTraceSettings } from "@/lib/svgTraceRender";
 import type { MemeSettings } from "@/lib/memeRender";
+import type { BackgroundMode } from "@/lib/backgroundRemoval/types";
 import type { ToolId } from "@/lib/tools";
 
 export type EditorLayerType =
@@ -64,7 +65,16 @@ export interface BgRemoveLayer extends BaseLayer {
   advancedEdges: number;
   subjectMasking: number;
   depthEstimation: number;
+  smartHandRecognition: boolean;
   enabled: boolean;
+  backgroundMode: BackgroundMode;
+  backgroundColor: string;
+  backgroundOpacity: number;
+  subjectOpacity: number;
+  replaceImageFile: File | null;
+  replaceImageName: string | null;
+  replaceImageUrl: string | null;
+  replaceImage: HTMLImageElement | null;
   resultImage: HTMLImageElement | null;
   processing: boolean;
 }

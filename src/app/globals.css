@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../components/ui/animations/live-feedback.css";
 
 /* Industrial Light (default when .light or no .dark) */
 :root {
@@ -36,6 +37,11 @@
     sans-serif;
   --text-base-size: 1.0625rem;
   --text-base-leading: 1.6;
+  --motion-duration-fast: 0.22s;
+  --motion-duration-base: 0.34s;
+  --motion-duration-slow: 0.48s;
+  --motion-ease-smooth: cubic-bezier(0.33, 1, 0.68, 1);
+  --motion-ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Industrial Matte (dark) with vibrant glow accents */
@@ -124,6 +130,29 @@ body {
 
 [dir="rtl"] body {
   text-align: start;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :where(
+    button,
+    a,
+    [role="button"],
+    select,
+    input[type="checkbox"],
+    input[type="radio"],
+    .tool-segment,
+    .tool-card,
+    .dashboard-tool-card
+  ) {
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform, filter;
+    transition-duration: var(--motion-duration-base);
+    transition-timing-function: var(--motion-ease-smooth);
+  }
+
+  :where(button, a, [role="button"]):active:not(:disabled) {
+    transform: scale(0.98);
+    transition-duration: var(--motion-duration-fast);
+  }
 }
 
 button,
@@ -1776,11 +1805,179 @@ button[data-favorite="true"] svg path {
 .tool-upload-zone {
   border: 1px dashed color-mix(in srgb, var(--border) 82%, transparent);
   background: color-mix(in srgb, var(--card) 38%, var(--background));
+  border-radius: 1rem;
   box-shadow: var(--shadow-elevated);
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.upload-card-dropzone {
+  min-height: 17.5rem;
+  border-radius: 1rem;
+  border-width: 1.5px;
+  border-style: dashed;
+}
+
+html:not(.dark) .upload-card-dropzone {
+  background: color-mix(in srgb, #f8fafc 88%, #ffffff);
+  border-color: color-mix(in srgb, #94a3b8 42%, transparent);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, #0f172a 6%, transparent),
+    0 12px 32px color-mix(in srgb, #0f172a 5%, transparent);
+}
+
+html:not(.dark) .upload-card-dropzone .upload-zone-headline {
+  color: #0f172a;
+}
+
+html:not(.dark) .upload-card-dropzone .upload-zone-subtext {
+  color: #64748b;
+}
+
+html:not(.dark) .upload-card-dropzone .upload-zone-icon {
+  color: #475569;
+}
+
+html:not(.dark) .upload-card-dropzone .upload-zone-format-tag {
+  border-color: color-mix(in srgb, #cbd5e1 80%, transparent);
+  background: color-mix(in srgb, #ffffff 70%, #f1f5f9);
+  color: #64748b;
+}
+
+.dark .upload-card-dropzone {
+  background: #f0f2f5;
+  border-color: color-mix(in srgb, #64748b 38%, transparent);
+  box-shadow:
+    0 2px 4px color-mix(in srgb, #000 18%, transparent),
+    0 16px 40px color-mix(in srgb, #000 28%, transparent);
+}
+
+.dark .upload-card-dropzone .upload-zone-headline,
+.dark .upload-card-dropzone .compact-upload-headline {
+  color: #0f172a;
+}
+
+.dark .upload-card-dropzone .upload-zone-subtext,
+.dark .upload-card-dropzone .compact-upload-drop-hint,
+.dark .upload-card-dropzone .compact-upload-format {
+  color: #4b5563;
+}
+
+.dark .upload-card-dropzone .upload-zone-icon {
+  color: #374151;
+}
+
+.dark .upload-card-dropzone .upload-zone-format-tag {
+  border-color: color-mix(in srgb, #cbd5e1 85%, transparent);
+  background: color-mix(in srgb, #ffffff 55%, #e2e8f0);
+  color: #4b5563;
+}
+
+.dark .upload-card-dropzone .example-image-strip-label {
+  color: #374151;
+}
+
+.dark .unified-editor-examples .example-image-strip-label,
+.dark .example-image-strip-wrap:not(.compact-upload-examples) .example-image-strip-label {
+  color: #f5f5f5;
+}
+
+.upload-card-dropzone:hover,
+.upload-card-dropzone.tool-dropzone-active {
+  border-color: color-mix(in srgb, #2563eb 42%, #94a3b8);
+}
+
+html:not(.dark) .upload-card-dropzone:hover,
+html:not(.dark) .upload-card-dropzone.tool-dropzone-active {
+  background: #ffffff;
+  box-shadow:
+    0 2px 4px color-mix(in srgb, #0f172a 7%, transparent),
+    0 16px 36px color-mix(in srgb, #2563eb 8%, transparent);
+}
+
+.dark .upload-card-dropzone:hover,
+.dark .upload-card-dropzone.tool-dropzone-active {
+  background: #f8fafc;
+  box-shadow:
+    0 4px 8px color-mix(in srgb, #000 20%, transparent),
+    0 20px 44px color-mix(in srgb, #2563eb 12%, transparent);
+}
+
+.upload-card-dropzone.tool-dropzone-active {
+  transform: translateY(-1px);
+}
+
+.upload-zone-content {
+  max-width: 24rem;
+}
+
+.upload-zone-icon {
+  width: 3.25rem;
+  height: 3.25rem;
+  color: color-mix(in srgb, var(--muted) 88%, var(--foreground));
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.upload-card-dropzone:hover .upload-zone-icon,
+.upload-card-dropzone .upload-zone-icon--active {
+  color: #2563eb;
+  transform: translateY(-2px);
+}
+
+.upload-zone-headline {
+  margin: 0;
+  line-height: 1.25;
+}
+
+.upload-zone-subtext {
+  margin: 0;
+}
+
+.upload-zone-button-label,
+.compact-upload-button-label {
+  display: inline-flex;
+  cursor: pointer;
+  margin-top: 0.125rem;
+}
+
+.upload-zone-button,
+.compact-upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding-inline: 1.5rem;
+  border-radius: 0.5rem;
+  background: #1d72b8;
+  color: #ffffff;
+  font-family: var(--font-label), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, #000 14%, transparent),
+    0 4px 12px color-mix(in srgb, #1d72b8 24%, transparent);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
     background-color 0.2s ease;
+}
+
+.upload-card-dropzone:hover .upload-zone-button,
+.upload-card-dropzone.tool-dropzone-active .upload-zone-button,
+.upload-card-dropzone:hover .compact-upload-button,
+.upload-card-dropzone.tool-dropzone-active .compact-upload-button,
+.compact-upload-panel--dragging .compact-upload-button {
+  background: #1a66a6;
+  box-shadow:
+    0 2px 6px color-mix(in srgb, #000 12%, transparent),
+    0 8px 20px color-mix(in srgb, #1d72b8 32%, transparent);
+  transform: translateY(-1px);
 }
 
 html:not(.dark) .tool-upload-zone,
@@ -1827,16 +2024,25 @@ html:not(.dark) .tool-upload-zone.tool-dropzone-active {
   opacity: 0.65;
 }
 
-.upload-zone-icon {
-  width: 3rem;
-  height: 3rem;
-  color: color-mix(in srgb, var(--muted) 88%, var(--foreground));
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease;
+.dark .upload-card-dropzone.tool-styled-dropzone.tool-upload-zone {
+  background: #f0f2f5 !important;
 }
 
-.tool-upload-zone:hover .upload-zone-icon,
+html:not(.dark) .upload-card-dropzone.tool-styled-dropzone.tool-upload-zone {
+  background: color-mix(in srgb, #f8fafc 88%, #ffffff) !important;
+}
+
+.upload-card-dropzone.tool-styled-dropzone.tool-upload-zone:hover,
+.upload-card-dropzone.tool-styled-dropzone.tool-upload-zone.tool-dropzone-active {
+  background: #f8fafc !important;
+}
+
+html:not(.dark) .upload-card-dropzone.tool-styled-dropzone.tool-upload-zone:hover,
+html:not(.dark) .upload-card-dropzone.tool-styled-dropzone.tool-upload-zone.tool-dropzone-active {
+  background: #ffffff !important;
+}
+
+.tool-upload-zone:hover .upload-zone-icon:not(.upload-zone-icon--active),
 .upload-zone-icon--active {
   color: color-mix(in srgb, var(--glow-teal) 58%, var(--foreground));
   transform: translateY(-1px);
@@ -1918,7 +2124,7 @@ html:not(.dark) .tool-upload-zone.tool-dropzone-active {
 
 .compact-upload-dropzone {
   min-height: auto;
-  border-style: solid;
+  border-style: dashed;
   border-color: color-mix(in srgb, var(--border) 70%, transparent);
   border-radius: 1rem;
   background: color-mix(in srgb, var(--card) 55%, var(--background));
@@ -1928,8 +2134,8 @@ html:not(.dark) .tool-upload-zone.tool-dropzone-active {
   padding-block: 1rem;
 }
 
-.compact-upload-dropzone:hover,
-.compact-upload-dropzone.tool-dropzone-active {
+.compact-upload-dropzone:not(.upload-card-dropzone):hover,
+.compact-upload-dropzone:not(.upload-card-dropzone).tool-dropzone-active {
   border-color: color-mix(in srgb, #2563eb 28%, var(--border));
   box-shadow:
     var(--shadow-elevated),
@@ -1940,11 +2146,11 @@ html:not(.dark) .tool-upload-zone.tool-dropzone-active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   width: 100%;
   max-width: 26rem;
   margin-inline: auto;
-  padding: 1.25rem 1rem 1rem;
+  padding: 1.75rem 1.25rem 1.25rem;
   text-align: center;
 }
 
@@ -1956,40 +2162,43 @@ html:not(.dark) .tool-upload-zone.tool-dropzone-active {
   margin: 0;
   max-width: 22rem;
   font-family: var(--font-label), ui-sans-serif, system-ui, sans-serif;
-  font-size: 1.0625rem;
-  font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
   color: var(--foreground);
 }
 
 .compact-upload-button-label {
   display: inline-flex;
   cursor: pointer;
+  margin-top: 0.25rem;
 }
 
 .compact-upload-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.625rem;
-  padding-inline: 1.375rem;
-  border-radius: 9999px;
-  background: #2563eb;
+  min-height: 2.75rem;
+  padding-inline: 1.5rem;
+  border-radius: 0.5rem;
+  background: #1d72b8;
   color: #fff;
   font-family: var(--font-label), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1;
-  box-shadow: 0 1px 2px color-mix(in srgb, #000 12%, transparent);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, #000 14%, transparent),
+    0 4px 12px color-mix(in srgb, #1d72b8 24%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.compact-upload-dropzone:hover .compact-upload-button,
-.compact-upload-dropzone.tool-dropzone-active .compact-upload-button {
+.compact-upload-dropzone:not(.upload-card-dropzone):hover .compact-upload-button,
+.compact-upload-dropzone:not(.upload-card-dropzone).tool-dropzone-active .compact-upload-button {
   box-shadow:
-    0 2px 8px color-mix(in srgb, #2563eb 28%, transparent),
-    0 1px 2px color-mix(in srgb, #000 10%, transparent);
+    0 2px 6px color-mix(in srgb, #000 12%, transparent),
+    0 8px 20px color-mix(in srgb, #1d72b8 32%, transparent);
 }
 
 .compact-upload-drop-hint,
@@ -2130,8 +2339,8 @@ html:not(.dark) .tool-upload-zone.tool-dropzone-active {
 
 .example-image-strip-thumb {
   position: relative;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3rem;
+  height: 3rem;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
   border-radius: 0.625rem;
@@ -2155,6 +2364,95 @@ html:not(.dark) .tool-upload-zone.tool-dropzone-active {
 
 .example-image-strip-status {
   margin: 0;
+}
+
+.bg-replace-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+}
+
+.bg-replace-picker-label {
+  margin: 0.25rem 0 0;
+}
+
+.bg-replace-picker-colors,
+.bg-replace-picker-gradients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bg-replace-picker-swatch,
+.bg-replace-picker-gradient {
+  position: relative;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.bg-replace-picker-swatch:hover:not(:disabled),
+.bg-replace-picker-gradient:hover:not(:disabled) {
+  border-color: var(--muted);
+  transform: translateY(-1px);
+}
+
+.bg-replace-picker-swatch.is-active,
+.bg-replace-picker-gradient.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.bg-replace-picker-swatch:disabled,
+.bg-replace-picker-gradient:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.bg-replace-picker-examples {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.125rem;
+}
+
+.bg-replace-picker-example {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.bg-replace-picker-example:hover:not(:disabled) {
+  border-color: var(--muted);
+}
+
+.bg-replace-picker-example.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.bg-replace-picker-example:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .workspace-image-filmstrip {
@@ -3494,20 +3792,20 @@ input[type="range"].slider-control:active::-moz-range-thumb {
 /* -------------------------------------------------------------------------- */
 
 .unified-editor {
-  --editor-accent: #007bff;
+  --editor-accent: #00a3ff;
   min-height: calc(100vh - 4rem);
   background: var(--editor-bg);
   color: var(--editor-text);
 }
 
 .dark .unified-editor {
-  --editor-bg: #0a0a0a;
-  --editor-surface: #0d0d0d;
-  --editor-elevated: #111111;
+  --editor-bg: #050505;
+  --editor-surface: #0a0a0a;
+  --editor-elevated: #0f0f0f;
   --editor-input-bg: #111111;
   --editor-frame-bg: #050505;
   --editor-frame-border: #1a1a1a;
-  --editor-border: #222222;
+  --editor-border: #1a1a1a;
   --editor-text: #f0f0f0;
   --editor-muted: #888888;
   --editor-nav-bg: rgba(10, 10, 10, 0.95);
@@ -3571,6 +3869,47 @@ html:not(.dark) .unified-editor {
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
+.unified-editor-workspace-item {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.unified-editor-workspace-item.is-active .unified-editor-workspace-thumb {
+  border-color: var(--editor-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--editor-accent) 35%, transparent);
+}
+
+.unified-editor-workspace-item:not(.is-active) .unified-editor-workspace-thumb:hover {
+  border-color: color-mix(in srgb, var(--editor-accent) 45%, var(--editor-border));
+}
+
+.unified-editor-workspace-remove {
+  position: absolute;
+  top: -0.35rem;
+  inset-inline-end: -0.35rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  border: 1px solid var(--editor-border);
+  background: var(--editor-chrome);
+  color: var(--editor-muted);
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.unified-editor-workspace-remove:hover {
+  color: var(--editor-foreground);
+  border-color: var(--editor-accent);
+  background: color-mix(in srgb, var(--editor-accent) 12%, var(--editor-chrome));
+}
+
 .unified-editor-workspace-add {
   display: inline-flex;
   align-items: center;
@@ -3583,21 +3922,14 @@ html:not(.dark) .unified-editor {
   color: var(--editor-accent);
 }
 
-.unified-editor-workspace-thumb.is-active {
-  border-color: var(--editor-accent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--editor-accent) 35%, transparent);
-}
-
-.unified-editor-workspace-thumb:not(.is-active):hover {
-  border-color: color-mix(in srgb, var(--editor-accent) 50%, var(--editor-border));
-}
-
 .unified-editor-examples {
   padding: 0 0.25rem;
 }
 
 .unified-editor-examples .example-image-strip-label {
-  color: var(--editor-muted);
+  color: var(--editor-text, var(--foreground));
+  font-size: 0.875rem;
+  font-weight: 500;
   text-align: center;
 }
 
@@ -3634,7 +3966,10 @@ html:not(.dark) .unified-editor {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--editor-muted);
-  transition: color 0.15s, background 0.15s;
+  transition:
+    color var(--motion-duration-base) var(--motion-ease-smooth),
+    background var(--motion-duration-base) var(--motion-ease-smooth),
+    transform var(--motion-duration-fast) var(--motion-ease-smooth);
 }
 
 .unified-editor-nav-btn:hover:not(:disabled),
@@ -3669,12 +4004,183 @@ html:not(.dark) .unified-editor {
   text-align: start;
   font-size: 0.8125rem;
   color: var(--editor-text);
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background var(--motion-duration-base) var(--motion-ease-smooth),
+    color var(--motion-duration-base) var(--motion-ease-smooth);
 }
 
 .unified-editor-dropdown-item:hover {
   background: color-mix(in srgb, var(--editor-accent) 15%, transparent);
   color: var(--editor-accent);
+}
+
+.unified-editor-dropdown-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.15rem;
+}
+
+.unified-editor-dropdown-row .unified-editor-dropdown-item {
+  flex: 1;
+  min-width: 0;
+}
+
+.unified-editor-dropdown-pin {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  border-radius: 0.25rem;
+  color: var(--editor-muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.unified-editor-dropdown-pin:hover,
+.unified-editor-dropdown-pin.is-active {
+  background: color-mix(in srgb, var(--editor-accent) 15%, transparent);
+  color: var(--editor-accent);
+}
+
+.unified-editor-pinned-label {
+  margin: 0 0 0.4rem;
+}
+
+.unified-editor-pinned-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.unified-editor-pinned-btn {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--editor-border);
+  background: var(--editor-input-bg);
+  font-size: 0.6875rem;
+  color: var(--editor-text);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.unified-editor-pinned-btn:hover {
+  border-color: var(--editor-accent);
+  color: var(--editor-accent);
+}
+
+.unified-editor-mask-refinement {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--editor-accent) 25%, var(--editor-border));
+  border-radius: 0.4rem;
+  background: color-mix(in srgb, var(--editor-accent) 4%, var(--editor-input-bg));
+}
+
+.unified-editor-mask-refinement-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--editor-accent);
+}
+
+.unified-editor-mask-brush-tools {
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--editor-border);
+}
+
+.unified-editor-mask-brush-label {
+  margin: 0 0 0.4rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--editor-muted);
+}
+
+.unified-editor-mask-brush-cluster {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.unified-editor-mask-brush-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--editor-border);
+  background: var(--editor-input-bg);
+  color: var(--editor-text);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.unified-editor-mask-brush-btn:not(:disabled):hover {
+  border-color: var(--editor-accent);
+  color: var(--editor-accent);
+  background: color-mix(in srgb, var(--editor-accent) 8%, var(--editor-input-bg));
+}
+
+.unified-editor-mask-brush-btn.is-active {
+  border-color: var(--editor-accent);
+  color: var(--editor-accent);
+  background: color-mix(in srgb, var(--editor-accent) 18%, var(--editor-input-bg));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--editor-accent) 35%, transparent);
+}
+
+.unified-editor-mask-brush-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.unified-editor-mask-analysis {
+  margin-top: 0.65rem;
+  font-size: 0.6875rem;
+  color: var(--editor-muted);
+}
+
+.unified-editor-mask-analysis summary {
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--editor-accent);
+  list-style: none;
+}
+
+.unified-editor-mask-analysis summary::-webkit-details-marker {
+  display: none;
+}
+
+.unified-editor-mask-analysis-list {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.unified-editor-mask-analysis-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--editor-border);
+  background: color-mix(in srgb, var(--editor-accent) 3%, var(--editor-input-bg));
+}
+
+.unified-editor-mask-analysis-list strong {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--editor-text);
 }
 
 .unified-editor-canvas {
@@ -3726,6 +4232,89 @@ html:not(.dark) .unified-editor {
   100% { transform: translateY(8px); }
 }
 
+.unified-editor-canvas-frame {
+  position: relative;
+}
+
+.unified-editor-zoom-controls {
+  position: absolute;
+  top: 0.75rem;
+  inset-inline-end: 0.75rem;
+  z-index: 14;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem;
+  border-radius: 999px;
+  border: 1px solid var(--editor-border);
+  background: color-mix(in srgb, var(--editor-panel-bg, var(--background)) 92%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.unified-editor-zoom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--editor-text);
+  cursor: pointer;
+}
+
+.unified-editor-zoom-btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--editor-accent) 12%, transparent);
+  color: var(--editor-accent);
+}
+
+.unified-editor-zoom-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.unified-editor-zoom-label {
+  min-width: 3rem;
+  padding: 0 0.35rem;
+  border: none;
+  background: transparent;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--editor-muted);
+  cursor: pointer;
+}
+
+.unified-editor-zoom-label:hover {
+  color: var(--editor-accent);
+}
+
+.unified-editor-preview-canvas--mask-brush {
+  cursor: none;
+  touch-action: none;
+}
+
+.unified-editor-mask-brush-cursor {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--editor-accent) 75%, white);
+  background: color-mix(in srgb, var(--editor-accent) 12%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--editor-text) 18%, transparent),
+    inset 0 0 12px color-mix(in srgb, white 35%, transparent);
+  z-index: 12;
+}
+
+.unified-editor-mask-brush-cursor--clean {
+  border-color: color-mix(in srgb, #f87171 70%, white);
+  background: color-mix(in srgb, #f87171 14%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--editor-text) 15%, transparent),
+    inset 0 0 18px color-mix(in srgb, white 42%, transparent);
+}
+
 .unified-editor-preview-canvas {
   display: block;
   border-radius: 0.25rem;
@@ -3759,13 +4348,49 @@ html:not(.dark) .unified-editor {
   50% { opacity: 0.3; }
 }
 
-.unified-editor-dropzone {
-  border-color: var(--editor-border) !important;
-  background: var(--editor-input-bg) !important;
+.unified-editor-dropzone:not(.upload-card-dropzone) {
+  border-color: transparent !important;
+  background: transparent !important;
 }
 
-.unified-editor-dropzone:hover {
-  border-color: var(--editor-accent) !important;
+.unified-editor-dropzone:not(.upload-card-dropzone):hover {
+  border-color: transparent !important;
+}
+
+.dark .upload-card-dropzone.unified-editor-dropzone {
+  background: #f0f2f5 !important;
+  border-color: color-mix(in srgb, #64748b 38%, transparent) !important;
+}
+
+.dark .upload-card-dropzone.unified-editor-dropzone:hover,
+.dark .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-active {
+  background: #f8fafc !important;
+  border-color: color-mix(in srgb, #2563eb 42%, #94a3b8) !important;
+}
+
+html:not(.dark) .upload-card-dropzone.unified-editor-dropzone {
+  background: color-mix(in srgb, #f8fafc 88%, #ffffff) !important;
+  border-color: color-mix(in srgb, #94a3b8 42%, transparent) !important;
+}
+
+html:not(.dark) .upload-card-dropzone.unified-editor-dropzone:hover,
+html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-active {
+  background: #ffffff !important;
+}
+
+.dark .upload-card-dropzone .upload-zone-headline,
+.dark .upload-card-dropzone .compact-upload-headline {
+  color: #0f172a !important;
+}
+
+.dark .upload-card-dropzone .upload-zone-subtext,
+.dark .upload-card-dropzone .compact-upload-drop-hint,
+.dark .upload-card-dropzone .compact-upload-format {
+  color: #374151 !important;
+}
+
+.dark .upload-card-dropzone .upload-zone-icon {
+  color: #334155 !important;
 }
 
 .unified-editor-panel-header {
@@ -3865,7 +4490,10 @@ html:not(.dark) .unified-editor {
   padding: 0.3rem;
   border-radius: 0.25rem;
   color: var(--editor-muted);
-  transition: color 0.15s, background 0.15s;
+  transition:
+    color var(--motion-duration-base) var(--motion-ease-smooth),
+    background var(--motion-duration-base) var(--motion-ease-smooth),
+    transform var(--motion-duration-fast) var(--motion-ease-smooth);
 }
 
 .unified-editor-layer-action:hover {
@@ -4018,6 +4646,43 @@ html:not(.dark) .unified-editor {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
+  align-items: center;
+}
+
+.unified-editor-history-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding-inline-end: 0.35rem;
+  margin-inline-end: 0.15rem;
+  border-inline-end: 1px solid var(--editor-border);
+}
+
+.unified-editor-history-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--editor-border);
+  border-radius: 0.35rem;
+  color: var(--editor-text);
+  background: var(--editor-input-bg);
+  transition:
+    border-color var(--motion-duration-base) var(--motion-ease-smooth),
+    color var(--motion-duration-base) var(--motion-ease-smooth),
+    background var(--motion-duration-base) var(--motion-ease-smooth),
+    transform var(--motion-duration-fast) var(--motion-ease-smooth);
+}
+
+.unified-editor-history-btn:hover:not(:disabled) {
+  border-color: var(--editor-accent);
+  color: var(--editor-accent);
+}
+
+.unified-editor-history-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .unified-editor-pill-btn {
@@ -4031,7 +4696,10 @@ html:not(.dark) .unified-editor {
   color: var(--editor-text);
   background: var(--editor-input-bg);
   white-space: nowrap;
-  transition: border-color 0.15s, color 0.15s;
+  transition:
+    border-color var(--motion-duration-base) var(--motion-ease-smooth),
+    color var(--motion-duration-base) var(--motion-ease-smooth),
+    transform var(--motion-duration-fast) var(--motion-ease-smooth);
 }
 
 .unified-editor-pill-btn:hover:not(:disabled) {
@@ -4057,7 +4725,10 @@ html:not(.dark) .unified-editor {
   border: 1px solid var(--editor-border);
   border-radius: 0.35rem;
   color: var(--editor-muted);
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color var(--motion-duration-base) var(--motion-ease-smooth),
+    border-color var(--motion-duration-base) var(--motion-ease-smooth),
+    transform var(--motion-duration-fast) var(--motion-ease-smooth);
 }
 
 .unified-editor-fav-btn:hover:not(:disabled) {
