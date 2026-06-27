@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useEditor } from "@/hooks/useEditorState";
+import { useAdaptiveCanvasFrame } from "@/hooks/useAdaptiveCanvasFrame";
+import { useEditorCanvasViewport } from "@/hooks/useEditorCanvasViewport";
 import { useLiveFeedback } from "@/hooks/useLiveFeedback";
 import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { ExampleImageStrip } from "@/components/ui/ExampleImageStrip";
+import { CanvasContainer } from "@/components/editor/CanvasContainer";
+import { ImageWrapper } from "@/components/editor/ImageWrapper";
 import { EditorCanvasDrag, useEditorCanvasDragHandlers } from "@/components/editor/EditorCanvasDrag";
 import { useEditorMaskBrushHandlers } from "@/components/editor/useEditorMaskBrushHandlers";
 import { EditorMaskBrushCursor } from "@/components/editor/EditorMaskBrushCursor";
@@ -25,10 +29,6 @@ export function EditorCanvas() {
     previewCanvasRef,
     isComposing,
     loadFile,
-    magnifierZoom,
-    canvasZoom,
-    zoomCanvasIn,
-    zoomCanvasOut,
     layers,
     isClickSegmentationLoading,
     maskClickMode,
@@ -37,12 +37,19 @@ export function EditorCanvas() {
   const [isDragging, setIsDragging] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const inputId = useId();
-  const frameRef = useRef<HTMLDivElement>(null);
   const drag = useEditorCanvasDragHandlers();
   const maskBrush = useEditorMaskBrushHandlers();
   const maskClick = useEditorMaskClickHandlers();
+  const imageWidth = source?.width ?? 0;
+  const imageHeight = source?.height ?? 0;
 
-  const viewportZoom = canvasZoom * magnifierZoom;
+  const { workspaceRef, frame } = useAdaptiveCanvasFrame(imageWidth, imageHeight);
+  const viewport = useEditorCanvasViewport(
+    imageWidth,
+    imageHeight,
+    frame.contentWidth,
+    frame.contentHeight,
+  );
 
   const showTransparencyGrid = layers.some(
     (layer) =>
@@ -78,10 +85,20 @@ export function EditorCanvas() {
       maskBrush.onPointerDown(event);
       return;
     }
-    drag.onPointerDown(event);
+    if (drag.canDrag) {
+      drag.onPointerDown(event);
+      return;
+    }
+    if (viewport.canPan) {
+      viewport.handlePanPointerDown(event);
+    }
   };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (viewport.isPanning) {
+      viewport.handlePanPointerMove(event);
+      return;
+    }
     if (maskClick.canClick) {
       maskClick.handlePointerMove(event);
       return;
@@ -94,6 +111,10 @@ export function EditorCanvas() {
   };
 
   const handlePointerUp = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (viewport.isPanning) {
+      viewport.endPan(event);
+      return;
+    }
     if (maskBrush.canPaint) {
       maskBrush.onPointerUp(event);
       return;
@@ -126,90 +147,119 @@ export function EditorCanvas() {
     );
   }
 
+  const wrapperCursorClass = viewport.isPanning
+    ? "image-wrapper--panning"
+    : viewport.canPan
+      ? "image-wrapper--can-pan"
+      : "";
+
   return (
-    <div className="unified-editor-canvas flex min-h-0 flex-1 flex-col">
-      <div
-        ref={frameRef}
-        className="unified-editor-canvas-frame flex min-h-0 flex-1 items-center justify-center overflow-auto p-4 sm:p-6"
-        onWheel={(event) => {
-          if (!source || !event.ctrlKey && !event.metaKey) return;
-          event.preventDefault();
-          if (event.deltaY < 0) zoomCanvasIn();
-          else if (event.deltaY > 0) zoomCanvasOut();
-        }}
-      >
+    <div className="unified-editor-canvas sticky-canvas-column">
+      <div className="canvas-anchor is-anchored">
         <EditorCanvasZoomControls />
-        <div
-          className={`unified-editor-canvas-inner relative ${
-            showTransparencyGrid ? "transparency-checkerboard" : ""
-          }`}
-          style={
-            viewportZoom !== 1
-              ? { transform: `scale(${viewportZoom})`, transformOrigin: "center center" }
-              : undefined
-          }
-        >
-          <div className="unified-editor-hologram" aria-hidden />
-          <canvas
-            ref={previewCanvasRef}
-            className={`unified-editor-preview-canvas live-feedback-canvas max-h-[calc(100vh-14rem)] max-w-full object-contain shadow-2xl ${
-              liveFeedback.isCanvasUpdating ? "is-updating" : ""
-            } ${drag.canDrag ? "unified-editor-preview-canvas--draggable" : ""} ${
-              maskBrush.canPaint ? "unified-editor-preview-canvas--mask-brush" : ""
-            } ${maskClick.canClick ? "unified-editor-preview-canvas--mask-click" : ""}`}
-            style={{ opacity: liveFeedback.canvasOpacity }}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
-            onPointerLeave={(event) => {
-              maskBrush.onPointerLeave();
-              maskClick.handlePointerLeave();
-            }}
-          />
-          <ScanningGridOverlay
-            active={liveFeedback.isScanningGridVisible}
-            width={canvasSize.width}
-            height={canvasSize.height}
-          />
-          {maskBrush.cursor ? (
-            <EditorMaskBrushCursor
-              x={maskBrush.cursor.x}
-              y={maskBrush.cursor.y}
-              radius={maskBrush.cursor.displayRadius}
-              mode={maskBrush.cursor.mode}
-            />
-          ) : null}
-          {maskClick.cursor ? (
-            <CursorOverlay
-              active={Boolean(maskClickMode)}
-              x={maskClick.cursor.x}
-              y={maskClick.cursor.y}
-            />
-          ) : null}
-          {maskClick.naturalPoint && maskClick.cursor ? (
-            <FloatingPreview
-              active={maskClick.canClick}
-              x={maskClick.cursor.x}
-              y={maskClick.cursor.y}
-              sourceCanvas={previewCanvasRef.current}
-              naturalX={maskClick.naturalPoint.x}
-              naturalY={maskClick.naturalPoint.y}
-            />
-          ) : null}
-          <ClickPulseOverlay
-            pulses={maskClick.pulses}
-            onPulseEnd={maskClick.removePulse}
-          />
-          <EditorCanvasDrag />
-          {isComposing || isClickSegmentationLoading ? (
-            <div className="unified-editor-processing live-feedback-processing-badge" role="status">
-              <span className="unified-editor-processing-dot" />
-              {isClickSegmentationLoading
-                ? t("editor.params.maskClickLoading")
-                : t("editor.processing")}
-            </div>
-          ) : null}
+        <div ref={workspaceRef} className="canvas-workspace">
+          <CanvasContainer width={frame.frameWidth} height={frame.frameHeight}>
+            <ImageWrapper
+              viewportRef={viewport.viewportRef}
+              contentWidth={frame.contentWidth}
+              contentHeight={frame.contentHeight}
+              stageWidth={imageWidth}
+              stageHeight={imageHeight}
+              stageTransform={viewport.stageTransform}
+              className={wrapperCursorClass}
+              ariaLabel={t("editor.canvas.zoom")}
+              onWheel={viewport.handleWheel}
+            >
+                <div
+                  className={`unified-editor-canvas-inner ${
+                    showTransparencyGrid ? "transparency-checkerboard" : ""
+                  }`}
+                >
+                  <div className="unified-editor-hologram" aria-hidden />
+                  <canvas
+                    ref={previewCanvasRef}
+                    className={`unified-editor-preview-canvas live-feedback-canvas shadow-2xl ${
+                      liveFeedback.isCanvasUpdating ? "is-updating" : ""
+                    } ${drag.canDrag ? "unified-editor-preview-canvas--draggable" : ""} ${
+                      maskBrush.canPaint ? "unified-editor-preview-canvas--mask-brush" : ""
+                    } ${maskClick.canClick ? "unified-editor-preview-canvas--mask-click" : ""} ${
+                      viewport.canPan &&
+                      !drag.canDrag &&
+                      !maskBrush.canPaint &&
+                      !maskClick.canClick
+                        ? "unified-editor-preview-canvas--pannable"
+                        : ""
+                    }`}
+                    style={{ opacity: liveFeedback.canvasOpacity }}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerUp}
+                    onPointerLeave={(event) => {
+                      if (viewport.isPanning) {
+                        viewport.endPan(event);
+                      }
+                      maskBrush.onPointerLeave();
+                      maskClick.handlePointerLeave();
+                    }}
+                  />
+                  <ScanningGridOverlay
+                    active={liveFeedback.isScanningGridVisible}
+                    width={canvasSize.width}
+                    height={canvasSize.height}
+                  />
+                  {maskBrush.cursor ? (
+                    <EditorMaskBrushCursor
+                      x={maskBrush.cursor.x}
+                      y={maskBrush.cursor.y}
+                      radius={maskBrush.cursor.displayRadius}
+                      mode={maskBrush.cursor.mode}
+                    />
+                  ) : null}
+                  {maskClick.cursor ? (
+                    <CursorOverlay
+                      active={Boolean(maskClickMode)}
+                      x={maskClick.cursor.x}
+                      y={maskClick.cursor.y}
+                    />
+                  ) : null}
+                  {maskClick.naturalPoint && maskClick.cursor ? (
+                    <FloatingPreview
+                      active={maskClick.canClick}
+                      x={maskClick.cursor.x}
+                      y={maskClick.cursor.y}
+                      sourceCanvas={previewCanvasRef.current}
+                      naturalX={maskClick.naturalPoint.x}
+                      naturalY={maskClick.naturalPoint.y}
+                    />
+                  ) : null}
+                  <ClickPulseOverlay
+                    pulses={maskClick.pulses}
+                    onPulseEnd={maskClick.removePulse}
+                  />
+                  <EditorCanvasDrag />
+                  {viewport.canPan &&
+                  !drag.canDrag &&
+                  !maskBrush.canPaint &&
+                  !maskClick.canClick ? (
+                    <span className="unified-editor-pan-hint" aria-live="polite">
+                      {t("editor.canvas.panHint")}
+                    </span>
+                  ) : null}
+                  {isComposing || isClickSegmentationLoading ? (
+                    <div
+                      className="unified-editor-processing live-feedback-processing-badge"
+                      role="status"
+                    >
+                      <span className="unified-editor-processing-dot" />
+                      {isClickSegmentationLoading
+                        ? t("editor.params.maskClickLoading")
+                        : t("editor.processing")}
+                    </div>
+                  ) : null}
+                </div>
+              </ImageWrapper>
+          </CanvasContainer>
         </div>
       </div>
     </div>

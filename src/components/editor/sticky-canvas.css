@@ -1,0 +1,98 @@
+/* Fixed canvas pane + independent sidebar scroll */
+
+.unified-editor {
+  --editor-sticky-canvas-top: 100px;
+  min-height: 0;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+.unified-editor-body--sticky-canvas {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sticky-canvas-column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--editor-bg);
+}
+
+.canvas-anchor {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  z-index: 10;
+  display: flex;
+  width: 100%;
+  padding-inline: 1rem;
+  padding-block: 0.25rem 0.5rem;
+  box-sizing: border-box;
+}
+
+.canvas-anchor .unified-editor-zoom-controls {
+  position: absolute;
+  top: 0.75rem;
+  inset-inline-end: 0.75rem;
+  z-index: 14;
+}
+
+.canvas-anchor .unified-editor-canvas-inner {
+  transition: box-shadow 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.canvas-anchor.is-anchored .unified-editor-canvas-inner {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--editor-accent) 28%, transparent),
+    0 24px 48px -12px rgba(0, 0, 0, 0.55),
+    0 12px 32px -8px color-mix(in srgb, var(--editor-accent) 12%, transparent);
+}
+
+.unified-editor-body--sticky-canvas .contextual-sidebar {
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.unified-editor-body--sticky-canvas .contextual-scroller {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+body:has(.unified-editor-body--sticky-canvas) {
+  overflow: hidden;
+}
+
+html:has(.unified-editor-body--sticky-canvas) {
+  overflow: hidden;
+  height: 100%;
+}
+
+body:has(.unified-editor-body--sticky-canvas) .app-main {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas-anchor .unified-editor-canvas-inner {
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .unified-editor-body--sticky-canvas .sticky-canvas-column {
+    min-height: 40vh;
+  }
+}

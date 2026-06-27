@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "../components/ui/animations/live-feedback.css";
 @import "../components/editor/contextual-scroll.css";
+@import "../components/editor/sticky-canvas.css";
+@import "../components/editor/canvas-viewport.css";
 
 /* Industrial Light (default when .light or no .dark) */
 :root {
@@ -3794,7 +3796,6 @@ input[type="range"].slider-control:active::-moz-range-thumb {
 
 .unified-editor {
   --editor-accent: #00a3ff;
-  min-height: calc(100vh - 4rem);
   background: var(--editor-bg);
   color: var(--editor-text);
 }
@@ -4134,19 +4135,20 @@ html:not(.dark) .unified-editor {
 
 .unified-editor-canvas {
   background-color: var(--editor-bg);
+}
+
+.sticky-canvas-column.unified-editor-canvas {
   background-image:
     linear-gradient(var(--editor-border) 1px, transparent 1px),
     linear-gradient(90deg, var(--editor-border) 1px, transparent 1px);
   background-size: 24px 24px;
+  background-attachment: local;
 }
 
 .unified-editor-canvas--empty {
   background-image: none;
 }
 
-.unified-editor-canvas-frame {
-  position: relative;
-}
 
 .unified-editor-canvas-inner {
   position: relative;
@@ -4181,11 +4183,7 @@ html:not(.dark) .unified-editor {
   100% { transform: translateY(8px); }
 }
 
-.unified-editor-canvas-frame {
-  position: relative;
-}
-
-.unified-editor-zoom-controls {
+.canvas-anchor .unified-editor-zoom-controls {
   position: absolute;
   top: 0.75rem;
   inset-inline-end: 0.75rem;

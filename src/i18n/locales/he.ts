@@ -267,6 +267,7 @@ export const he: TranslationDictionary = {
     },
     canvas: {
       dragHint: "גרור על התמונה כדי למקם את השכבה הפעילה",
+      panHint: "גרור לגלילה · Ctrl+גלגלת לזום",
       zoom: "זום קנבס",
       zoomIn: "זום פנימה",
       zoomOut: "זום החוצה",

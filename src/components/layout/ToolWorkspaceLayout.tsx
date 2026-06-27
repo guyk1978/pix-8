@@ -25,12 +25,12 @@ function ToolWorkspaceLayoutInner({ children }: ToolWorkspaceLayoutProps) {
   return (
     <div
       dir="ltr"
-      className={`flex w-full min-w-0 flex-1 flex-row items-start ${
+      className={`flex w-full min-w-0 flex-1 flex-row ${
         embeddedToolbarLayout
-          ? "min-h-0 flex-1"
+          ? "h-full min-h-0 items-stretch"
           : showSidebar
-            ? "tool-layout-with-sidebar"
-            : "min-h-0 flex-1"
+            ? "items-start tool-layout-with-sidebar"
+            : "min-h-0 flex-1 items-start"
       }`}
     >
       {showSidebar && !sidebarOnRight ? <ToolSidebarPanel /> : null}

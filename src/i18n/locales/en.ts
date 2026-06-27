@@ -266,6 +266,7 @@ export const en = {
     },
     canvas: {
       dragHint: "Drag on the image to position the active layer",
+      panHint: "Drag to pan · Ctrl+scroll to zoom",
       zoom: "Canvas zoom",
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",

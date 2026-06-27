@@ -1,0 +1,123 @@
+/* Adaptive aspect-ratio canvas frame */
+
+.canvas-anchor {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.canvas-workspace {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: var(--editor-bg);
+  background-image:
+    linear-gradient(var(--editor-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--editor-border) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: center;
+}
+
+.canvas-container {
+  position: relative;
+  flex: 0 0 auto;
+  max-width: calc(100% - 0.5rem);
+  max-height: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--editor-frame-border, var(--editor-border));
+  background: var(--editor-frame-bg, var(--editor-surface));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--editor-accent) 20%, transparent),
+    var(--editor-canvas-shadow, 0 20px 60px rgba(0, 0, 0, 0.45));
+  transition:
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.canvas-container__matte {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  border-radius: 0.25rem;
+  flex: 0 0 auto;
+}
+
+.image-wrapper--can-pan {
+  cursor: grab;
+}
+
+.image-wrapper--panning,
+.image-wrapper--panning .unified-editor-preview-canvas--pannable {
+  cursor: grabbing;
+}
+
+.image-wrapper__stage {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.image-wrapper__stage .unified-editor-canvas-inner {
+  width: 100%;
+  height: 100%;
+}
+
+.image-wrapper .unified-editor-canvas-inner {
+  position: relative;
+  border: none;
+  padding: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  box-shadow: none;
+}
+
+.image-wrapper .unified-editor-preview-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+}
+
+.unified-editor-preview-canvas--pannable {
+  touch-action: none;
+}
+
+.unified-editor-pan-hint {
+  pointer-events: none;
+  position: absolute;
+  bottom: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 12;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--editor-border);
+  background: color-mix(in srgb, var(--editor-panel-bg, var(--background)) 90%, transparent);
+  backdrop-filter: blur(6px);
+  font-size: 0.6875rem;
+  color: var(--editor-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas-container {
+    transition: none;
+  }
+}

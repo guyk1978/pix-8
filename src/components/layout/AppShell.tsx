@@ -18,7 +18,9 @@ function AppShellFrame({ children }: AppShellProps) {
   const hideFooter = isHomeDashboard(pathname);
 
   return (
-    <div className="flex min-h-screen min-w-0 flex-col overflow-x-clip bg-background">
+    <div className={`flex min-w-0 flex-col overflow-x-clip bg-background ${
+      hideFooter ? "h-screen overflow-hidden" : "min-h-screen"
+    }`}>
       <Header />
       <ToolWorkspaceLayout>{children}</ToolWorkspaceLayout>
       {hideFooter ? null : <SiteFooter />}

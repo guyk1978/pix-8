@@ -16,16 +16,20 @@ function EditorLayoutInner() {
 
   useEffect(() => {
     setEmbeddedToolbarLayout?.(true);
-    return () => setEmbeddedToolbarLayout?.(false);
+    document.body.style.overflow = "hidden";
+    return () => {
+      setEmbeddedToolbarLayout?.(false);
+      document.body.style.overflow = "";
+    };
   }, [setEmbeddedToolbarLayout]);
 
   return (
-    <section className="unified-editor flex min-h-0 w-full flex-1 flex-col">
+    <section className="unified-editor flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
       <Suspense fallback={null}>
         <EditorProjectLoader />
       </Suspense>
       <EditorTopNav />
-      <div className="unified-editor-body flex min-h-0 flex-1 overflow-hidden">
+      <div className="unified-editor-body unified-editor-body--sticky-canvas flex min-h-0 flex-1 overflow-hidden">
         <EditorCanvas />
         <EditorContextualSidebar />
       </div>
