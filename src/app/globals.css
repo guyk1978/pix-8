@@ -3984,6 +3984,11 @@ html:not(.dark) .unified-editor {
   cursor: not-allowed;
 }
 
+[dir="rtl"] .unified-editor-nav-btn {
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
 .unified-editor-dropdown {
   position: absolute;
   top: calc(100% + 0.35rem);

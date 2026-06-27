@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  Suspense,
   useCallback,
   useContext,
   useEffect,
@@ -9,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useSearchParams } from "next/navigation";
 import { translate, type TranslationParams } from "@/i18n";
 import {
   DEFAULT_LANGUAGE,
@@ -28,24 +30,35 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
+function LanguageUrlSync({
+  onResolved,
+}: {
+  onResolved: (language: Language) => void;
+}) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const urlLang = searchParams.get("lang");
+
+    if (isLanguage(urlLang)) {
+      onResolved(urlLang);
+      storeLanguage(urlLang);
+      return;
+    }
+
+    const stored = getStoredLanguage();
+    onResolved(stored ?? DEFAULT_LANGUAGE);
+  }, [onResolved, searchParams]);
+
+  return null;
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(DEFAULT_LANGUAGE);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlLang = params.get("lang");
-
-    if (isLanguage(urlLang)) {
-      setLanguageState(urlLang);
-      storeLanguage(urlLang);
-    } else {
-      const stored = getStoredLanguage();
-      if (stored) {
-        setLanguageState(stored);
-      }
-    }
-
+  const resolveLanguage = useCallback((next: Language) => {
+    setLanguageState(next);
     setMounted(true);
   }, []);
 
@@ -78,7 +91,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
+    <LanguageContext.Provider value={value}>
+      <Suspense fallback={null}>
+        <LanguageUrlSync onResolved={resolveLanguage} />
+      </Suspense>
+      {children}
+    </LanguageContext.Provider>
   );
 }
 

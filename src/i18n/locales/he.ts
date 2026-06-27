@@ -111,10 +111,10 @@ export const he: TranslationDictionary = {
   editor: {
     nav: {
       label: "כלי עריכה",
-      aiAssist: "AI ASSIST",
-      optimization: "OPTIMIZATION",
-      metadata: "METADATA",
-      design: "DESIGN",
+      aiAssist: "עוזר AI",
+      optimization: "אופטימיזציה",
+      metadata: "מטא-דאטה",
+      design: "עיצוב",
     },
     upload: {
       title: "העלה פעם אחת, ערוך הכל",

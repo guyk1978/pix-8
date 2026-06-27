@@ -1,3 +1,4 @@
+import { isLanguage } from "@/lib/language";
 import { getHomeToolHref } from "@/lib/homeTool";
 import {
   getLegacyToolRoute,
@@ -69,6 +70,10 @@ export function isToolPage(pathname: string): boolean {
 
 export function isHomeDashboard(pathname: string): boolean {
   return normalizePathname(pathname) === "/";
+}
+
+export function isSplashEntry(pathname: string, lang: string | null): boolean {
+  return normalizePathname(pathname) === "/" && !isLanguage(lang);
 }
 
 export function getLegacyToolHref(toolId: ToolId): string {
