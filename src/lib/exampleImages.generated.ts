@@ -39,6 +39,56 @@ export const EXAMPLE_IMAGES = [
     "id": "image8",
     "fileName": "image8.webp",
     "src": "/examples/image8.webp"
+  },
+  {
+    "id": "image9",
+    "fileName": "image9.webp",
+    "src": "/examples/image9.webp"
+  },
+  {
+    "id": "image10",
+    "fileName": "image10.webp",
+    "src": "/examples/image10.webp"
+  },
+  {
+    "id": "image11",
+    "fileName": "image11.webp",
+    "src": "/examples/image11.webp"
+  },
+  {
+    "id": "image12",
+    "fileName": "image12.webp",
+    "src": "/examples/image12.webp"
+  },
+  {
+    "id": "image13",
+    "fileName": "image13.webp",
+    "src": "/examples/image13.webp"
+  },
+  {
+    "id": "image14",
+    "fileName": "image14.webp",
+    "src": "/examples/image14.webp"
+  },
+  {
+    "id": "image15",
+    "fileName": "image15.webp",
+    "src": "/examples/image15.webp"
+  },
+  {
+    "id": "image16",
+    "fileName": "image16.webp",
+    "src": "/examples/image16.webp"
+  },
+  {
+    "id": "image17",
+    "fileName": "image17.webp",
+    "src": "/examples/image17.webp"
+  },
+  {
+    "id": "image18",
+    "fileName": "image18.webp",
+    "src": "/examples/image18.webp"
   }
 ] as const;
 
