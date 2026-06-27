@@ -10,24 +10,26 @@ export function EditorToolPanel() {
 
   if (!source || !activeLayer || activeLayer.type === "source") {
     return (
-      <div className="unified-editor-params unified-editor-divider-top">
-        <header className="unified-editor-panel-header">
+      <section className="contextual-panel contextual-panel--params unified-editor-divider-top">
+        <header className="unified-editor-panel-header contextual-panel-header">
           <h2 className="unified-editor-panel-title">{t("editor.params.title")}</h2>
         </header>
-        <p className="unified-editor-params-empty">{t("editor.params.empty")}</p>
-      </div>
+        <p className="unified-editor-params-empty contextual-panel-body">
+          {t("editor.params.empty")}
+        </p>
+      </section>
     );
   }
 
   return (
-    <div className="unified-editor-params unified-editor-divider-top">
-      <header className="unified-editor-panel-header">
+    <section className="contextual-panel contextual-panel--params unified-editor-divider-top">
+      <header className="unified-editor-panel-header contextual-panel-header">
         <h2 className="unified-editor-panel-title">{t("editor.params.title")}</h2>
         <span className="unified-editor-panel-meta">{t(activeLayer.nameKey)}</span>
       </header>
-      <div className="unified-editor-params-body">
+      <div className="unified-editor-params-body contextual-panel-body">
         <EditorLayerParams layer={activeLayer} />
       </div>
-    </div>
+    </section>
   );
 }

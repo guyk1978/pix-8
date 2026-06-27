@@ -5,6 +5,7 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { LayerItem } from "@/components/editor/LayerItem";
 import { useEditor } from "@/hooks/useEditorState";
 import { useLiveFeedback } from "@/hooks/useLiveFeedback";
+import { useContextualScrollContext } from "@/hooks/useContextualScroll";
 
 export function EditorLayerPanel() {
   const { t } = useLanguage();
@@ -19,6 +20,7 @@ export function EditorLayerPanel() {
     source,
   } = useEditor();
   const { layerFeedback } = useLiveFeedback();
+  const { registerLayerRef } = useContextualScrollContext();
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const handleDragStart = (index: number) => (event: DragEvent) => {
@@ -40,8 +42,8 @@ export function EditorLayerPanel() {
   const handleDragEnd = () => setDragIndex(null);
 
   return (
-    <div className="unified-editor-layers flex min-h-0 flex-1 flex-col overflow-hidden">
-      <header className="unified-editor-panel-header">
+    <section className="contextual-panel contextual-panel--layers">
+      <header className="unified-editor-panel-header contextual-panel-header">
         <h2 className="unified-editor-panel-title">{t("editor.layers.stackTitle")}</h2>
         {source ? (
           <span className="unified-editor-panel-meta">
@@ -50,7 +52,7 @@ export function EditorLayerPanel() {
         ) : null}
       </header>
 
-      <ul className="unified-editor-layer-list flex-1 overflow-y-auto" role="list">
+      <ul className="unified-editor-layer-list contextual-panel-body" role="list">
         {!source ? (
           <li className="unified-editor-layer-empty">
             {t("editor.layers.empty")}
@@ -64,6 +66,7 @@ export function EditorLayerPanel() {
               isActive={layer.id === activeLayerId}
               isDragging={dragIndex === index}
               feedback={layerFeedback.get(layer.id) ?? null}
+              registerRef={(element) => registerLayerRef(layer.id, element)}
               onSelect={() => selectLayer(layer.id)}
               onToggleVisibility={() => toggleLayerVisibility(layer.id)}
               onToggleLock={() => toggleLayerLock(layer.id)}
@@ -75,6 +78,6 @@ export function EditorLayerPanel() {
           ))
         )}
       </ul>
-    </div>
+    </section>
   );
 }

@@ -1,16 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ChevronDown, Pin } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { usePinnedTools } from "@/components/editor/PinnedToolsProvider";
 import { EDITOR_CATEGORIES, useEditor } from "@/hooks/useEditorState";
 import type { EditorToolAction } from "@/lib/editor/layerTypes";
 
 export function EditorTopNav() {
   const { t } = useLanguage();
   const { openCategory, setOpenCategory, addToolAction, source } = useEditor();
-  const { isPinned, togglePinned } = usePinnedTools();
   const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,52 +59,17 @@ export function EditorTopNav() {
                   className="unified-editor-dropdown"
                   role="menu"
                 >
-                  {category.tools.map((tool) => {
-                    const pinned = isPinned(tool.action);
-                    return (
-                      <div
-                        key={tool.action}
-                        className="unified-editor-dropdown-row"
-                        role="none"
-                      >
-                        <button
-                          type="button"
-                          role="menuitem"
-                          className="unified-editor-dropdown-item"
-                          onClick={() => handleAddTool(tool.action)}
-                        >
-                          {t(tool.labelKey)}
-                        </button>
-                        <button
-                          type="button"
-                          className={`unified-editor-dropdown-pin ${
-                            pinned ? "is-active" : ""
-                          }`}
-                          aria-label={
-                            pinned
-                              ? t("editor.pinned.unpin", {
-                                  name: t(tool.labelKey),
-                                })
-                              : t("editor.pinned.pin", {
-                                  name: t(tool.labelKey),
-                                })
-                          }
-                          aria-pressed={pinned}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            togglePinned(tool.action);
-                          }}
-                        >
-                          <Pin
-                            className="h-3.5 w-3.5"
-                            strokeWidth={2}
-                            fill={pinned ? "currentColor" : "none"}
-                            aria-hidden
-                          />
-                        </button>
-                      </div>
-                    );
-                  })}
+                  {category.tools.map((tool) => (
+                    <button
+                      key={tool.action}
+                      type="button"
+                      role="menuitem"
+                      className="unified-editor-dropdown-item"
+                      onClick={() => handleAddTool(tool.action)}
+                    >
+                      {t(tool.labelKey)}
+                    </button>
+                  ))}
                 </div>
               ) : null}
             </div>

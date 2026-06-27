@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../components/ui/animations/live-feedback.css";
+@import "../components/editor/contextual-scroll.css";
 
 /* Industrial Light (default when .light or no .dark) */
 :root {
@@ -4014,63 +4015,6 @@ html:not(.dark) .unified-editor {
   color: var(--editor-accent);
 }
 
-.unified-editor-dropdown-row {
-  display: flex;
-  align-items: stretch;
-  gap: 0.15rem;
-}
-
-.unified-editor-dropdown-row .unified-editor-dropdown-item {
-  flex: 1;
-  min-width: 0;
-}
-
-.unified-editor-dropdown-pin {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  border-radius: 0.25rem;
-  color: var(--editor-muted);
-  transition: background 0.15s, color 0.15s;
-}
-
-.unified-editor-dropdown-pin:hover,
-.unified-editor-dropdown-pin.is-active {
-  background: color-mix(in srgb, var(--editor-accent) 15%, transparent);
-  color: var(--editor-accent);
-}
-
-.unified-editor-pinned-label {
-  margin: 0 0 0.4rem;
-}
-
-.unified-editor-pinned-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
-.unified-editor-pinned-btn {
-  display: inline-flex;
-  max-width: 100%;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.3rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid var(--editor-border);
-  background: var(--editor-input-bg);
-  font-size: 0.6875rem;
-  color: var(--editor-text);
-  transition: border-color 0.15s, color 0.15s;
-}
-
-.unified-editor-pinned-btn:hover {
-  border-color: var(--editor-accent);
-  color: var(--editor-accent);
-}
-
 .unified-editor-mask-refinement {
   margin-top: 0.5rem;
   padding: 0.75rem;
@@ -4508,14 +4452,10 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
 }
 
 .unified-editor-params {
-  max-height: 45%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 .unified-editor-params-body {
-  overflow-y: auto;
   padding: 0.75rem 1rem 1rem;
   display: flex;
   flex-direction: column;

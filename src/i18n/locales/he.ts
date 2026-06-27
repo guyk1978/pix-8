@@ -265,11 +265,6 @@ export const he: TranslationDictionary = {
       favorite: "שמור סשן",
       save: "שמור",
     },
-    pinned: {
-      title: "כלים נעוצים",
-      pin: "נעץ {name}",
-      unpin: "בטל נעיצה של {name}",
-    },
     canvas: {
       dragHint: "גרור על התמונה כדי למקם את השכבה הפעילה",
       zoom: "זום קנבס",

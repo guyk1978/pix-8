@@ -20,6 +20,7 @@ interface LayerItemProps {
   onDragStart: (event: DragEvent) => void;
   onDragOver: (event: DragEvent) => void;
   onDragEnd: () => void;
+  registerRef?: (element: HTMLLIElement | null) => void;
 }
 
 function resolveDisplayPhase(
@@ -48,6 +49,7 @@ export function LayerItem({
   onDragStart,
   onDragOver,
   onDragEnd,
+  registerRef,
 }: LayerItemProps) {
   const { t } = useLanguage();
   const isSource = layer.type === "source";
@@ -57,6 +59,7 @@ export function LayerItem({
 
   return (
     <li
+      ref={registerRef}
       draggable={!isSource && !layer.locked}
       onDragStart={onDragStart}
       onDragOver={onDragOver}

@@ -1,0 +1,56 @@
+/* Unified contextual scroller for editor sidebar panels */
+
+.contextual-sidebar {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.contextual-scroller {
+  min-height: 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+.contextual-panel {
+  display: block;
+}
+
+.contextual-panel-header {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  margin: 0;
+  background: color-mix(in srgb, var(--editor-surface) 90%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.contextual-panel--params .contextual-panel-header {
+  z-index: 3;
+}
+
+.contextual-panel-body {
+  min-height: 0;
+}
+
+.unified-editor-params {
+  max-height: none;
+  overflow: visible;
+  display: block;
+}
+
+.unified-editor-params-body {
+  overflow: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contextual-scroller {
+    scroll-behavior: auto;
+  }
+}

@@ -264,11 +264,6 @@ export const en = {
       favorite: "Save workspace",
       save: "Save",
     },
-    pinned: {
-      title: "Pinned tools",
-      pin: "Pin {name}",
-      unpin: "Unpin {name}",
-    },
     canvas: {
       dragHint: "Drag on the image to position the active layer",
       zoom: "Canvas zoom",
