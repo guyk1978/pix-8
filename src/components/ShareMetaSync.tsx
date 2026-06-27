@@ -1,8 +1,10 @@
 "use client";
 
 import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { isSplashEntry } from "@/lib/routes";
 import {
   getShareHeaderImage,
   getShareTheme,
@@ -39,6 +41,7 @@ function upsertMetaName(name: string, content: string) {
 export function ShareMetaSync() {
   const { language } = useLanguage();
   const { resolvedTheme } = useTheme();
+  const pathname = usePathname();
   const isDark = resolvedTheme !== "light";
 
   useEffect(() => {
@@ -49,15 +52,16 @@ export function ShareMetaSync() {
     upsertMetaProperty("og:image", imageUrl);
     upsertMetaName("twitter:image", imageUrl);
 
-    const url = withShareParams(
-      new URL(window.location.href),
-      language,
-      theme,
-    );
+    const current = new URL(window.location.href);
+    if (isSplashEntry(pathname, current.searchParams.get("lang"))) {
+      return;
+    }
+
+    const url = withShareParams(current, language, theme);
     if (url.href !== window.location.href) {
       window.history.replaceState(null, "", url.href);
     }
-  }, [language, isDark]);
+  }, [language, isDark, pathname]);
 
   return null;
 }
