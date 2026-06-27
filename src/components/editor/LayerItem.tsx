@@ -65,72 +65,70 @@ export function LayerItem({
         isDragging ? "is-dragging" : ""
       } ${phaseClass}`}
     >
-      <div className="unified-editor-layer-item-row">
-        <button
-          type="button"
-          className="unified-editor-layer-grip"
-          aria-hidden={isSource}
-          tabIndex={isSource ? -1 : 0}
-          disabled={isSource || layer.locked}
-        >
-          <GripVertical className="h-3.5 w-3.5" strokeWidth={2} />
-        </button>
+      <button
+        type="button"
+        className="unified-editor-layer-grip"
+        aria-hidden={isSource}
+        tabIndex={isSource ? -1 : 0}
+        disabled={isSource || layer.locked}
+      >
+        <GripVertical className="h-3.5 w-3.5" strokeWidth={2} />
+      </button>
 
-        <button
-          type="button"
-          className="unified-editor-layer-label"
-          onClick={onSelect}
-        >
-          <span className="unified-editor-layer-index">{index + 1}.</span>
-          <span className="truncate">{t(layer.nameKey)}</span>
-        </button>
+      <button
+        type="button"
+        className="unified-editor-layer-label"
+        onClick={onSelect}
+      >
+        <span className="unified-editor-layer-index">{index + 1}.</span>
+        <span className="truncate">{t(layer.nameKey)}</span>
+      </button>
 
-        <div className="unified-editor-layer-actions">
-          {!isSource ? (
-            <>
-              <button
-                type="button"
-                className="unified-editor-layer-action"
-                onClick={onToggleVisibility}
-                aria-label={
-                  layer.visible ? t("editor.layers.hide") : t("editor.layers.show")
-                }
-              >
-                {layer.visible ? (
-                  <Eye className="h-3.5 w-3.5" strokeWidth={2} />
-                ) : (
-                  <EyeOff className="h-3.5 w-3.5" strokeWidth={2} />
-                )}
-              </button>
-              <button
-                type="button"
-                className="unified-editor-layer-action"
-                onClick={onToggleLock}
-                aria-label={
-                  layer.locked ? t("editor.layers.unlock") : t("editor.layers.lock")
-                }
-              >
-                {layer.locked ? (
-                  <Lock className="h-3.5 w-3.5" strokeWidth={2} />
-                ) : (
-                  <Unlock className="h-3.5 w-3.5" strokeWidth={2} />
-                )}
-              </button>
-              <button
-                type="button"
-                className="unified-editor-layer-action unified-editor-layer-action--danger"
-                onClick={onDelete}
-                disabled={layer.locked}
-                aria-label={t("editor.layers.delete")}
-              >
-                <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
-              </button>
-            </>
-          ) : null}
-        </div>
+      <div className="unified-editor-layer-actions">
+        {!isSource ? (
+          <>
+            <button
+              type="button"
+              className="unified-editor-layer-action"
+              onClick={onToggleVisibility}
+              aria-label={
+                layer.visible ? t("editor.layers.hide") : t("editor.layers.show")
+              }
+            >
+              {layer.visible ? (
+                <Eye className="h-3.5 w-3.5" strokeWidth={2} />
+              ) : (
+                <EyeOff className="h-3.5 w-3.5" strokeWidth={2} />
+              )}
+            </button>
+            <button
+              type="button"
+              className="unified-editor-layer-action"
+              onClick={onToggleLock}
+              aria-label={
+                layer.locked ? t("editor.layers.unlock") : t("editor.layers.lock")
+              }
+            >
+              {layer.locked ? (
+                <Lock className="h-3.5 w-3.5" strokeWidth={2} />
+              ) : (
+                <Unlock className="h-3.5 w-3.5" strokeWidth={2} />
+              )}
+            </button>
+            <button
+              type="button"
+              className="unified-editor-layer-action unified-editor-layer-action--danger"
+              onClick={onDelete}
+              disabled={layer.locked}
+              aria-label={t("editor.layers.delete")}
+            >
+              <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
+            </button>
+          </>
+        ) : null}
       </div>
 
-      {feedback?.isAiLayer ? (
+      {feedback?.isAiLayer && phase !== "idle" ? (
         <LayerProgressBar
           phase={phase}
           progress={feedback.progress}

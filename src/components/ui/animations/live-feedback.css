@@ -27,23 +27,12 @@
   z-index: 14;
 }
 
-.live-feedback-layer-item-row {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  width: 100%;
-}
-
-.unified-editor-layer-item {
-  flex-direction: column;
-  align-items: stretch;
-}
-
 .live-feedback-layer-progress {
   position: relative;
+  flex: 0 0 100%;
   width: 100%;
   height: 3px;
-  margin-top: 0.2rem;
+  margin-top: 0.05rem;
   border-radius: 999px;
   overflow: hidden;
   background: color-mix(in srgb, var(--editor-border) 70%, transparent);

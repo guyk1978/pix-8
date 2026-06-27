@@ -4431,6 +4431,7 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
 
 .unified-editor-layer-item {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.25rem;
   padding: 0.35rem 0.25rem;
