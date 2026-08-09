@@ -39,12 +39,14 @@ function upsertMetaName(name: string, content: string) {
 }
 
 export function ShareMetaSync() {
-  const { language } = useLanguage();
+  const { language, isReady } = useLanguage();
   const { resolvedTheme } = useTheme();
   const pathname = usePathname();
   const isDark = resolvedTheme !== "light";
 
   useEffect(() => {
+    if (!isReady) return;
+
     const imagePath = getShareHeaderImage(language, isDark);
     const imageUrl = resolveShareImageUrl(imagePath, window.location.origin);
     const theme = getShareTheme(isDark);
@@ -61,7 +63,7 @@ export function ShareMetaSync() {
     if (url.href !== window.location.href) {
       window.history.replaceState(null, "", url.href);
     }
-  }, [language, isDark, pathname]);
+  }, [language, isDark, pathname, isReady]);
 
   return null;
 }

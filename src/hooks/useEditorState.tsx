@@ -68,6 +68,7 @@ import {
   EDITOR_PROJECT_TOOL_ID,
   hydrateCollageLayersFromFiles,
   deserializeEditorLayers,
+  isEditorProjectPayload,
   layersFromEditorPayload,
   revokeBgReplaceObjectUrls,
   revokeCollageObjectUrls,
@@ -394,84 +395,103 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const loadFromProjectId = useCallback(
     async (id: string) => {
-      const record = await getProject(id);
-      if (!record) return false;
-
-      const images = await loadProjectImages(record);
-      const mainFile = images.get(MAIN_IMAGE_KEY);
-      if (!mainFile) return false;
-
-      const restoredLayers = hydrateCollageLayersFromFiles(
-        layersFromEditorPayload(record.payload),
-        images,
-      );
-
-      const workspaceMeta = Array.isArray(record.payload.workspaceImages)
-        ? (record.payload.workspaceImages as { id: string; fileName: string }[])
-        : [];
-      const savedActiveId =
-        typeof record.payload.activeWorkspaceImageId === "string"
-          ? record.payload.activeWorkspaceImageId
-          : null;
-
-      let hydratedWorkspace: EditorWorkspaceImage[] = [];
-      if (workspaceMeta.length > 0) {
-        for (const entry of workspaceMeta) {
-          const file =
-            images.get(workspaceImageKey(entry.id)) ??
-            (savedActiveId === entry.id ? mainFile : undefined);
-          if (!file) continue;
-          const parsed = await loadImageFromFile(file);
-          hydratedWorkspace.push(workspaceImageFromParsed(parsed, entry.id));
+      try {
+        const record = await getProject(id);
+        if (!record) {
+          showToast(t("editor.project.notFound"));
+          return false;
         }
-      }
 
-      if (hydratedWorkspace.length === 0) {
-        const parsed = await loadImageFromFile(mainFile);
-        hydratedWorkspace = [workspaceImageFromParsed(parsed)];
-      }
-
-      const activeId =
-        savedActiveId && hydratedWorkspace.some((image) => image.id === savedActiveId)
-          ? savedActiveId
-          : hydratedWorkspace[0]!.id;
-      const activeImage =
-        hydratedWorkspace.find((image) => image.id === activeId) ?? hydratedWorkspace[0]!;
-
-      workspaceSessionsRef.current.clear();
-      const rawStacks = record.payload.workspaceLayerStacks;
-      if (rawStacks && typeof rawStacks === "object" && !Array.isArray(rawStacks)) {
-        for (const [workspaceId, entry] of Object.entries(
-          rawStacks as Record<
-            string,
-            { layers?: unknown; activeLayerId?: string | null }
-          >,
-        )) {
-          if (!Array.isArray(entry?.layers)) continue;
-          const hydrated = hydrateCollageLayersFromFiles(
-            deserializeEditorLayers(entry.layers as SerializableEditorLayer[]),
-            images,
-          );
-          workspaceSessionsRef.current.set(workspaceId, {
-            layers: hydrated,
-            activeLayerId: entry.activeLayerId ?? null,
-          });
+        const images = await loadProjectImages(record);
+        const mainFile = images.get(MAIN_IMAGE_KEY);
+        if (!mainFile) {
+          showToast(t("editor.project.loadFailed"));
+          return false;
         }
+
+        if (!isEditorProjectPayload(record.payload)) {
+          showToast(t("editor.project.loadFailed"));
+          return false;
+        }
+
+        const restoredLayers = hydrateCollageLayersFromFiles(
+          layersFromEditorPayload(record.payload),
+          images,
+        );
+
+        const workspaceMeta = Array.isArray(record.payload.workspaceImages)
+          ? (record.payload.workspaceImages as { id: string; fileName: string }[])
+          : [];
+        const savedActiveId =
+          typeof record.payload.activeWorkspaceImageId === "string"
+            ? record.payload.activeWorkspaceImageId
+            : null;
+
+        let hydratedWorkspace: EditorWorkspaceImage[] = [];
+        if (workspaceMeta.length > 0) {
+          for (const entry of workspaceMeta) {
+            const file =
+              images.get(workspaceImageKey(entry.id)) ??
+              (savedActiveId === entry.id ? mainFile : undefined);
+            if (!file) continue;
+            const parsed = await loadImageFromFile(file);
+            hydratedWorkspace.push(workspaceImageFromParsed(parsed, entry.id));
+          }
+        }
+
+        if (hydratedWorkspace.length === 0) {
+          const parsed = await loadImageFromFile(mainFile);
+          hydratedWorkspace = [workspaceImageFromParsed(parsed)];
+        }
+
+        const activeId =
+          savedActiveId && hydratedWorkspace.some((image) => image.id === savedActiveId)
+            ? savedActiveId
+            : hydratedWorkspace[0]!.id;
+        const activeImage =
+          hydratedWorkspace.find((image) => image.id === activeId) ??
+          hydratedWorkspace[0]!;
+
+        workspaceSessionsRef.current.clear();
+        const rawStacks = record.payload.workspaceLayerStacks;
+        if (rawStacks && typeof rawStacks === "object" && !Array.isArray(rawStacks)) {
+          for (const [workspaceId, entry] of Object.entries(
+            rawStacks as Record<
+              string,
+              { layers?: unknown; activeLayerId?: string | null }
+            >,
+          )) {
+            if (!Array.isArray(entry?.layers)) continue;
+            const hydrated = hydrateCollageLayersFromFiles(
+              deserializeEditorLayers(entry.layers as SerializableEditorLayer[]),
+              images,
+            );
+            workspaceSessionsRef.current.set(workspaceId, {
+              layers: hydrated,
+              activeLayerId: entry.activeLayerId ?? null,
+            });
+          }
+        }
+
+        const activeSession = workspaceSessionsRef.current.get(activeId);
+        const layersToRestore = activeSession?.layers ?? restoredLayers;
+
+        setWorkspaceImages(hydratedWorkspace);
+        setActiveWorkspaceImageId(activeId);
+        await applyEditorSession(activeImage.file, layersToRestore, {
+          projectId: record.id,
+          projectName: record.name,
+          activeLayerId: activeSession?.activeLayerId ?? null,
+        });
+        return true;
+      } catch (error) {
+        showToast(
+          error instanceof Error ? error.message : t("editor.project.loadFailed"),
+        );
+        return false;
       }
-
-      const activeSession = workspaceSessionsRef.current.get(activeId);
-      const layersToRestore = activeSession?.layers ?? restoredLayers;
-
-      setWorkspaceImages(hydratedWorkspace);
-      setActiveWorkspaceImageId(activeId);
-      await applyEditorSession(activeImage.file, layersToRestore, {
-        projectId: record.id,
-        projectName: record.name,
-        activeLayerId: activeSession?.activeLayerId ?? null,
-      });
-      return true;
     },
-    [applyEditorSession],
+    [applyEditorSession, showToast, t],
   );
 
   const scheduleCompose = useCallback(() => {
@@ -905,21 +925,32 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   }, [activeWorkspaceImageId]);
 
   const buildProjectImages = useCallback(() => {
-    if (!source || !activeWorkspaceImageId) {
-      return [{ key: MAIN_IMAGE_KEY, file: source!.file }];
+    if (!source) return [];
+
+    const sessions = new Map(workspaceSessionsRef.current);
+    if (activeWorkspaceImageId) {
+      sessions.set(activeWorkspaceImageId, {
+        layers: layersRef.current,
+        activeLayerId: activeLayerIdRef.current,
+      });
     }
 
-    return [
-      { key: MAIN_IMAGE_KEY, file: source.file },
-      ...collectCollageProjectImages(layers),
-      ...workspaceImages
-        .filter((image) => image.id !== activeWorkspaceImageId)
-        .map((image) => ({
-          key: workspaceImageKey(image.id),
-          file: image.file,
-        })),
-    ];
-  }, [activeWorkspaceImageId, layers, source, workspaceImages]);
+    const byKey = new Map<string, File>();
+    byKey.set(MAIN_IMAGE_KEY, source.file);
+
+    for (const session of sessions.values()) {
+      for (const image of collectCollageProjectImages(session.layers)) {
+        byKey.set(image.key, image.file);
+      }
+    }
+
+    for (const image of workspaceImages) {
+      if (image.id === activeWorkspaceImageId) continue;
+      byKey.set(workspaceImageKey(image.id), image.file);
+    }
+
+    return [...byKey.entries()].map(([key, file]) => ({ key, file }));
+  }, [activeWorkspaceImageId, source, workspaceImages]);
 
   const saveProject = useCallback(
     async (name: string) => {

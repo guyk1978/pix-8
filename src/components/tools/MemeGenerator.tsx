@@ -80,6 +80,11 @@ export function MemeGenerator() {
       const file = files.get(MAIN_IMAGE_KEY);
       if (!file) return;
 
+      await loadFile(file);
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 0);
+      });
+
       applyBooleanPayload(toolSettings, "stripMetadata", setStripMetadata);
       applyNumberPayload(toolSettings, "cornerRadius", setCornerRadius);
 
@@ -93,8 +98,6 @@ export function MemeGenerator() {
       if (toolSettings.settings && typeof toolSettings.settings === "object") {
         setSettings(toolSettings.settings as MemeSettings);
       }
-
-      await loadFile(file);
     },
   });
 

@@ -202,6 +202,16 @@ export function Watermark() {
       const mainFile = files.get(MAIN_IMAGE_KEY);
       if (mainFile) {
         await loadFile(mainFile);
+        await new Promise<void>((resolve) => {
+          window.setTimeout(resolve, 0);
+        });
+        applyBooleanPayload(settings, "stripMetadata", setStripMetadata);
+        applyNumberPayload(settings, "cornerRadius", setCornerRadius);
+        applyNumberPayload(settings, "opacity", setOpacity);
+        applyNumberPayload(settings, "scale", setScale);
+        if (typeof settings.position === "string") {
+          setPosition(settings.position as WatermarkPosition);
+        }
       }
 
       const watermarkFile = files.get(WATERMARK_IMAGE_KEY);

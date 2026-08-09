@@ -284,8 +284,11 @@ export const en = {
     },
     project: {
       label: "Unified Editor",
+      defaultName: "Editor project",
       saved: "Project saved locally.",
       saveFailed: "Could not save project.",
+      loadFailed: "Could not open the saved project.",
+      notFound: "Saved project was not found in this browser.",
     },
     workspace: {
       hint: "Images in this session — click to edit, + to add more",
@@ -462,6 +465,9 @@ export const en = {
     openProject: "Open",
     deleteProject: "Delete",
     lastUpdated: "Updated {date}",
+    restoreFailed: "Could not restore this project.",
+    restoreNotFound: "Project not found in this browser.",
+    restoreToolMismatch: "This project belongs to a different tool.",
   },
   footer: {
     description:

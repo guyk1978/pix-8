@@ -112,10 +112,8 @@ export function ImageOverlay() {
       y: Math.round(source.height / 2),
     }));
 
-    if (!selectedPresetId) {
-      setSelectedPresetId("stars");
-    }
-  }, [source, selectedPresetId]);
+    setSelectedPresetId((current) => current ?? "stars");
+  }, [source]);
 
   useEffect(() => {
     if (!selectedPresetId) {

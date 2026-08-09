@@ -60,7 +60,9 @@ export function EditorBottomBar() {
   };
 
   const defaultProjectName =
-    projectName ?? source?.name.replace(/\.[^.]+$/, "") ?? "Editor project";
+    projectName ??
+    source?.name.replace(/\.[^.]+$/, "") ??
+    t("editor.project.defaultName");
 
   return (
     <>

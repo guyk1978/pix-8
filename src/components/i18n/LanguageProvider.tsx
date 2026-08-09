@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -26,6 +27,7 @@ interface LanguageContextValue {
   setLanguage: (language: Language) => void;
   t: (key: string, params?: TranslationParams) => string;
   dir: "ltr" | "rtl";
+  isReady: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -37,7 +39,7 @@ function LanguageUrlSync({
 }) {
   const searchParams = useSearchParams();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const urlLang = searchParams.get("lang");
 
     if (isLanguage(urlLang)) {
@@ -55,20 +57,20 @@ function LanguageUrlSync({
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(DEFAULT_LANGUAGE);
-  const [mounted, setMounted] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   const resolveLanguage = useCallback((next: Language) => {
     setLanguageState(next);
-    setMounted(true);
+    setIsReady(true);
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!isReady) return;
 
     const dir = getDocumentDirection(language);
     document.documentElement.lang = language;
     document.documentElement.dir = dir;
-  }, [language, mounted]);
+  }, [language, isReady]);
 
   const setLanguage = useCallback((next: Language) => {
     setLanguageState(next);
@@ -86,8 +88,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       setLanguage,
       t,
       dir: getDocumentDirection(language),
+      isReady,
     }),
-    [language, setLanguage, t],
+    [language, setLanguage, t, isReady],
   );
 
   return (

@@ -121,6 +121,6 @@ export async function loadProjectFiles(
 ): Promise<File[]> {
   const map = await loadProjectImages(record);
   return record.images
-    .map((ref) => map.get(ref.key))
+    .map((ref) => map.get(toLogicalImageKey(record.id, ref.key)))
     .filter((file): file is File => !!file);
 }

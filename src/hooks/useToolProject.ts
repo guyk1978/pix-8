@@ -61,10 +61,12 @@ export function useToolProject({
   const restoreRef = useRef(restore);
   const setIsResultMarkedRef = useRef(setIsResultMarked);
 
-  getToolStateRef.current = getToolState;
-  getImagesRef.current = getImages;
-  restoreRef.current = restore;
-  setIsResultMarkedRef.current = setIsResultMarked;
+  useEffect(() => {
+    getToolStateRef.current = getToolState;
+    getImagesRef.current = getImages;
+    restoreRef.current = restore;
+    setIsResultMarkedRef.current = setIsResultMarked;
+  }, [getToolState, getImages, restore, setIsResultMarked]);
 
   useEffect(() => {
     const handlers = {
@@ -169,12 +171,16 @@ export function useImageToolProject({
     getToolState: resolveToolState,
     getImages: () =>
       source ? [{ key: MAIN_IMAGE_KEY, file: source.file }] : [],
-    restore: async (settings, _files, _meta) => {
-      resolveApplyToolState?.(settings);
-      const file = _files.get(MAIN_IMAGE_KEY);
+    restore: async (settings, files) => {
+      const file = files.get(MAIN_IMAGE_KEY);
       if (file) {
         await loadFile(file);
+        // Let source-driven reset effects (crop/transform centering) flush first.
+        await new Promise<void>((resolve) => {
+          window.setTimeout(resolve, 0);
+        });
       }
+      resolveApplyToolState?.(settings);
     },
   });
 }
@@ -273,10 +279,9 @@ export function useBulkToolProject({
         file: item.file,
       }));
     },
-    restore: async (settings, files, _meta) => {
+    restore: async (settings, files) => {
       const restoredMode = settings.mode === "batch" ? "batch" : "single";
       onModeRestore?.(restoredMode);
-      resolveApplyToolState(settings);
 
       if (restoredMode === "batch") {
         const orderedFiles = [...files.entries()]
@@ -288,13 +293,21 @@ export function useBulkToolProject({
           .map(([, file]) => file);
 
         await bulk.loadFromFiles(orderedFiles);
+        await new Promise<void>((resolve) => {
+          window.setTimeout(resolve, 0);
+        });
+        resolveApplyToolState(settings);
         return;
       }
 
       const file = files.get(MAIN_IMAGE_KEY);
       if (file) {
         await loadFile(file);
+        await new Promise<void>((resolve) => {
+          window.setTimeout(resolve, 0);
+        });
       }
+      resolveApplyToolState(settings);
     },
   });
 }

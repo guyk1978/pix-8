@@ -81,13 +81,6 @@ export function ImageCollageMaker() {
         file: item.file,
       })),
     restore: async (toolSettings, files) => {
-      applyBooleanPayload(toolSettings, "stripMetadata", setStripMetadata);
-      applyNumberPayload(toolSettings, "cornerRadius", setCornerRadius);
-
-      if (toolSettings.settings && typeof toolSettings.settings === "object") {
-        setSettings(toolSettings.settings as CollageSettings);
-      }
-
       const orderedFiles = [...files.entries()]
         .filter(([key]) => key.startsWith("image-"))
         .sort(
@@ -97,6 +90,16 @@ export function ImageCollageMaker() {
         .map(([, file]) => file);
 
       await bulk.loadFromFiles(orderedFiles);
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 0);
+      });
+
+      applyBooleanPayload(toolSettings, "stripMetadata", setStripMetadata);
+      applyNumberPayload(toolSettings, "cornerRadius", setCornerRadius);
+
+      if (toolSettings.settings && typeof toolSettings.settings === "object") {
+        setSettings(toolSettings.settings as CollageSettings);
+      }
     },
   });
 

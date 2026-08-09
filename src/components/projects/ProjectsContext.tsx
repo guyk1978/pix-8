@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { EDITOR_FAVORITE_PROJECT_ID } from "@/lib/editor/editorProject";
 import { deleteProject, listProjects } from "@/lib/projects/save";
 import type { SavedProjectRecord } from "@/lib/projects/types";
 
@@ -28,7 +29,10 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
   const refreshProjects = useCallback(async () => {
     setIsLoading(true);
     try {
-      setProjects(await listProjects());
+      const records = await listProjects();
+      setProjects(
+        records.filter((project) => project.id !== EDITOR_FAVORITE_PROJECT_ID),
+      );
     } finally {
       setIsLoading(false);
     }

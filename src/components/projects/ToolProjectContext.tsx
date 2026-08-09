@@ -13,10 +13,11 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MarkFinalResultPrompt } from "@/components/projects/MarkFinalResultPrompt";
 import { SaveProjectModal } from "@/components/projects/SaveProjectModal";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useProjects } from "@/components/projects/ProjectsContext";
 import { getProject, loadProjectImages, saveProject } from "@/lib/projects/save";
 import type { ProjectImageInput } from "@/lib/projects/types";
 import type { ToolId } from "@/lib/tools";
-import { useProjects } from "@/components/projects/ProjectsContext";
 
 export interface ToolProjectSnapshot {
   payload: Record<string, unknown>;
@@ -70,6 +71,7 @@ export function ToolProjectProvider({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { refreshProjects } = useProjects();
+  const { t } = useLanguage();
 
   const handlersRef = useRef<ToolProjectHandlers | null>(null);
   const restoredIdRef = useRef<string | null>(null);
@@ -129,25 +131,33 @@ export function ToolProjectProvider({
       try {
         const record = await getProject(projectId);
         if (!record) {
-          throw new Error("Project not found.");
+          throw new Error(t("projects.restoreNotFound"));
         }
 
         if (record.toolId !== toolId) {
-          throw new Error("Project tool mismatch.");
+          throw new Error(t("projects.restoreToolMismatch"));
         }
 
         const files = await loadProjectImages(record);
         await handlers.restore(record.payload, files);
       } catch (cause) {
         setRestoreError(
-          cause instanceof Error ? cause.message : "Failed to restore project.",
+          cause instanceof Error ? cause.message : t("projects.restoreFailed"),
         );
+        restoredIdRef.current = null;
       } finally {
         setIsRestoring(false);
-        router.replace(pathname);
+        const params = new URLSearchParams(searchParams.toString());
+        if (params.has("project")) {
+          params.delete("project");
+          const qs = params.toString();
+          router.replace(qs ? `${pathname}?${qs}` : pathname);
+        } else {
+          router.replace(pathname);
+        }
       }
     },
-    [pathname, router, toolId],
+    [pathname, router, searchParams, t, toolId],
   );
 
   useEffect(() => {

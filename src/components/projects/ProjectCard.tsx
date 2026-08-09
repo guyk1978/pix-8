@@ -6,7 +6,7 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useProjects } from "@/components/projects/ProjectsContext";
 import { getToolTranslationKey } from "@/i18n";
 import { isEditorProjectPayload } from "@/lib/editor/editorProject";
-import { buildHomeToolHref } from "@/lib/homeTool";
+import { buildProjectOpenHref } from "@/lib/projects/openHref";
 import type { SavedProjectRecord } from "@/lib/projects/types";
 import { getToolById } from "@/lib/tools";
 
@@ -32,9 +32,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       ? t(getToolTranslationKey(tool.id, "name"))
       : project.toolId;
 
-  const openHref = isEditorProject
-    ? `/?project=${project.id}`
-    : buildHomeToolHref(project.toolId, { project: project.id });
+  const openHref = buildProjectOpenHref(project, language);
 
   return (
     <article className="borderless-elevated flex flex-col gap-4 rounded-xl bg-card p-4 transition-shadow hover:shadow-[var(--shadow-hover)]">

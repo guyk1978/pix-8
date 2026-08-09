@@ -4,7 +4,7 @@ import { PanelTopClose } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { useEditorFocusMode } from "@/components/editor/EditorFocusModeContext";
+import { useOptionalEditorFocusMode } from "@/components/editor/EditorFocusModeContext";
 import { headerUtilityButtonClass } from "@/components/layout/headerNavStyles";
 import { isLanguage } from "@/lib/language";
 import { isHomeDashboard } from "@/lib/routes";
@@ -13,11 +13,11 @@ function EditorFocusToggleInner() {
   const { t } = useLanguage();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { isHeaderVisible, toggleHeaderVisible } = useEditorFocusMode();
+  const focusMode = useOptionalEditorFocusMode();
   const lang = searchParams.get("lang");
   const isEditor = isHomeDashboard(pathname) && isLanguage(lang);
 
-  if (!isEditor || !isHeaderVisible) {
+  if (!focusMode || !isEditor || !focusMode.isHeaderVisible) {
     return null;
   }
 
@@ -25,7 +25,7 @@ function EditorFocusToggleInner() {
     <button
       type="button"
       className={`${headerUtilityButtonClass} editor-focus-toggle`}
-      onClick={toggleHeaderVisible}
+      onClick={focusMode.toggleHeaderVisible}
       aria-pressed={false}
       aria-label={t("editor.focusMode.hideHeader")}
       title={t("editor.focusMode.hideHeader")}

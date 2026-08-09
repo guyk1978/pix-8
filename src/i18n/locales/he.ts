@@ -285,8 +285,11 @@ export const he: TranslationDictionary = {
     },
     project: {
       label: "עורך מאוחד",
+      defaultName: "פרויקט עורך",
       saved: "הפרויקט נשמר מקומית.",
       saveFailed: "לא ניתן לשמור את הפרויקט.",
+      loadFailed: "לא ניתן לפתוח את הפרויקט השמור.",
+      notFound: "הפרויקט השמור לא נמצא בדפדפן זה.",
     },
     workspace: {
       hint: "תמונות בסשן — לחץ לעריכה, + להוספה",
@@ -463,6 +466,9 @@ export const he: TranslationDictionary = {
     openProject: "פתח",
     deleteProject: "מחק",
     lastUpdated: "עודכן {date}",
+    restoreFailed: "לא ניתן לשחזר את הפרויקט.",
+    restoreNotFound: "הפרויקט לא נמצא בדפדפן זה.",
+    restoreToolMismatch: "הפרויקט שייך לכלי אחר.",
   },
   footer: {
     description:
