@@ -13,6 +13,9 @@ export function SplashPage() {
         <p className="splash-page__tagline">
           Professional AI-Powered Image Editing, Locally in Your Browser.
         </p>
+        <p className="splash-page__tagline splash-page__tagline--secondary" lang="he" dir="rtl">
+          עריכת תמונות מקצועית עם AI — מקומית בדפדפן.
+        </p>
 
         <div className="splash-page__actions">
           <Link href="/?lang=en" className="splash-page__button">

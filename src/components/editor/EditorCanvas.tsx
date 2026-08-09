@@ -8,6 +8,7 @@ import { useEditorCanvasViewport } from "@/hooks/useEditorCanvasViewport";
 import { useLiveFeedback } from "@/hooks/useLiveFeedback";
 import { ImageUploadDropzone } from "@/components/ui/ImageUploadDropzone";
 import { ExampleImageStrip } from "@/components/ui/ExampleImageStrip";
+import { HomeProcessingGuide } from "@/components/dashboard/HomeProcessingGuide";
 import { CanvasContainer } from "@/components/editor/CanvasContainer";
 import { ImageWrapper } from "@/components/editor/ImageWrapper";
 import { EditorCanvasDrag, useEditorCanvasDragHandlers } from "@/components/editor/EditorCanvasDrag";
@@ -132,6 +133,34 @@ export function EditorCanvas() {
     return (
       <div className="unified-editor-canvas unified-editor-canvas--empty flex min-h-0 flex-1 flex-col items-center justify-center p-6 sm:p-10">
         <div className="unified-editor-upload-wrap w-full max-w-xl space-y-6">
+          <div className="unified-editor-empty-intro space-y-2 text-center">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+              {t("editor.upload.title")}
+            </h2>
+            <p className="text-sm leading-relaxed text-muted">
+              {t("editor.upload.hint")}
+            </p>
+            <ol className="mx-auto flex max-w-md flex-wrap items-center justify-center gap-2 pt-1 text-[0.7rem] font-label uppercase tracking-[0.06em] text-muted">
+              <li className="rounded-md border border-border/70 bg-card/60 px-2.5 py-1">
+                {t("home.processingSteps.upload.label")}
+              </li>
+              <li aria-hidden className="text-border">
+                →
+              </li>
+              <li className="rounded-md border border-border/70 bg-card/60 px-2.5 py-1">
+                {t("home.processingSteps.process.label")}
+              </li>
+              <li aria-hidden className="text-border">
+                →
+              </li>
+              <li className="rounded-md border border-border/70 bg-card/60 px-2.5 py-1">
+                {t("home.processingSteps.download.label")}
+              </li>
+            </ol>
+            <div className="flex justify-center pt-1">
+              <HomeProcessingGuide />
+            </div>
+          </div>
           <ImageUploadDropzone
             inputId={inputId}
             isDragging={isDragging}

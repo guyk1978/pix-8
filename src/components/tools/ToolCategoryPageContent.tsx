@@ -55,12 +55,15 @@ export function ToolCategoryPageContent({
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
             <AppLink href="/" className="transition-colors hover:text-foreground">
-              {t("toolCategoryPages.breadcrumbHome")}
+              {t("nav.dashboard")}
             </AppLink>
           </li>
           <li aria-hidden>·</li>
           <li>
-            <AppLink href="/" className="transition-colors hover:text-foreground">
+            <AppLink
+              href="/tools/category/editor-studio"
+              className="transition-colors hover:text-foreground"
+            >
               {t("toolCategoryPages.breadcrumbTools")}
             </AppLink>
           </li>

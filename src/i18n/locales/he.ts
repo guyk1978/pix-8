@@ -2,7 +2,7 @@ import type { TranslationDictionary } from "@/i18n/locales/en";
 
 export const he: TranslationDictionary = {
   nav: {
-    dashboard: "לוח בקרה",
+    dashboard: "סטודיו",
     blog: "בלוג",
     tools: "כלים",
     advanced: "מתקדם",
@@ -26,7 +26,7 @@ export const he: TranslationDictionary = {
     controls: "בקרות",
     panelLabel: "בקרות כלי",
     empty: "התאימו הגדרות בסביבת העבודה, או העלו קובץ כדי לחשוף אפשרויות.",
-    backToDashboard: "חזרה ללוח הבקרה",
+    backToDashboard: "חזרה לסטודיו",
     reset: "איפוס",
   },
   header: {
@@ -120,6 +120,7 @@ export const he: TranslationDictionary = {
       title: "העלה פעם אחת, ערוך הכל",
       hint: "גרור קובץ כדי להתחיל את תהליך העבודה שלך. כל העיבוד נשאר בדפדפן שלך.",
     },
+    uploadFirst: "העלה תמונה קודם כדי להשתמש בכלי העורך.",
     processing: "מרנדר…",
     layers: {
       title: "שכבות",
@@ -264,6 +265,24 @@ export const he: TranslationDictionary = {
       downloadOptions: "אפשרויות פורמט הורדה",
       favorite: "שמור סשן",
       save: "שמור",
+    },
+    mobilePanel: {
+      title: "שכבות ופרמטרים",
+      open: "שכבות",
+      close: "סגור את לוח השכבות",
+    },
+    layerArticles: {
+      crop: "אמנות החיתוך",
+      transform: "כיוון מושלם",
+      bgRemove: "הסרת רקע עם AI",
+      watermark: "הגנה עם סימן מים",
+      textOverlay: "הוספת טקסט לתמונות",
+      filter: "פילטרים לתמונות",
+      resize: "שינוי גודל מקומי",
+      compress: "דחיסה עם/בלי אובדן",
+      meme: "מדריך מחולל ממים",
+      collage: "מדריך קולאז'",
+      imageOverlay: "עורך שכבות תמונה",
     },
     canvas: {
       dragHint: "גרור על התמונה כדי למקם את השכבה הפעילה",
@@ -510,7 +529,7 @@ export const he: TranslationDictionary = {
     denied: "הגישה נחסמה: יש לאשר את מדיניות העוגיות כדי להשתמש באתר.",
   },
   toolShell: {
-    backToDashboard: "→ לוח בקרה",
+    backToDashboard: "→ סטודיו",
     whatsNext: "מה הלאה?",
   },
   blog: {
@@ -523,6 +542,8 @@ export const he: TranslationDictionary = {
     article: "מאמר",
     tool: "כלי",
     relatedTo: "קשור ל-{tool}",
+    openTool: "פתח את {tool} ←",
+    featuredTools: "כלים קשורים לניסיון",
     readArticle: "← קרא מאמר",
     relatedArticles: "מאמרים קשורים",
     articleCount: "{count} מאמרים",

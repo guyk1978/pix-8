@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DashboardHome } from "@/components/dashboard/DashboardHome";
 import { SplashPage } from "@/components/SplashPage";
@@ -10,19 +10,12 @@ export function HomeEntry() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const lang = searchParams.get("lang");
-  const [bootstrapping, setBootstrapping] = useState(!isLanguage(lang));
 
   useEffect(() => {
-    if (isLanguage(lang)) {
-      setBootstrapping(false);
-      return;
-    }
+    if (isLanguage(lang)) return;
 
     const stored = getStoredLanguage();
-    if (!stored) {
-      setBootstrapping(false);
-      return;
-    }
+    if (!stored) return;
 
     const params = new URLSearchParams(searchParams.toString());
     params.set("lang", stored);
@@ -31,10 +24,6 @@ export function HomeEntry() {
 
   if (isLanguage(lang)) {
     return <DashboardHome />;
-  }
-
-  if (bootstrapping) {
-    return null;
   }
 
   return <SplashPage />;

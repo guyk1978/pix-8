@@ -1,5 +1,4 @@
 import { isLanguage } from "@/lib/language";
-import { getHomeToolHref } from "@/lib/homeTool";
 import {
   getLegacyToolRoute,
   getToolCategoryId,
@@ -20,7 +19,7 @@ export function isActiveHref(pathname: string, href: string): boolean {
 }
 
 export function getToolHref(toolId: ToolId): string {
-  return getHomeToolHref(toolId);
+  return getToolRoute(toolId);
 }
 
 function resolveToolFromNestedPath(pathname: string): Tool | undefined {

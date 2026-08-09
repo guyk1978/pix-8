@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleJsonLd } from "@/components/articles/ArticleJsonLd";
 import { ArticlePageContent } from "@/components/articles/ArticlePageContent";
-import { getAllArticles, getArticleBySlug } from "@/lib/blog";
+import { getAllArticles, getArticleBySlug, getArticlesByToolId } from "@/lib/blog";
 import { SITE_URL } from "@/lib/siteUrl";
 import { getToolById } from "@/lib/tools";
 
@@ -48,6 +48,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   const articleHe = getArticleBySlug(slug, "he");
   const tool = getToolById(articleEn.toolId);
+  const relatedEn = getArticlesByToolId(articleEn.toolId, "en").filter(
+    (article) => article.slug !== articleEn.slug,
+  );
+  const relatedHe = getArticlesByToolId(articleEn.toolId, "he").filter(
+    (article) => article.slug !== articleEn.slug,
+  );
 
   return (
     <>
@@ -56,6 +62,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         articleEn={articleEn}
         articleHe={articleHe}
         tool={tool}
+        relatedEn={relatedEn}
+        relatedHe={relatedHe}
       />
     </>
   );

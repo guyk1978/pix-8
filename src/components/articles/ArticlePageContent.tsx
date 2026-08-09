@@ -2,9 +2,10 @@
 
 import { AppLink } from "@/components/layout/AppLink";
 import { ArticleBody } from "@/components/articles/ArticleBody";
+import { RelatedArticles } from "@/components/articles/RelatedArticles";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
-import { getHomeToolHref } from "@/lib/homeTool";
+import { getToolRoute } from "@/lib/navigationConfig";
 import { useLocalizedArticle } from "@/hooks/useLocalizedArticle";
 import type { Article } from "@/lib/blog";
 import type { Tool } from "@/lib/tools";
@@ -13,12 +14,16 @@ interface ArticlePageContentProps {
   articleEn: Article;
   articleHe?: Article;
   tool?: Tool;
+  relatedEn?: Article[];
+  relatedHe?: Article[];
 }
 
 export function ArticlePageContent({
   articleEn,
   articleHe,
   tool,
+  relatedEn = [],
+  relatedHe = [],
 }: ArticlePageContentProps) {
   const { t } = useLanguage();
   const article = useLocalizedArticle(articleEn, articleHe);
@@ -35,7 +40,7 @@ export function ArticlePageContent({
         </AppLink>
         <span className="text-border">/</span>
         <AppLink
-          href={tool ? getHomeToolHref(tool.id) : "/"}
+          href={tool ? getToolRoute(tool.id) : "/"}
           className="font-label text-muted transition-colors hover:text-foreground"
         >
           {toolName}
@@ -57,10 +62,20 @@ export function ArticlePageContent({
           >
             {article.date}
           </time>
+          {tool ? (
+            <AppLink
+              href={getToolRoute(tool.id)}
+              className="inline-flex font-label text-sm text-[var(--glow-teal)] transition-colors hover:text-foreground"
+            >
+              {t("blog.openTool", { tool: toolName })}
+            </AppLink>
+          ) : null}
         </header>
 
         <ArticleBody content={article.content} />
       </article>
+
+      <RelatedArticles articlesEn={relatedEn} articlesHe={relatedHe} />
     </div>
   );
 }

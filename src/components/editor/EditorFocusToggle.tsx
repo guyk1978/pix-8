@@ -26,11 +26,12 @@ function EditorFocusToggleInner() {
       type="button"
       className={`${headerUtilityButtonClass} editor-focus-toggle`}
       onClick={focusMode.toggleHeaderVisible}
-      aria-pressed={false}
+      aria-pressed={!focusMode.isHeaderVisible}
       aria-label={t("editor.focusMode.hideHeader")}
       title={t("editor.focusMode.hideHeader")}
     >
       <PanelTopClose size={16} strokeWidth={1.75} aria-hidden />
+      <span className="sr-only">{t("editor.focusMode.hideHeader")}</span>
     </button>
   );
 }

@@ -4,11 +4,15 @@ import { useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { EDITOR_CATEGORIES, useEditor } from "@/hooks/useEditorState";
+import { useOptionalEditorMobilePanel } from "@/components/editor/EditorMobilePanelContext";
+import { useToast } from "@/components/ui/ToastProvider";
 import type { EditorToolAction } from "@/lib/editor/layerTypes";
 
 export function EditorTopNav() {
   const { t, dir, language } = useLanguage();
+  const { showToast } = useToast();
   const { openCategory, setOpenCategory, addToolAction, source } = useEditor();
+  const mobilePanel = useOptionalEditorMobilePanel();
   const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,6 +28,15 @@ export function EditorTopNav() {
   const handleAddTool = (action: EditorToolAction) => {
     addToolAction(action);
     setOpenCategory(null);
+    mobilePanel?.open();
+  };
+
+  const handleCategoryClick = (categoryId: (typeof EDITOR_CATEGORIES)[number]["id"], isOpen: boolean) => {
+    if (!source) {
+      showToast(t("editor.uploadFirst"));
+      return;
+    }
+    setOpenCategory(isOpen ? null : categoryId);
   };
 
   return (
@@ -44,10 +57,7 @@ export function EditorTopNav() {
                 className={`unified-editor-nav-btn ${isOpen ? "is-active" : ""}`}
                 aria-expanded={isOpen}
                 aria-haspopup="menu"
-                disabled={!source}
-                onClick={() =>
-                  setOpenCategory(isOpen ? null : category.id)
-                }
+                onClick={() => handleCategoryClick(category.id, isOpen)}
               >
                 <span>{t(category.labelKey)}</span>
                 <ChevronDown

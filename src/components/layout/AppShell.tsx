@@ -6,9 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ToolSidebarProvider } from "@/components/layout/ToolSidebarContext";
 import { ToolWorkspaceLayout } from "@/components/layout/ToolWorkspaceLayout";
-import {
-  EditorFocusFab,
-} from "@/components/editor/EditorFocusFab";
+import { EditorFocusFab } from "@/components/editor/EditorFocusFab";
 import {
   EditorFocusModeProvider,
   useOptionalEditorFocusMode,
@@ -20,11 +18,23 @@ interface AppShellProps {
   children: ReactNode;
 }
 
+function AppShellFallback({ children }: AppShellProps) {
+  return (
+    <div className="app-shell flex min-h-screen min-w-0 flex-col overflow-x-clip bg-background">
+      <div className="app-header-wrapper" aria-hidden>
+        <div className="h-16 border-b border-border/60 bg-header/90" />
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+    </div>
+  );
+}
+
 function AppShellFrameInner({ children }: AppShellProps) {
   const pathname = usePathname();
   const hideFooter = isHomeDashboard(pathname);
   const focusMode = useOptionalEditorFocusMode();
-  const isHeaderVisible = focusMode?.isHeaderVisible ?? true;
+  const isHeaderVisible =
+    !hideFooter || (focusMode?.isHeaderVisible ?? true);
 
   return (
     <div
@@ -35,7 +45,7 @@ function AppShellFrameInner({ children }: AppShellProps) {
       <div className="app-header-wrapper" aria-hidden={!isHeaderVisible}>
         <Header />
       </div>
-      {hideFooter && focusMode ? <EditorFocusFab /> : null}
+      {hideFooter && !isHeaderVisible ? <EditorFocusFab /> : null}
       <ToolWorkspaceLayout>{children}</ToolWorkspaceLayout>
       {hideFooter ? null : <SiteFooter />}
     </div>
@@ -43,18 +53,11 @@ function AppShellFrameInner({ children }: AppShellProps) {
 }
 
 function AppShellFrame({ children }: AppShellProps) {
-  const pathname = usePathname();
-  const hideFooter = isHomeDashboard(pathname);
-
-  if (hideFooter) {
-    return (
-      <EditorFocusModeProvider>
-        <AppShellFrameInner>{children}</AppShellFrameInner>
-      </EditorFocusModeProvider>
-    );
-  }
-
-  return <AppShellFrameInner>{children}</AppShellFrameInner>;
+  return (
+    <EditorFocusModeProvider>
+      <AppShellFrameInner>{children}</AppShellFrameInner>
+    </EditorFocusModeProvider>
+  );
 }
 
 function AppShellInner({ children }: AppShellProps) {
@@ -79,7 +82,7 @@ export function AppShell({ children }: AppShellProps) {
   }, []);
 
   return (
-    <Suspense fallback={<>{children}</>}>
+    <Suspense fallback={<AppShellFallback>{children}</AppShellFallback>}>
       <AppShellInner>{children}</AppShellInner>
     </Suspense>
   );

@@ -24,6 +24,8 @@
 
 .app-shell--header-hidden .app-header-wrapper {
   height: 0;
+  pointer-events: none;
+  visibility: hidden;
 }
 
 .app-header-wrapper .app-header {
@@ -84,11 +86,12 @@
 
 @media (max-width: 480px) {
   .editor-focus-fab-label {
-    display: none;
+    max-width: 7.5rem;
+    font-size: 0.6875rem;
   }
 
   .editor-focus-fab {
-    padding: 0.5rem;
+    padding: 0.45rem 0.65rem;
   }
 }
 

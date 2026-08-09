@@ -4,7 +4,7 @@ import { AppLink } from "@/components/layout/AppLink";
 import { ToolIcon } from "@/components/dashboard/ToolIcon";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
-import { getHomeToolHref } from "@/lib/homeTool";
+import { getToolRoute } from "@/lib/navigationConfig";
 import type { Tool } from "@/lib/tools";
 
 interface ToolCardProps {
@@ -17,7 +17,7 @@ export function ToolCard({ tool, index }: ToolCardProps) {
 
   return (
     <div className="group relative min-w-0 rounded-lg bg-card shadow-[var(--shadow-elevated)] transition-[background-color,box-shadow] duration-200 hover:bg-card-hover hover:shadow-[var(--shadow-hover)]">
-      <AppLink href={getHomeToolHref(tool.id)} className="flex gap-4 p-4 sm:p-5">
+      <AppLink href={getToolRoute(tool.id)} className="flex gap-4 p-4 sm:p-5">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-background text-muted shadow-[var(--shadow-elevated)] transition-all duration-200 group-hover:text-foreground group-hover:shadow-[var(--shadow-hover)]"
           aria-hidden

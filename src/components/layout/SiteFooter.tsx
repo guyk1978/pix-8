@@ -8,7 +8,7 @@ import { FooterResources } from "@/components/layout/FooterResources";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
 import { resolveFooterResourceCategory } from "@/lib/footerResources";
-import { getHomeToolHref } from "@/lib/navigationConfig";
+import { getToolRoute } from "@/lib/navigationConfig";
 import {
   SITE_FOOTER_ACCENT,
   SITE_FOOTER_LEGAL_LINKS,
@@ -16,6 +16,7 @@ import {
   SITE_FOOTER_UTILITY_LINKS,
   type SiteFooterLink,
 } from "@/lib/siteFooterLinks";
+import { normalizePathname } from "@/lib/routes";
 import { usePathname } from "next/navigation";
 
 const footerLinkClassName =
@@ -74,11 +75,51 @@ function FooterColumn({ title, ariaLabel, children }: FooterColumnProps) {
   );
 }
 
+function BlogExploreLinks() {
+  const { t } = useLanguage();
+
+  return (
+    <div className="space-y-3">
+      <h2 className="font-label text-sm" style={{ color: SITE_FOOTER_ACCENT }}>
+        {t("siteFooter.resources")}
+      </h2>
+      <nav aria-label={t("siteFooter.resourcesNav")}>
+        <ul className="space-y-2">
+          <li>
+            <AppLink
+              href="/"
+              className={footerLinkClassName}
+              style={{ color: SITE_FOOTER_ACCENT }}
+            >
+              {t("nav.dashboard")}
+            </AppLink>
+          </li>
+          {SITE_FOOTER_RELATED_TOOL_IDS.map((toolId) => (
+            <li key={toolId}>
+              <AppLink
+                href={getToolRoute(toolId)}
+                className={footerLinkClassName}
+                style={{ color: SITE_FOOTER_ACCENT }}
+                title={t(getToolTranslationKey(toolId, "name"))}
+              >
+                {t(getToolTranslationKey(toolId, "name"))}
+              </AppLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  );
+}
+
 export function SiteFooter() {
   const { t } = useLanguage();
   const pathname = usePathname() ?? "/";
+  const path = normalizePathname(pathname);
   const year = new Date().getFullYear();
-  const hasResourceLinks = resolveFooterResourceCategory(pathname) !== null;
+  const category = resolveFooterResourceCategory(pathname);
+  const isBlogSurface = path === "/blog" || path.startsWith("/articles/");
+  const hasResourceLinks = category !== null || isBlogSurface;
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -92,9 +133,13 @@ export function SiteFooter() {
                 : "sm:grid-cols-2 lg:grid-cols-3"
             }`}
           >
-            {hasResourceLinks ? (
+            {category ? (
               <div className="min-w-0">
                 <FooterResources />
+              </div>
+            ) : isBlogSurface ? (
+              <div className="min-w-0">
+                <BlogExploreLinks />
               </div>
             ) : null}
 
@@ -106,7 +151,7 @@ export function SiteFooter() {
                 {SITE_FOOTER_RELATED_TOOL_IDS.map((toolId) => (
                   <li key={toolId}>
                     <AppLink
-                      href={getHomeToolHref(toolId)}
+                      href={getToolRoute(toolId)}
                       className={footerLinkClassName}
                       style={{ color: SITE_FOOTER_ACCENT }}
                       title={t(getToolTranslationKey(toolId, "name"))}

@@ -3,6 +3,8 @@
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useEditor } from "@/hooks/useEditorState";
 import { EditorLayerParams } from "@/components/editor/EditorLayerParams";
+import { SupportingArticleLink } from "@/components/tools/SupportingArticleLink";
+import { EDITOR_LAYER_ARTICLE_SLUGS } from "@/lib/editor/layerArticleSlugs";
 
 export function EditorToolPanel() {
   const { t } = useLanguage();
@@ -24,6 +26,8 @@ export function EditorToolPanel() {
     );
   }
 
+  const article = EDITOR_LAYER_ARTICLE_SLUGS[activeLayer.type];
+
   return (
     <section
       key={activeLayer.id}
@@ -35,6 +39,13 @@ export function EditorToolPanel() {
       </header>
       <div className="unified-editor-params-body contextual-panel-body">
         <EditorLayerParams layer={activeLayer} />
+        {article ? (
+          <SupportingArticleLink
+            slug={article.slug}
+            label={t("blog.relatedArticles")}
+            title={t(article.titleKey)}
+          />
+        ) : null}
       </div>
     </section>
   );

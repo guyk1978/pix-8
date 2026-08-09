@@ -1,6 +1,6 @@
 export const en = {
   nav: {
-    dashboard: "Dashboard",
+    dashboard: "Studio",
     blog: "Blog",
     tools: "Tools",
     advanced: "Advanced",
@@ -24,7 +24,7 @@ export const en = {
     controls: "Controls",
     panelLabel: "Tool controls",
     empty: "Adjust settings in the workspace, or upload a file to reveal tool options.",
-    backToDashboard: "Back to dashboard",
+    backToDashboard: "Back to Studio",
     reset: "Reset",
   },
   header: {
@@ -119,6 +119,7 @@ export const en = {
       title: "Upload once, edit everything",
       hint: "Drop a file to start your workflow. All processing stays in your browser.",
     },
+    uploadFirst: "Upload an image first to use editor tools.",
     processing: "Rendering…",
     layers: {
       title: "Layers",
@@ -263,6 +264,24 @@ export const en = {
       downloadOptions: "Download format options",
       favorite: "Save workspace",
       save: "Save",
+    },
+    mobilePanel: {
+      title: "Layers & parameters",
+      open: "Layers",
+      close: "Close layers panel",
+    },
+    layerArticles: {
+      crop: "The art of cropping",
+      transform: "Perfect orientation",
+      bgRemove: "AI background removal",
+      watermark: "Protecting work with watermarks",
+      textOverlay: "Adding text to images",
+      filter: "Online photo filters",
+      resize: "Local resizing guide",
+      compress: "Lossy vs lossless compression",
+      meme: "Meme generator guide",
+      collage: "Image collage guide",
+      imageOverlay: "Photo overlay editor",
     },
     canvas: {
       dragHint: "Drag on the image to position the active layer",
@@ -523,6 +542,8 @@ export const en = {
     article: "Article",
     tool: "Tool",
     relatedTo: "Related to {tool}",
+    openTool: "Open {tool} →",
+    featuredTools: "Try related tools",
     readArticle: "Read article →",
     relatedArticles: "Related Articles",
     articleCount: "{count} articles",

@@ -19,7 +19,7 @@ import {
   APP_ROUTES,
   getAppsMenuEntries,
   getAppsMenuUncategorized,
-  getHomeToolHref,
+  getToolRoute,
   validateNavigationConfig,
 } from "@/lib/navigationConfig";
 import { isToolLinkActive } from "@/hooks/useActiveToolId";
@@ -142,7 +142,7 @@ export function AppsMenu({ appsActive = false }: AppsMenuProps) {
     return (
       <li key={tool.id}>
         <AppLink
-          href={getHomeToolHref(tool.id)}
+          href={getToolRoute(tool.id)}
           onClick={handleMenuLinkClick}
           className={`apps-menu-link block rounded-md px-3 py-2 font-label text-[13px] ${
             active ? "apps-menu-link-active" : "text-muted"

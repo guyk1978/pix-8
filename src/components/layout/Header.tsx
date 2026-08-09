@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { AppLink } from "@/components/layout/AppLink";
 import { usePathname } from "next/navigation";
-import { Folder, LayoutGrid } from "lucide-react";
+import { BookOpen, Folder, LayoutGrid, Settings } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -18,7 +18,11 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { EditorFocusToggle } from "@/components/editor/EditorFocusToggle";
 import { BrandLogo, brandLogoAriaLabel } from "@/components/brand/BrandLogo";
 import { APP_ROUTES } from "@/lib/navigationConfig";
-import { isActiveHref, isHomeDashboard, isToolPage } from "@/lib/routes";
+import {
+  isActiveHref,
+  isToolPage,
+  normalizePathname,
+} from "@/lib/routes";
 
 const GITHUB_REPO_URL = "https://github.com/guyk1978/pix-8";
 
@@ -33,7 +37,7 @@ function HeaderNavLink({ href, active, children, title }: HeaderNavLinkProps) {
   return (
     <AppLink
       href={href}
-      className={headerNavTabClass(active)}
+      className={`${headerNavTabClass(active)}${active ? " header-nav-tab--show-label" : ""}`}
       title={title}
       aria-current={active ? "page" : undefined}
     >
@@ -46,7 +50,12 @@ export function Header() {
   const { t, dir, language } = useLanguage();
   const pathname = usePathname();
   const projectsActive = isActiveHref(pathname, APP_ROUTES.projects);
-  const appsActive = isToolPage(pathname) || isHomeDashboard(pathname);
+  const settingsActive = isActiveHref(pathname, APP_ROUTES.settings);
+  const normalizedPath = normalizePathname(pathname);
+  const blogActive =
+    isActiveHref(pathname, APP_ROUTES.blog) ||
+    normalizedPath.startsWith("/articles/");
+  const appsActive = isToolPage(pathname);
 
   return (
     <header
@@ -80,6 +89,14 @@ export function Header() {
             <AppsMenu appsActive={appsActive} />
           </Suspense>
           <HeaderNavLink
+            href={APP_ROUTES.blog}
+            active={blogActive}
+            title={t("nav.blog")}
+          >
+            <BookOpen className="header-nav-tab-icon" strokeWidth={1.75} aria-hidden />
+            <span>{t("nav.blog")}</span>
+          </HeaderNavLink>
+          <HeaderNavLink
             href={APP_ROUTES.projects}
             active={projectsActive}
             title={t("nav.projects")}
@@ -103,6 +120,15 @@ export function Header() {
           <ShareButton className={headerUtilityButtonClass} />
           <ThemeToggle className={headerUtilityButtonClass} />
           <PwaInstallButton className={headerUtilityButtonClass} />
+          <AppLink
+            href={APP_ROUTES.settings}
+            className={`${headerUtilityButtonClass}${settingsActive ? " text-foreground" : ""}`}
+            aria-label={t("nav.settings")}
+            title={t("nav.settings")}
+            aria-current={settingsActive ? "page" : undefined}
+          >
+            <Settings className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+          </AppLink>
 
           <a
             href={GITHUB_REPO_URL}

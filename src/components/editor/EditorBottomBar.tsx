@@ -6,6 +6,7 @@ import {
   Crop,
   Download,
   FlipHorizontal,
+  Layers,
   Maximize2,
   Redo2,
   RotateCw,
@@ -17,6 +18,8 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useEditor } from "@/hooks/useEditorState";
+import { useOptionalEditorMobilePanel } from "@/components/editor/EditorMobilePanelContext";
+import { useToast } from "@/components/ui/ToastProvider";
 import { BOTTOM_BAR_ACTIONS } from "@/lib/editor/editorCategories";
 import type { EditorToolAction } from "@/lib/editor/layerTypes";
 import type { ImageFormat } from "@/hooks/useImageProcessor";
@@ -48,15 +51,23 @@ export function EditorBottomBar() {
     undo,
     redo,
   } = useEditor();
+  const mobilePanel = useOptionalEditorMobilePanel();
+  const { showToast } = useToast();
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
 
   const handleQuickAction = (action: EditorToolAction) => {
+    if (!source) {
+      showToast(t("editor.uploadFirst"));
+      return;
+    }
     if (action === "rotate-flip") {
       addToolAction("rotate-flip");
+      mobilePanel?.open();
       return;
     }
     addToolAction(action);
+    mobilePanel?.open();
   };
 
   const defaultProjectName =
@@ -89,6 +100,19 @@ export function EditorBottomBar() {
             </button>
           </div>
 
+          <button
+            type="button"
+            className={`unified-editor-pill-btn unified-editor-mobile-panel-btn${
+              mobilePanel?.isOpen ? " is-active" : ""
+            }`}
+            aria-expanded={mobilePanel?.isOpen ?? false}
+            aria-controls="editor-mobile-panel"
+            onClick={() => mobilePanel?.toggle()}
+          >
+            <Layers className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+            <span>{t("editor.mobilePanel.open")}</span>
+          </button>
+
           {BOTTOM_BAR_ACTIONS.map((action) => {
             const Icon = BOTTOM_BAR_ICONS[action] ?? Crop;
             return (
@@ -96,7 +120,6 @@ export function EditorBottomBar() {
                 key={action}
                 type="button"
                 className="unified-editor-pill-btn"
-                disabled={!source}
                 onClick={() => handleQuickAction(action)}
               >
                 <Icon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
@@ -109,8 +132,7 @@ export function EditorBottomBar() {
           <button
             type="button"
             className="unified-editor-pill-btn"
-            disabled={!source}
-            onClick={() => addToolAction("rotate-flip")}
+            onClick={() => handleQuickAction("rotate-flip")}
             aria-label={t("editor.bottomBar.flip")}
           >
             <FlipHorizontal className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
