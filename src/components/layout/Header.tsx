@@ -18,6 +18,7 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { EditorFocusToggle } from "@/components/editor/EditorFocusToggle";
 import { BrandLogo, brandLogoAriaLabel } from "@/components/brand/BrandLogo";
 import { APP_ROUTES } from "@/lib/navigationConfig";
+import { getJoinMyPdfUrl } from "@/lib/external-links";
 import {
   isActiveHref,
   isToolPage,
@@ -129,6 +130,17 @@ export function Header() {
           >
             <Settings className="h-4 w-4" strokeWidth={1.75} aria-hidden />
           </AppLink>
+
+          <a
+            href={getJoinMyPdfUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${headerUtilityButtonClass} hidden sm:inline-flex`}
+            aria-label={t("ecosystem.openJoinMyPdf")}
+            title={t("ecosystem.openJoinMyPdf")}
+          >
+            <span className="font-mono text-[10px] font-semibold tracking-wide">PDF</span>
+          </a>
 
           <a
             href={GITHUB_REPO_URL}

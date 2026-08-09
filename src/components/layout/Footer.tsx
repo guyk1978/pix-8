@@ -3,7 +3,7 @@
 import { AppLink } from "@/components/layout/AppLink";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { getToolTranslationKey } from "@/i18n";
-import { JOIN_MY_PDF_URL } from "@/lib/external-links";
+import { getJoinMyPdfUrl } from "@/lib/external-links";
 import {
   getCategoryRoute,
   getToolRoute,
@@ -71,7 +71,7 @@ export function Footer() {
 
         <div className="mt-8 border-t border-border pt-6">
           <a
-            href={JOIN_MY_PDF_URL}
+            href={getJoinMyPdfUrl()}
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex max-w-md flex-col gap-1 rounded-sm border border-border bg-card px-4 py-3 transition-colors hover:border-muted hover:bg-card-hover"

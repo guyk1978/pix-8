@@ -9,6 +9,7 @@ import { EditorHistoryBindings } from "@/components/editor/EditorHistoryBindings
 import { EditorStatusMonitor } from "@/components/editor/EditorStatusMonitor";
 import { EditorProjectLoader } from "@/components/editor/EditorProjectLoader";
 import { EditorMobilePanelProvider } from "@/components/editor/EditorMobilePanelContext";
+import { EcosystemHandoffListener } from "@/components/ecosystem/EcosystemHandoffListener";
 import { EditorProvider } from "@/hooks/useEditorState";
 import { useOptionalToolSidebar } from "@/components/layout/ToolSidebarContext";
 
@@ -30,6 +31,7 @@ function EditorLayoutInner() {
         <Suspense fallback={null}>
           <EditorProjectLoader />
         </Suspense>
+        <EcosystemHandoffListener />
         <EditorTopNav />
         <div
           className="unified-editor-body unified-editor-body--sticky-canvas flex min-h-0 flex-1 overflow-hidden"

@@ -11,6 +11,7 @@ import {
   EditorFocusModeProvider,
   useOptionalEditorFocusMode,
 } from "@/components/editor/EditorFocusModeContext";
+import { EcosystemHandoffReceiver } from "@/components/ecosystem/EcosystemHandoffReceiver";
 import { registerPwaServiceWorker } from "@/hooks/usePwaInstall";
 import { isHomeDashboard, isSplashEntry } from "@/lib/routes";
 
@@ -66,11 +67,17 @@ function AppShellInner({ children }: AppShellProps) {
   const isSplash = isSplashEntry(pathname, searchParams.get("lang"));
 
   if (isSplash) {
-    return <>{children}</>;
+    return (
+      <>
+        <EcosystemHandoffReceiver />
+        {children}
+      </>
+    );
   }
 
   return (
     <ToolSidebarProvider>
+      <EcosystemHandoffReceiver />
       <AppShellFrame>{children}</AppShellFrame>
     </ToolSidebarProvider>
   );

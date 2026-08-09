@@ -5,6 +5,7 @@ import {
   ChevronDown,
   Crop,
   Download,
+  FilePlus2,
   FlipHorizontal,
   Layers,
   Maximize2,
@@ -20,9 +21,11 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useEditor } from "@/hooks/useEditorState";
 import { useOptionalEditorMobilePanel } from "@/components/editor/EditorMobilePanelContext";
 import { useToast } from "@/components/ui/ToastProvider";
+import { sendCanvasToJoinMyPdf } from "@/lib/ecosystem/bridge";
 import { BOTTOM_BAR_ACTIONS } from "@/lib/editor/editorCategories";
 import type { EditorToolAction } from "@/lib/editor/layerTypes";
 import type { ImageFormat } from "@/hooks/useImageProcessor";
+import { SendToJoinMyPdfButton } from "@/components/ecosystem/SendToJoinMyPdfButton";
 import { SaveProjectModal } from "@/components/projects/SaveProjectModal";
 
 const BOTTOM_BAR_ICONS: Record<string, typeof Crop> = {
@@ -50,11 +53,38 @@ export function EditorBottomBar() {
     canRedo,
     undo,
     redo,
+    previewCanvasRef,
   } = useEditor();
   const mobilePanel = useOptionalEditorMobilePanel();
   const { showToast } = useToast();
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [sendingToPdf, setSendingToPdf] = useState(false);
+
+  const handleSendToJoinMyPdf = async (intent: string) => {
+    if (!source || !previewCanvasRef.current) {
+      showToast(t("editor.uploadFirst"));
+      return;
+    }
+    setSendingToPdf(true);
+    setDownloadOpen(false);
+    try {
+      await sendCanvasToJoinMyPdf({
+        canvas: previewCanvasRef.current,
+        filename: source.name,
+        mimeType: "image/png",
+        intent,
+        locale: language === "he" ? "he" : "en",
+      });
+      showToast(t("ecosystem.sentToJoinMyPdf"));
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : t("ecosystem.sendFailed"),
+      );
+    } finally {
+      setSendingToPdf(false);
+    }
+  };
 
   const handleQuickAction = (action: EditorToolAction) => {
     if (!source) {
@@ -167,6 +197,8 @@ export function EditorBottomBar() {
             <span>{t("editor.bottomBar.save")}</span>
           </button>
 
+          <SendToJoinMyPdfButton />
+
           <div className="relative flex">
             <button
               type="button"
@@ -204,6 +236,35 @@ export function EditorBottomBar() {
                     {format.toUpperCase()}
                   </button>
                 ))}
+                <div className="unified-editor-download-menu-divider" role="separator" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="unified-editor-dropdown-item"
+                  disabled={sendingToPdf}
+                  onClick={() => void handleSendToJoinMyPdf("jpg-to-pdf")}
+                >
+                  <FilePlus2 className="me-1.5 inline h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+                  {t("ecosystem.convertToPdf")}
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="unified-editor-dropdown-item"
+                  disabled={sendingToPdf}
+                  onClick={() => void handleSendToJoinMyPdf("sign-pdf")}
+                >
+                  {t("ecosystem.signInJoinMyPdf")}
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="unified-editor-dropdown-item"
+                  disabled={sendingToPdf}
+                  onClick={() => void handleSendToJoinMyPdf("merge-pdf")}
+                >
+                  {t("ecosystem.addToJoinMyPdf")}
+                </button>
               </div>
             ) : null}
           </div>

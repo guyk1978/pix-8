@@ -4844,11 +4844,17 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
   bottom: calc(100% + 0.35rem);
   inset-inline-end: 0;
   z-index: 30;
-  min-width: 6rem;
+  min-width: 11rem;
   padding: 0.35rem;
   border: 1px solid var(--editor-border);
   border-radius: 0.35rem;
   background: var(--editor-input-bg);
+}
+
+.unified-editor-download-menu-divider {
+  height: 1px;
+  margin: 0.35rem 0.25rem;
+  background: var(--editor-border);
 }
 
 .unified-editor-status {
