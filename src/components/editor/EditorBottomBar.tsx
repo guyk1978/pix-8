@@ -22,6 +22,10 @@ import { useEditor } from "@/hooks/useEditorState";
 import { useOptionalEditorMobilePanel } from "@/components/editor/EditorMobilePanelContext";
 import { useToast } from "@/components/ui/ToastProvider";
 import { sendCanvasToJoinMyPdf } from "@/lib/ecosystem/bridge";
+import {
+  buildJoinMyPdfHandoffUrl,
+  isPopupBlockedError,
+} from "@/lib/ecosystem/protocol";
 import { BOTTOM_BAR_ACTIONS } from "@/lib/editor/editorCategories";
 import type { EditorToolAction } from "@/lib/editor/layerTypes";
 import type { ImageFormat } from "@/hooks/useImageProcessor";
@@ -68,19 +72,32 @@ export function EditorBottomBar() {
     }
     setSendingToPdf(true);
     setDownloadOpen(false);
+    const locale = language === "he" ? "he" : "en";
     try {
       await sendCanvasToJoinMyPdf({
         canvas: previewCanvasRef.current,
         filename: source.name,
         mimeType: "image/png",
         intent,
-        locale: language === "he" ? "he" : "en",
+        locale,
       });
       showToast(t("ecosystem.sentToJoinMyPdf"));
     } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : t("ecosystem.sendFailed"),
-      );
+      if (isPopupBlockedError(error)) {
+        const url =
+          error.fallbackUrl || buildJoinMyPdfHandoffUrl(intent, locale);
+        showToast(t("ecosystem.popupBlocked"));
+        const openManual = window.confirm(
+          `${t("ecosystem.popupBlocked")}\n\n${t("ecosystem.popupBlockedHint")}`,
+        );
+        if (openManual) {
+          window.open(url, "_blank", "noopener,noreferrer");
+        }
+      } else {
+        showToast(
+          error instanceof Error ? error.message : t("ecosystem.sendFailed"),
+        );
+      }
     } finally {
       setSendingToPdf(false);
     }

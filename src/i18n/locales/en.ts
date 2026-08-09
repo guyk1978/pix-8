@@ -683,6 +683,9 @@ export const en = {
     sentToJoinMyPdf: "Opening JoinMyPDF with your image…",
     sendFailed: "Could not send file to JoinMyPDF.",
     popupBlocked: "Popup blocked — allow popups to transfer files.",
+    popupBlockedHint:
+      "Allow popups for this site in your browser, then try again — or open JoinMyPDF manually.",
+    openManually: "Open JoinMyPDF manually",
     receivedFromJoinMyPdf: "Image received from JoinMyPDF.",
   },
   toast: {

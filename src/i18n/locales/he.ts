@@ -683,6 +683,9 @@ export const he: TranslationDictionary = {
     sentToJoinMyPdf: "פותח את JoinMyPDF עם התמונה שלך…",
     sendFailed: "לא ניתן לשלוח קובץ ל-JoinMyPDF.",
     popupBlocked: "חלון קופץ נחסם — אפשר חלונות קופצים להעברת קבצים.",
+    popupBlockedHint:
+      "אפשר חלונות קופצים לאתר הזה בדפדפן, ואז נסה שוב — או פתח את JoinMyPDF ידנית.",
+    openManually: "פתח את JoinMyPDF ידנית",
     receivedFromJoinMyPdf: "התקבלה תמונה מ-JoinMyPDF.",
   },
   toast: {

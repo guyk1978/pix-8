@@ -4582,6 +4582,8 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
 }
 
 .unified-editor-bottom-bar {
+  position: relative;
+  z-index: 40;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4589,7 +4591,9 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
   padding: 0.65rem 1rem;
   border-top: 1px solid var(--editor-border);
   background: var(--editor-bg);
-  overflow-x: auto;
+  /* Keep overflow visible so upward menus (JoinMyPDF / download) aren't clipped under the canvas.
+     Horizontal scroll lives on the actions row instead. */
+  overflow: visible;
 }
 
 .unified-editor-bottom-actions {
@@ -4597,6 +4601,9 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
   flex-wrap: wrap;
   gap: 0.35rem;
   align-items: center;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 .unified-editor-history-group {
@@ -4663,10 +4670,13 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
 }
 
 .unified-editor-bottom-primary {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex-shrink: 0;
+  overflow: visible;
 }
 
 .unified-editor-fav-btn {
@@ -4843,12 +4853,13 @@ html:not(.dark) .upload-card-dropzone.unified-editor-dropzone.tool-dropzone-acti
   position: absolute;
   bottom: calc(100% + 0.35rem);
   inset-inline-end: 0;
-  z-index: 30;
+  z-index: 50;
   min-width: 11rem;
   padding: 0.35rem;
   border: 1px solid var(--editor-border);
   border-radius: 0.35rem;
   background: var(--editor-input-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .unified-editor-download-menu-divider {

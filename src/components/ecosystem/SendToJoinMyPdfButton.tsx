@@ -6,7 +6,11 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useEditor } from "@/hooks/useEditorState";
 import { useToast } from "@/components/ui/ToastProvider";
 import { sendCanvasToJoinMyPdf } from "@/lib/ecosystem/bridge";
-import { resolveJoinMyPdfBaseUrl } from "@/lib/ecosystem/protocol";
+import {
+  buildJoinMyPdfHandoffUrl,
+  isPopupBlockedError,
+  resolveJoinMyPdfBaseUrl,
+} from "@/lib/ecosystem/protocol";
 
 const ACTIONS = [
   { intent: "jpg-to-pdf", labelKey: "ecosystem.convertToPdf" },
@@ -21,6 +25,7 @@ export function SendToJoinMyPdfButton() {
   const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [fallbackUrl, setFallbackUrl] = useState<string | null>(null);
   const locale = language === "he" ? "he" : "en";
   const homeUrl = `${resolveJoinMyPdfBaseUrl()}/${locale}/home/`;
 
@@ -31,6 +36,7 @@ export function SendToJoinMyPdfButton() {
     }
     setBusy(true);
     setOpen(false);
+    setFallbackUrl(null);
     try {
       await sendCanvasToJoinMyPdf({
         canvas: previewCanvasRef.current,
@@ -41,9 +47,22 @@ export function SendToJoinMyPdfButton() {
       });
       showToast(t("ecosystem.sentToJoinMyPdf"));
     } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : t("ecosystem.sendFailed"),
-      );
+      if (isPopupBlockedError(error)) {
+        const url =
+          error.fallbackUrl || buildJoinMyPdfHandoffUrl(intent, locale);
+        setFallbackUrl(url);
+        showToast(t("ecosystem.popupBlocked"));
+        const openManual = window.confirm(
+          `${t("ecosystem.popupBlocked")}\n\n${t("ecosystem.popupBlockedHint")}`,
+        );
+        if (openManual) {
+          window.open(url, "_blank", "noopener,noreferrer");
+        }
+      } else {
+        showToast(
+          error instanceof Error ? error.message : t("ecosystem.sendFailed"),
+        );
+      }
     } finally {
       setBusy(false);
     }
@@ -90,6 +109,18 @@ export function SendToJoinMyPdfButton() {
             {t("ecosystem.openJoinMyPdf")}
           </a>
         </div>
+      ) : null}
+
+      {fallbackUrl ? (
+        <a
+          href={fallbackUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="unified-editor-pill-btn ms-1"
+        >
+          <ExternalLink className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+          <span>{t("ecosystem.openManually")}</span>
+        </a>
       ) : null}
     </div>
   );

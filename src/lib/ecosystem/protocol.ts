@@ -20,6 +20,13 @@ export type EcosystemReadyMessage = {
   app: EcosystemAppId;
 };
 
+/** Child asks opener to (re)send the pending handoff after it finishes loading. */
+export type EcosystemRequestHandoffMessage = {
+  channel: typeof ECOSYSTEM_CHANNEL;
+  type: "request-handoff";
+  app: EcosystemAppId;
+};
+
 export type EcosystemHandoffMessage = {
   channel: typeof ECOSYSTEM_CHANNEL;
   type: "handoff";
@@ -38,6 +45,7 @@ export type EcosystemAckMessage = {
 
 export type EcosystemMessage =
   | EcosystemReadyMessage
+  | EcosystemRequestHandoffMessage
   | EcosystemHandoffMessage
   | EcosystemAckMessage;
 
@@ -50,6 +58,21 @@ export const JOINMYPDF_PRODUCTION_ORIGINS = [
   "https://joinmypdf.com",
   "https://www.joinmypdf.com",
 ] as const;
+
+const LOG_PREFIX = "[ecosystem]";
+
+export function ecosystemLog(
+  level: "log" | "warn" | "error",
+  message: string,
+  detail?: unknown,
+): void {
+  if (typeof console === "undefined") return;
+  if (detail !== undefined) {
+    console[level](LOG_PREFIX, message, detail);
+  } else {
+    console[level](LOG_PREFIX, message);
+  }
+}
 
 export function isLocalOrigin(origin: string): boolean {
   return (
@@ -73,7 +96,10 @@ export function isEcosystemMessage(data: unknown): data is EcosystemMessage {
   const msg = data as Partial<EcosystemMessage>;
   return (
     msg.channel === ECOSYSTEM_CHANNEL &&
-    (msg.type === "ready" || msg.type === "handoff" || msg.type === "ack")
+    (msg.type === "ready" ||
+      msg.type === "request-handoff" ||
+      msg.type === "handoff" ||
+      msg.type === "ack")
   );
 }
 
@@ -96,33 +122,75 @@ export function handoffPayloadToFile(payload: EcosystemHandoffFile): File {
   });
 }
 
-export function resolveJoinMyPdfBaseUrl(): string {
-  if (typeof window !== "undefined" && isLocalOrigin(window.location.origin)) {
-    const override = process.env.NEXT_PUBLIC_JOINMYPDF_URL;
-    if (override) return override.replace(/\/$/, "");
-    // Common local JoinMyPDF ports when Pix-8 occupies 3003.
-    return "http://localhost:3000";
-  }
-  return "https://joinmypdf.com";
+function stripTrailingSlash(url: string): string {
+  return url.replace(/\/$/, "");
 }
 
+function isCurrentOriginLocal(): boolean {
+  return (
+    typeof window !== "undefined" && isLocalOrigin(window.location.origin)
+  );
+}
+
+/**
+ * Prefer NEXT_PUBLIC_JOINMYPDF_URL; otherwise local vs production fallback.
+ */
+export function resolveJoinMyPdfBaseUrl(): string {
+  const override = process.env.NEXT_PUBLIC_JOINMYPDF_URL?.trim();
+  if (override) return stripTrailingSlash(override);
+  return isCurrentOriginLocal()
+    ? "http://localhost:3000"
+    : "https://joinmypdf.com";
+}
+
+/**
+ * Prefer NEXT_PUBLIC_PIX8_URL; otherwise local vs production fallback.
+ */
 export function resolvePix8BaseUrl(): string {
-  if (typeof window !== "undefined" && isLocalOrigin(window.location.origin)) {
-    const override = process.env.NEXT_PUBLIC_PIX8_URL;
-    if (override) return override.replace(/\/$/, "");
-    return "http://localhost:3003";
-  }
-  return "https://pix-8.com";
+  const override = process.env.NEXT_PUBLIC_PIX8_URL?.trim();
+  if (override) return stripTrailingSlash(override);
+  return isCurrentOriginLocal()
+    ? "http://localhost:3003"
+    : "https://pix-8.com";
 }
 
 export function buildJoinMyPdfHandoffUrl(intent: string, locale = "en"): string {
   const base = resolveJoinMyPdfBaseUrl();
   const tool = intent.replace(/^\//, "").replace(/\/$/, "") || "jpg-to-pdf";
   const slug = tool.startsWith("tools/") ? tool.slice("tools/".length) : tool;
-  return `${base}/${locale}/tools/${slug}/?ecosystem=1&from=pix-8`;
+  // JoinMyPDF uses trailingSlash: false — a trailing slash causes a redirect
+  // that drops early postMessage deliveries.
+  return `${base}/${locale}/tools/${slug}?ecosystem=1&from=pix-8`;
 }
 
-export function buildPix8HandoffUrl(): string {
+export function buildPix8HandoffUrl(locale = "en"): string {
   const base = resolvePix8BaseUrl();
-  return `${base}/?lang=en&ecosystem=1&from=joinmypdf`;
+  const lang = locale === "he" ? "he" : "en";
+  return `${base}/?lang=${lang}&ecosystem=1&from=joinmypdf`;
+}
+
+export class EcosystemPopupBlockedError extends Error {
+  readonly code = "POPUP_BLOCKED" as const;
+  readonly fallbackUrl: string;
+  readonly partnerLabel: string;
+
+  constructor(fallbackUrl: string, partnerLabel: string) {
+    super(
+      `Popup blocked — allow popups for this site to send files to ${partnerLabel}.`,
+    );
+    this.name = "EcosystemPopupBlockedError";
+    this.fallbackUrl = fallbackUrl;
+    this.partnerLabel = partnerLabel;
+  }
+}
+
+export function isPopupBlockedError(
+  error: unknown,
+): error is EcosystemPopupBlockedError {
+  return (
+    error instanceof EcosystemPopupBlockedError ||
+    (typeof error === "object" &&
+      error !== null &&
+      (error as { code?: string }).code === "POPUP_BLOCKED")
+  );
 }

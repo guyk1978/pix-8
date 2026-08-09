@@ -10,6 +10,7 @@ import {
 } from "@/lib/ecosystem/sendHandoff";
 import {
   ECOSYSTEM_CHANNEL,
+  ecosystemLog,
   handoffPayloadToFile,
   isAllowedPartnerOrigin,
   isEcosystemMessage,
@@ -54,6 +55,12 @@ async function handleIncomingHandoff(
   if (message.from !== "joinmypdf") return;
   if (!isAllowedPartnerOrigin(event.origin, "joinmypdf")) return;
 
+  ecosystemLog("log", "received handoff from JoinMyPDF", {
+    origin: event.origin,
+    intent: message.intent,
+    fileCount: message.files.length,
+  });
+
   const sourceWindow = event.source as Window | null;
   try {
     const files = message.files.map(handoffPayloadToFile);
@@ -61,6 +68,9 @@ async function handleIncomingHandoff(
     await writePix8PendingUpload(files);
     if (sourceWindow) postAck(sourceWindow, event.origin, true);
     window.dispatchEvent(new CustomEvent(PIX8_HANDOFF_EVENT));
+    ecosystemLog("log", "handoff applied + ack sent", {
+      names: files.map((file) => file.name),
+    });
 
     const url = new URL(window.location.href);
     url.searchParams.delete("ecosystem");
@@ -70,6 +80,7 @@ async function handleIncomingHandoff(
     if (!url.searchParams.get("lang")) url.searchParams.set("lang", "en");
     window.history.replaceState(null, "", url.toString());
   } catch (error) {
+    ecosystemLog("error", "incoming handoff failed", error);
     if (sourceWindow) {
       postAck(
         sourceWindow,
@@ -85,8 +96,9 @@ async function handleIncomingHandoff(
 export function startPix8EcosystemBridge(): () => void {
   if (typeof window === "undefined") return () => undefined;
 
+  let stopAnnounce: (() => void) | undefined;
   if (isHandoffLanding()) {
-    announceEcosystemReady("pix-8");
+    stopAnnounce = announceEcosystemReady("pix-8");
   }
 
   const onMessage = (event: MessageEvent) => {
@@ -96,7 +108,10 @@ export function startPix8EcosystemBridge(): () => void {
   };
 
   window.addEventListener("message", onMessage);
-  return () => window.removeEventListener("message", onMessage);
+  return () => {
+    stopAnnounce?.();
+    window.removeEventListener("message", onMessage);
+  };
 }
 
 export async function sendCanvasToJoinMyPdf(options: {
@@ -106,26 +121,31 @@ export async function sendCanvasToJoinMyPdf(options: {
   intent?: string;
   locale?: string;
 }): Promise<void> {
-  const format = options.mimeType === "image/jpeg" ? "jpeg" : "png";
-  const blob = await canvasToBlob(options.canvas, format, 0.92);
-  const name = buildDownloadFilename(
-    options.filename.replace(/\.[^.]+$/, "") || "pix8-export",
-    format,
-  );
-  const file = new File([blob], name, {
-    type: options.mimeType ?? "image/png",
-    lastModified: Date.now(),
-  });
-
   const intent =
     options.intent === "pdf-merge" || options.intent === "merge-pdf"
       ? "pdf-merge"
       : (options.intent ?? "jpg-to-pdf");
+  const format = options.mimeType === "image/jpeg" ? "jpeg" : "png";
+  const locale = options.locale ?? "en";
 
+  // window.open runs inside sendFilesToJoinMyPdf before prepareFiles awaits —
+  // keep this call on the click stack (no prior awaits in callers).
   await sendFilesToJoinMyPdf({
-    files: [file],
     intent,
-    locale: options.locale ?? "en",
+    locale,
+    prepareFiles: async () => {
+      const blob = await canvasToBlob(options.canvas, format, 0.92);
+      const name = buildDownloadFilename(
+        options.filename.replace(/\.[^.]+$/, "") || "pix8-export",
+        format,
+      );
+      return [
+        new File([blob], name, {
+          type: options.mimeType ?? "image/png",
+          lastModified: Date.now(),
+        }),
+      ];
+    },
   });
 }
 
